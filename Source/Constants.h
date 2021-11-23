@@ -1,0 +1,11 @@
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
+
+#define DEFAULT_SAMPLE_RATE 48000
+#define DEFAULT_PIXEL_PER_BEAT_AMOUNT 2
+#define MINIMUM_SPACE_BETWEEN_GRID_LINES 30
+
+// divisions : 1/4, 1/2, 1, 2, ...
+#define DEFAULT_DIVISIONS {0.25, 0.5, 1, 2, 4, 8, 16, 32}
+
+#endif // CONSTANTS_H
