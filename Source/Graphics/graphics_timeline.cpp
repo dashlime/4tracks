@@ -6,6 +6,33 @@ Timeline::Timeline(QWidget *parent) : QWidget(parent)
 {
     setLayout(&mMainLayout);
     layout()->setSpacing(1);
+
+    setStyleSheet(QString::fromUtf8("QScrollArea {"
+                                    "   border: none;"
+                                    "}"
+                                    "QScrollBar:vertical {"
+                                    "   background:rgba(0,0,0,0);"
+                                    "   width:8px;    "
+                                    "   margin: 0px 0px 0px 0px;"
+                                    "}"
+                                    "QScrollBar:horizontal {"
+                                    "   background:rgba(0,0,0,0);"
+                                    "   height:8px;    "
+                                    "   margin: 0px 0px 0px 0px;"
+                                    "}"
+                                    "QScrollBar::handle {"
+                                    "   background: #37474F;"
+                                    "   border-radius: 4px;"
+                                    "}"
+                                    "QScrollBar::add-line, QScrollBar::sub-line {"
+                                    "   background: none;"
+                                    "   display: none;"
+                                    "}"
+                                    "QScrollBar::left-arrow, QScrollBar::right-arrow, QScrollBar::down-arrow, QScrollBar::up-arrow {"
+                                    "   background: none;"
+                                    "   display: none;"
+                                    "}"
+    ));
 }
 
 void Timeline::setAudioTimeline(std::shared_ptr<Audio::Timeline> timeline)
