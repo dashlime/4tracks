@@ -135,18 +135,7 @@
    <bool>false</bool>
   </property>
   <property name="styleSheet">
-   <string notr="true">QPushButton {
-	background-color: #BDBDBD; 
-	border: 2px solid black;
-	border-radius: 5px; 
-	color: black;
-padding-left: 5px;
-padding-right: 5px;
-}
-
-QPushButton:hover:!pressed {
-	background-color: #9E9E9E;
-}</string>
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -183,9 +172,6 @@ QPushButton:hover:!pressed {
        </widget>
       </item>
       <item>
-       <widget class="QSpinBox" name="bpmSpin"/>
-      </item>
-      <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -200,6 +186,25 @@ QPushButton:hover:!pressed {
          </size>
         </property>
        </spacer>
+      </item>
+      <item alignment="Qt::AlignRight">
+       <widget class="QLabel" name="label">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
+        <property name="text">
+         <string>Tempo :</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSpinBox" name="bpmSpin"/>
       </item>
      </layout>
     </item>

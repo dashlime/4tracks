@@ -28,7 +28,7 @@ Timeline::Timeline(QWidget *parent) : QWidget(parent)
                                     "   background: none;"
                                     "   display: none;"
                                     "}"
-                                    "QScrollBar::left-arrow, QScrollBar::right-arrow, QScrollBar::down-arrow, QScrollBar::up-arrow {"
+                                    "QScrollBar::left-arrow, QScrollBar::right-arrow, QScrollBar::down-arrow, QScrollBar::up-arrow, QScrollBar::add-page {"
                                     "   background: none;"
                                     "   display: none;"
                                     "}"
@@ -59,10 +59,12 @@ void Timeline::displayTracks()
 
     mMainLayout.addWidget(&mScrollArea, 0, 1, i+1, 1);
     mScrollArea.setWidget(&mClipsGrid);
+    mScrollArea.setWidgetResizable(true);
 
-    mClipsGrid.setGeometry(mScrollArea.geometry());
     mClipsGrid.refreshBpm(mAudioTimeline->getBpm());
     mClipsGrid.setAudioTimeline(mAudioTimeline);
+
+    refreshClipsGridGeometry();
 }
 
 void Timeline::refreshZoomLevel(double newZoomLevel)
@@ -80,11 +82,15 @@ double Timeline::getZoomLevel() const
 
 void Timeline::refreshClipsGridGeometry()
 {
+    mClipsGrid.updateGeometry();
+    mClipsGrid.setGeometry(0, 0, mClipsGrid.minimumWidth(), mClipsGrid.minimumHeight());
     if (mScrollArea.width() > mClipsGrid.minimumWidth())
         mClipsGrid.setGeometry(0, 0, mScrollArea.width(), mClipsGrid.height());
 
     if (mScrollArea.height() > mClipsGrid.minimumHeight())
         mClipsGrid.setGeometry(0, 0, mClipsGrid.width(), mScrollArea.height());
+
+    mScrollArea.updateGeometry();
 }
 
 void Timeline::refreshBpm()

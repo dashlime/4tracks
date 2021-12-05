@@ -9,6 +9,36 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->centralwidget->layout()->addWidget(&mUiTimeline);
 
+    setStyleSheet(QString::fromUtf8("QPushButton {"
+                                        "background-color: #BDBDBD;"
+                                        "border: 2px solid black;"
+                                        "border-radius: 5px;"
+                                        "color: black;"
+                                        "padding-left: 5px;"
+                                        "padding-right: 5px;"
+                                    "}"
+
+                                    "QPushButton:hover:!pressed {"
+                                        "background-color: #9E9E9E;"
+                                    "}"
+
+                                    "QSpinBox {"
+                                        "background-color: #BDBDBD;"
+                                        "border: 2px solid black;"
+                                        "border-radius: 5px;"
+                                        "color: black;"
+                                        "padding-right: 15px;"
+                                    "}"
+
+                                    "QLabel {"
+                                        "color: black;"
+                                    "}"
+    ));
+
+    setWindowTitle("4tracks - Untitled project");
+
+    ui->bpmSpin->setButtonSymbols(QSpinBox::NoButtons);
+
     mTimeline = std::make_shared<Audio::Timeline>();
     mTimeline->setBpm(145);
     ui->bpmSpin->setRange(0, 512);
