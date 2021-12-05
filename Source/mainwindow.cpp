@@ -14,13 +14,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->bpmSpin->setRange(0, 512);
     ui->bpmSpin->setValue(145);
 
-    std::shared_ptr<Audio::AudioTrack> track = std::make_shared<Audio::AudioTrack>("Audio Track", 0);
-    if (track->addClip(std::make_shared<Audio::AudioClip>(track, "/media/alexis/084D-578B/Dev/4tracks/instru banger intense (bells).wav")) == false)
-    {
-        qDebug() << "Error when adding clip";
-    }
-    mTimeline->addTrack(track);
-
     mDeviceManager.initialise(0, 2, nullptr, false);
     auto setup = mDeviceManager.getAudioDeviceSetup();
     setup.bufferSize = 1024;
@@ -35,8 +28,6 @@ MainWindow::MainWindow(QWidget *parent)
         mDeviceManager.addAudioCallback(&mPlayer);
 
         mTimeline->prepareToPlay(mDeviceManager.getCurrentAudioDevice()->getCurrentBufferSizeSamples(), DEFAULT_SAMPLE_RATE);
-
-        mTimeline->play();
     }
 
     mUiTimeline.setAudioTimeline(mTimeline);
@@ -53,6 +44,10 @@ MainWindow::MainWindow(QWidget *parent)
         mTimeline->setBpm(ui->bpmSpin->value());
         mUiTimeline.refreshBpm();
     });
+
+    connect(ui->actionImport_file, &QAction::triggered, [=]() {
+        importFile();
+    });
 }
 
 MainWindow::~MainWindow()
@@ -60,3 +55,24 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::importFile()
+{
+    QFileDialog fileDialog;
+    fileDialog.setNameFilter("All audio files (*.wav)");
+    fileDialog.setFileMode(QFileDialog::ExistingFile);
+    fileDialog.setAcceptMode(QFileDialog::AcceptOpen);
+    if (fileDialog.exec()) {
+        if (fileDialog.selectedFiles().size() == 0)
+            return;
+
+        std::shared_ptr<Audio::AudioTrack> track = std::make_shared<Audio::AudioTrack>("Audio Track", 0);
+        if (track->addClip(std::make_shared<Audio::AudioClip>(track, fileDialog.selectedFiles().at(0))) == false)
+        {
+            qDebug() << "Error when adding clip";
+        }
+        mTimeline->addTrack(track);
+
+        mUiTimeline.displayTracks();
+    }
+
+}

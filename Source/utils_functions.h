@@ -5,6 +5,8 @@
 #include <vector>
 #include <math.h>
 
+#include <QLayout>
+
 class Utils {
 public:
     static long search_closest(const std::vector<double>& sorted_array, double x) {
@@ -27,7 +29,21 @@ public:
         }
 
         return iter_geq - sorted_array.begin();
-
+    }
+    static void clearLayout(QLayout *layout, bool deleteWidget = false) {
+        if (layout == NULL)
+            return;
+        QLayoutItem *item;
+        while((item = layout->takeAt(0))) {
+            if (item->layout()) {
+                clearLayout(item->layout());
+                delete item->layout();
+            }
+            if (item->widget() && deleteWidget) {
+               delete item->widget();
+            }
+            delete item;
+        }
     }
 };
 

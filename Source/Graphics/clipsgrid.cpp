@@ -6,6 +6,7 @@ ClipsGrid::ClipsGrid(QWidget *parent) : QWidget(parent)
 {
     setLayout(new QGridLayout());
     layout()->setContentsMargins(0, 0, 0, 0);
+    layout()->setSpacing(1);
 
     mPositionBarWidget.setParent(this);
     mPositionBarWidget.setGeometry(geometry());
@@ -34,6 +35,9 @@ void ClipsGrid::refreshClips()
     mClips.clear();
     if (mAudioTimeline.get() != nullptr)
     {
+        int i = 0;
+        Utils::clearLayout(layout(), true);
+
         for (auto track : mAudioTimeline->getTracks())
         {
             for (auto clip : track->getClips())
@@ -43,12 +47,18 @@ void ClipsGrid::refreshClips()
 
                 clipUi->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-                layout()->addWidget(clipUi.get());
+                ((QGridLayout*)layout())->addWidget(clipUi.get(), i, 0);
                 layout()->setAlignment(clipUi.get(), Qt::AlignTop | Qt::AlignLeft);
 
                 mClips.append(clipUi);
             }
+            i++;
         }
+
+        QWidget *spacerWidget = new QWidget();
+        spacerWidget->setStyleSheet("background-color: rgba(0,0,0,0)");
+        spacerWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        ((QGridLayout*) layout())->addWidget(spacerWidget, i, 0);
 
         double samplesPerMinute = DEFAULT_SAMPLE_RATE*60;
 
@@ -58,7 +68,7 @@ void ClipsGrid::refreshClips()
             double clipPosition = double(clip->getPositionInSamples()/samplesPerMinute)*mBpm*mPixelsPerBeat;
             double clipLength = double(clip->getLengthInSamples()/samplesPerMinute)*mBpm*mPixelsPerBeat;
 
-            clipUi->setGeometry(clipPosition, clip->getParentTrack()->getIndex()*150, clipLength, 150);
+            clipUi->setGeometry(clipPosition, clip->getParentTrack()->getIndex()*151, clipLength, 150);
             clipUi->setMinimumSize(clipLength, 150);
         }
 
@@ -79,6 +89,14 @@ double ClipsGrid::getZoomLevel() const
     return mZoomLevel;
 }
 
+double ClipsGrid::getDivision() const
+{
+    double division = MINIMUM_SPACE_BETWEEN_GRID_LINES / mPixelsPerBeat;
+    int index = Utils::search_closest(DEFAULT_DIVISIONS, division);
+    division = DEFAULT_DIVISIONS[index];
+    return division;
+}
+
 void ClipsGrid::paintEvent(QPaintEvent *)
 {
     QStyleOption opt;
@@ -88,8 +106,7 @@ void ClipsGrid::paintEvent(QPaintEvent *)
 
     p.setPen(QPen(QColor("#BDBDBD")));
 
-    int division = MINIMUM_SPACE_BETWEEN_GRID_LINES / mPixelsPerBeat;
-    division = Utils::search_closest(DEFAULT_DIVISIONS, division);
+    double division = getDivision();
 
     for (int i = 0; i*mPixelsPerBeat*division < geometry().width(); i++)
     {
@@ -99,7 +116,7 @@ void ClipsGrid::paintEvent(QPaintEvent *)
     {
         for (int i = 0; i < mAudioTimeline->getTracks().size()+1; i++)
         {
-            p.drawLine(0, i*150, geometry().width(), i*150);
+            p.drawLine(0, i*151, geometry().width(), i*151);
         }
     }
     p.drawLine(0, geometry().height() - 1, geometry().width(), geometry().height() - 1);
@@ -107,7 +124,7 @@ void ClipsGrid::paintEvent(QPaintEvent *)
 
 void ClipsGrid::resizeEvent(QResizeEvent *event)
 {
-    refreshClips();
+    //refreshClips();
     mPositionBarWidget.setGeometry(geometry());
 
     double samplesPerMinute = DEFAULT_SAMPLE_RATE*60;

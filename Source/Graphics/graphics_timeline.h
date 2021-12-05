@@ -8,6 +8,7 @@
 #include "clipsgrid.h"
 #include "../Audio/timeline.h"
 #include "../Audio/clip.h"
+#include "utils_functions.h"
 
 namespace Graphics {
     class Timeline;
@@ -27,6 +28,8 @@ public:
 
     void refreshClipsGridGeometry();
     void refreshBpm();
+
+    double getDivision() const;
 
     void resizeEvent(QResizeEvent *event) override;
 

@@ -5,6 +5,7 @@ namespace Graphics {
 Timeline::Timeline(QWidget *parent) : QWidget(parent)
 {
     setLayout(&mMainLayout);
+    layout()->setSpacing(1);
 }
 
 void Timeline::setAudioTimeline(std::shared_ptr<Audio::Timeline> timeline)
@@ -16,11 +17,7 @@ void Timeline::setAudioTimeline(std::shared_ptr<Audio::Timeline> timeline)
 
 void Timeline::displayTracks()
 {
-    while (mMainLayout.takeAt(0) != nullptr)
-    {
-        mMainLayout.removeWidget(mMainLayout.takeAt(0)->widget());
-    }
-
+    Utils::clearLayout(&mMainLayout);
     int i = 0;
 
     for (auto track : mAudioTimeline->getTracks())
@@ -29,7 +26,11 @@ void Timeline::displayTracks()
         i++;
     }
 
-    mMainLayout.addWidget(&mScrollArea, 0, 1, 1, 1);
+    QWidget *spacerWidget = new QWidget();
+    spacerWidget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    mMainLayout.addWidget(spacerWidget, i, 0);
+
+    mMainLayout.addWidget(&mScrollArea, 0, 1, i+1, 1);
     mScrollArea.setWidget(&mClipsGrid);
 
     mClipsGrid.setGeometry(mScrollArea.geometry());
@@ -63,6 +64,11 @@ void Timeline::refreshBpm()
 {
     if (mAudioTimeline.get() != nullptr)
         mClipsGrid.refreshBpm(mAudioTimeline->getBpm());
+}
+
+double Timeline::getDivision() const
+{
+    return mClipsGrid.getDivision();
 }
 
 void Timeline::resizeEvent(QResizeEvent *event)

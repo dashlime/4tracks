@@ -28,6 +28,8 @@ public:
     void refreshZoomLevel(double newZoomLevel);
     double getZoomLevel() const;
 
+    double getDivision() const;
+
     void paintEvent(QPaintEvent *) override;
     void resizeEvent(QResizeEvent *event) override;
 

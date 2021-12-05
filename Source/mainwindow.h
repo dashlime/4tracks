@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QFileDialog>
 #include "Graphics/graphics_timeline.h"
 #include "Audio/timeline.h"
 #include "Audio/JuceIncludes.h"
@@ -17,6 +18,8 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+    void importFile();
 
 private:
     Ui::MainWindow *ui;
