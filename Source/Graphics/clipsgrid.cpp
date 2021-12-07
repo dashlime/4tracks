@@ -68,8 +68,8 @@ void ClipsGrid::refreshClips()
             double clipPosition = double(clip->getPositionInSamples()/samplesPerMinute)*mBpm*mPixelsPerBeat;
             double clipLength = double(clip->getLengthInSamples()/samplesPerMinute)*mBpm*mPixelsPerBeat;
 
-            clipUi->setGeometry(clipPosition, clip->getParentTrack()->getIndex()*151, clipLength, 150);
-            clipUi->setMinimumSize(clipLength, 150);
+            clipUi->setGeometry(clipPosition, clip->getParentTrack()->getIndex()*(DEFAULT_TRACK_HEIGHT+1)+1, clipLength, DEFAULT_TRACK_HEIGHT);
+            clipUi->setMinimumSize(clipLength, DEFAULT_TRACK_HEIGHT);
         }
 
         updateGeometry();
@@ -116,7 +116,7 @@ void ClipsGrid::paintEvent(QPaintEvent *)
     {
         for (int i = 0; i < mAudioTimeline->getTracks().size()+1; i++)
         {
-            p.drawLine(0, i*151, geometry().width(), i*151);
+            p.drawLine(0, i*(DEFAULT_TRACK_HEIGHT+1), geometry().width(), i*(DEFAULT_TRACK_HEIGHT+1));
         }
     }
     p.drawLine(0, geometry().height() - 1, geometry().width(), geometry().height() - 1);

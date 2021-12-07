@@ -13,6 +13,7 @@ Track::Track(std::shared_ptr<Audio::AudioTrack> track, QWidget *parent) :
     ui->trackName->setText(mAudioTrack->getName());
 
     setStyleSheet("#Track { background-color: #BDBDBD; }");
+    setFixedHeight(DEFAULT_TRACK_HEIGHT);
 }
 
 Track::~Track()

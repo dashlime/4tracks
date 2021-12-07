@@ -2,9 +2,12 @@
 #define GRAPHICS_GRAPHICS_CLIP_H
 
 #include <QWidget>
+#include <QGraphicsOpacityEffect>
+#include <QStyleOption>
 #include "Audio/audioclip.h"
 #include "Audio/clip.h"
 #include "Graphics/elidedlabel.h"
+#include "Graphics/audiothumbnail.h"
 
 namespace Graphics {
 
@@ -24,12 +27,15 @@ public:
 
     std::shared_ptr<Audio::Clip> getAudioClip();
 
+    void paintEvent(QPaintEvent *) override;
     void resizeEvent(QResizeEvent *event) override;
 
 private:
     Ui::Clip *ui;
     ElidedLabel mLabel;
     std::shared_ptr<Audio::Clip> mClip;
+
+    AudioThumbnail mAudioThumbnail;
 };
 
 

@@ -10,4 +10,6 @@
 // divisions : 1/16, 1/8, 1/4, 1/2, 1, 2, ...
 static const std::vector<double> DEFAULT_DIVISIONS = {1/16, 1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64};
 
+#define DEFAULT_TRACK_HEIGHT 120
+
 #endif // CONSTANTS_H

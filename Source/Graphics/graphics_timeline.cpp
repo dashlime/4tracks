@@ -26,11 +26,9 @@ Timeline::Timeline(QWidget *parent) : QWidget(parent)
                                     "}"
                                     "QScrollBar::add-line, QScrollBar::sub-line {"
                                     "   background: none;"
-                                    "   display: none;"
                                     "}"
                                     "QScrollBar::left-arrow, QScrollBar::right-arrow, QScrollBar::down-arrow, QScrollBar::up-arrow, QScrollBar::add-page {"
                                     "   background: none;"
-                                    "   display: none;"
                                     "}"
     ));
 }
