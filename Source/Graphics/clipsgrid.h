@@ -32,6 +32,7 @@ public:
 
     void paintEvent(QPaintEvent *) override;
     void resizeEvent(QResizeEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
 
 public slots:
     void drawPositionBar();

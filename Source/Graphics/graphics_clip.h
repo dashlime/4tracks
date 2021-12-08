@@ -29,11 +29,15 @@ public:
 
     void paintEvent(QPaintEvent *) override;
     void resizeEvent(QResizeEvent *event) override;
+    void focusInEvent(QFocusEvent *event) override;
+    void focusOutEvent(QFocusEvent *event) override;
 
 private:
     Ui::Clip *ui;
     ElidedLabel mLabel;
     std::shared_ptr<Audio::Clip> mClip;
+
+    QGraphicsOpacityEffect *mEffect;
 
     AudioThumbnail mAudioThumbnail;
 };

@@ -140,4 +140,19 @@ void ClipsGrid::drawPositionBar()
     mPositionBarWidget.barPositionChanged((mAudioTimeline->getNextReadPosition()/samplesPerMinute)*mBpm*mPixelsPerBeat);
 }
 
+void ClipsGrid::mousePressEvent(QMouseEvent *event)
+{
+    double selection;
+    double samplesPerMinute = DEFAULT_SAMPLE_RATE*60;
+    double samplesPerPixel = samplesPerMinute/mBpm/mPixelsPerBeat;
+    selection = event->x() * samplesPerPixel;
+
+    double samplesInDivision = getDivision() / mBpm * samplesPerMinute;
+    selection = round(selection / samplesInDivision) * samplesInDivision;
+
+    mAudioTimeline->setNextReadPosition(selection);
+
+    update();
+}
+
 } // namespace Graphics

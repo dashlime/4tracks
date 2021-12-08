@@ -62,6 +62,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     mUiTimeline.setAudioTimeline(mTimeline);
 
+    for (auto button : findChildren<QPushButton*>())
+    {
+        button->setFocusPolicy(Qt::NoFocus);
+    }
+
     connect(ui->zoomPlusButton, &QPushButton::clicked, [=]() {
         mUiTimeline.refreshZoomLevel(mUiTimeline.getZoomLevel() * 2);
     });

@@ -5,6 +5,7 @@ namespace Graphics {
 PositionBarOverlay::PositionBarOverlay(QWidget *parent) : QWidget(parent)
 {
     setAttribute(Qt::WA_NoSystemBackground);
+    setAttribute(Qt::WA_TransparentForMouseEvents);
 }
 
 void PositionBarOverlay::barPositionChanged(double newPosition)

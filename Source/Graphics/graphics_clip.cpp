@@ -14,9 +14,11 @@ Clip::Clip(QWidget *parent) :
 
     setLayout(ui->verticalLayout);
 
-    QGraphicsOpacityEffect * effect = new QGraphicsOpacityEffect(this);
-    effect->setOpacity(0.8);
-    setGraphicsEffect(effect);
+    mEffect = new QGraphicsOpacityEffect(this);
+    mEffect->setOpacity(0.8);
+    setGraphicsEffect(mEffect);
+
+    setFocusPolicy(Qt::FocusPolicy::ClickFocus);
 
     setStyleSheet("background-color: white");
 
@@ -63,6 +65,18 @@ void Clip::paintEvent(QPaintEvent *event)
 void Clip::resizeEvent(QResizeEvent *event)
 {
     ui->verticalLayout->setGeometry(geometry());
+}
+
+void Clip::focusInEvent(QFocusEvent *event)
+{
+    mEffect->setOpacity(1);
+    setGraphicsEffect(mEffect);
+}
+
+void Clip::focusOutEvent(QFocusEvent *event)
+{
+    mEffect->setOpacity(0.8);
+    setGraphicsEffect(mEffect);
 }
 
 } // namespace Graphics

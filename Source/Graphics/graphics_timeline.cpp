@@ -58,6 +58,7 @@ void Timeline::displayTracks()
     mMainLayout.addWidget(&mScrollArea, 0, 1, i+1, 1);
     mScrollArea.setWidget(&mClipsGrid);
     mScrollArea.setWidgetResizable(true);
+    mScrollArea.setFocusPolicy(Qt::FocusPolicy::NoFocus);
 
     mClipsGrid.refreshBpm(mAudioTimeline->getBpm());
     mClipsGrid.setAudioTimeline(mAudioTimeline);
