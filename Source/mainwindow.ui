@@ -145,7 +145,7 @@
        <enum>QLayout::SetDefaultConstraint</enum>
       </property>
       <item>
-       <widget class="QPushButton" name="playStopButton">
+       <widget class="QPushButton" name="playPauseButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -154,6 +154,13 @@
         </property>
         <property name="text">
          <string>Play</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="stopButton">
+        <property name="text">
+         <string>Stop</string>
         </property>
        </widget>
       </item>

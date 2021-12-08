@@ -40,24 +40,6 @@ juce::AudioBuffer<float>& AudioClip::getAudioBuffer()
     return mAudioBuffer;
 }
 
-void AudioClip::setNextReadPosition(juce::int64 newPosition)
-{
-    mResamplingAudioSource->setNextReadPosition(newPosition - getPositionInSamples());
-}
-
-juce::int64 AudioClip::getNextReadPosition() const
-{
-    return mResamplingAudioSource->getNextReadPosition() + getPositionInSamples();
-}
-
-juce::int64 AudioClip::getTotalLength() const
-{
-    return mResamplingAudioSource->getTotalLength();
-}
-
-void AudioClip::setLooping(bool shouldLoop) {}
-bool AudioClip::isLooping() const { return false; }
-
 void AudioClip::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 {
     mResamplingAudioSource->prepareToPlay(samplesPerBlockExpected, sampleRate);
@@ -71,6 +53,12 @@ void AudioClip::releaseResources()
 void AudioClip::getNextAudioBlock(const juce::AudioSourceChannelInfo &bufferToFill)
 {
     mResamplingAudioSource->getNextAudioBlock(bufferToFill);
+    mNextReadPosition = mResamplingAudioSource->getNextReadPosition() + getPositionInSamples();
+}
+
+void AudioClip::nextReadPositionChanged()
+{
+    mResamplingAudioSource->setNextReadPosition(mNextReadPosition - getPositionInSamples());
 }
 
 }

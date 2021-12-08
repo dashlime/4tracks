@@ -73,6 +73,8 @@ void AudioTrack::setNextReadPosition(juce::int64 newPosition)
             break;
         }
     }
+
+    mClipPlaying->setReadPosition(newPosition);
 }
 
 juce::int64 AudioTrack::getNextReadPosition() const

@@ -52,8 +52,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     if (mDeviceManager.getCurrentAudioDevice() != nullptr)
     {
-        ui->playStopButton->setText("Stop");
-
         mPlayer.setSource(mTimeline.get());
         mDeviceManager.addAudioCallback(&mPlayer);
 
@@ -82,6 +80,22 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->actionImport_file, &QAction::triggered, [=]() {
         importFile();
+    });
+
+    connect(ui->playPauseButton, &QPushButton::clicked, [=]() {
+        if (!mTimeline->isPlaying()) {
+            mTimeline->play();
+            ui->playPauseButton->setText("Pause");
+        }
+        else {
+            mTimeline->pause();
+            ui->playPauseButton->setText("Play");
+        }
+    });
+
+    connect(ui->stopButton, &QPushButton::clicked, [=]() {
+        mTimeline->stop();
+        ui->playPauseButton->setText("Play");
     });
 }
 

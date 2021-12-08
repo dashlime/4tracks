@@ -21,9 +21,14 @@ public:
     void setClipPositionInSamples(int newPosition);
     int getLengthInSamples() const;
 
+    void setReadPosition(int newPosition);
+    int getReadPosition() const;
+
     std::shared_ptr<Audio::AudioTrack> getParentTrack();
 
     virtual int getType() const = 0;
+
+    virtual void nextReadPositionChanged() {};
 
     enum Type { AUDIO_CLIP, MIDI_CLIP };
 protected:
@@ -31,6 +36,7 @@ protected:
     QString mSourceFilePath;
     int mPositionInSamples = 0;
     int mLengthInSamples = 0;
+    int mNextReadPosition = 0;
 
     std::shared_ptr<Audio::AudioTrack> mParentTrack;
 };

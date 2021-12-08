@@ -32,6 +32,17 @@ int Clip::getLengthInSamples() const
     return mLengthInSamples;
 }
 
+void Clip::setReadPosition(int newPosition)
+{
+    mNextReadPosition = newPosition;
+    nextReadPositionChanged();
+}
+
+int Clip::getReadPosition() const
+{
+    return mNextReadPosition;
+}
+
 std::shared_ptr<AudioTrack> Clip::getParentTrack()
 {
     return mParentTrack;
