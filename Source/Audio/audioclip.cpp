@@ -23,14 +23,30 @@ void AudioClip::load()
     juce::File file = juce::File(mSourceFilePath.toStdString());
     juce::AudioFormatReader *reader = formatManager.createReaderFor(file);
 
-    mAudioBuffer.setSize(reader->numChannels, reader->lengthInSamples);
+    juce::AudioSampleBuffer temp;
 
-    reader->read(&mAudioBuffer, 0, reader->lengthInSamples, 0, true, true);
+    mAudioBuffer.clear();
+    temp.clear();
+
+    double ratio =  reader->sampleRate / DEFAULT_SAMPLE_RATE;
+
+    temp.setSize((int)reader->numChannels, (int)reader->lengthInSamples);
+    mAudioBuffer.setSize((int)reader->numChannels, (int)(((double)reader->lengthInSamples) / ratio));
+
+    reader->read(&temp, 0, (int)reader->lengthInSamples, 0, true, true);
+
+    std::unique_ptr<juce::LagrangeInterpolator> resampler = std::make_unique<juce::LagrangeInterpolator>();
+
+    const float **inputs  = temp.getArrayOfReadPointers();
+    float **outputs = mAudioBuffer.getArrayOfWritePointers();
+    for (int c = 0; c < mAudioBuffer.getNumChannels(); c++)
+    {
+        resampler->reset();
+        resampler->process(ratio, inputs[c], outputs[c], mAudioBuffer.getNumSamples());
+    }
+
+    mLengthInSamples = mAudioBuffer.getNumSamples();
     mAudioSource = std::make_unique<juce::MemoryAudioSource>(mAudioBuffer, false);
-
-    mResamplingAudioSource = std::make_unique<ResamplingPositionableAudioSource>(mAudioSource.get(), false, reader->sampleRate, DEFAULT_SAMPLE_RATE, reader->numChannels);
-
-    mLengthInSamples = mResamplingAudioSource->getTotalLength();
 
     delete reader;
 }
@@ -42,23 +58,23 @@ juce::AudioBuffer<float>& AudioClip::getAudioBuffer()
 
 void AudioClip::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 {
-    mResamplingAudioSource->prepareToPlay(samplesPerBlockExpected, sampleRate);
+    mAudioSource->prepareToPlay(samplesPerBlockExpected, sampleRate);
 }
 
 void AudioClip::releaseResources()
 {
-    mResamplingAudioSource->releaseResources();
+    mAudioSource->releaseResources();
 }
 
 void AudioClip::getNextAudioBlock(const juce::AudioSourceChannelInfo &bufferToFill)
 {
-    mResamplingAudioSource->getNextAudioBlock(bufferToFill);
-    mNextReadPosition = mResamplingAudioSource->getNextReadPosition() + getPositionInSamples();
+    mAudioSource->getNextAudioBlock(bufferToFill);
+    mNextReadPosition = mAudioSource->getNextReadPosition() + getPositionInSamples();
 }
 
 void AudioClip::nextReadPositionChanged()
 {
-    mResamplingAudioSource->setNextReadPosition(mNextReadPosition - getPositionInSamples());
+    mAudioSource->setNextReadPosition(mNextReadPosition - getPositionInSamples());
 }
 
 }

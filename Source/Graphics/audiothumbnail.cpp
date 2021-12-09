@@ -28,13 +28,14 @@ void AudioThumbnail::loadThumbnail(std::shared_ptr<Audio::AudioClip> clip, int s
 void AudioThumbnail::drawThumbnail(QPainter& p, QRect rect)
 {
     int ratio = rect.height() / 2;
+    double thumbnailValuesPerPixel = (double)mThumbnailValues.size() / (double)rect.width();
 
     p.setPen(QPen(QColor("#000000")));
     p.translate(rect.topLeft());
     for (int i = 0; i < rect.width(); i++)
     {
-        float min = mThumbnailValues.at(i*(mThumbnailValues.size() / rect.width())).getMinValue();
-        float max = mThumbnailValues.at(i*(mThumbnailValues.size() / rect.width())).getMaxValue();
+        float min = mThumbnailValues.at(i*thumbnailValuesPerPixel).getMinValue();
+        float max = mThumbnailValues.at(i*thumbnailValuesPerPixel).getMaxValue();
         p.drawLine(i, min*ratio + rect.height()/2, i, max*ratio + rect.height()/2);
     }
 }

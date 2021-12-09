@@ -25,7 +25,6 @@ private:
 
     juce::AudioBuffer<float> mAudioBuffer;
     std::unique_ptr<juce::MemoryAudioSource> mAudioSource;
-    std::unique_ptr<ResamplingPositionableAudioSource> mResamplingAudioSource;
 };
 
 }
