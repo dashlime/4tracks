@@ -6,7 +6,7 @@
 #include <QScrollArea>
 #include "track.h"
 #include "clipsgrid.h"
-#include "../Audio/timeline.h"
+#include "../Audio/project.h"
 #include "../Audio/clip.h"
 #include "utils_functions.h"
 
@@ -20,7 +20,7 @@ class Graphics::Timeline : public QWidget
 public:
     Timeline(QWidget *parent = nullptr);
 
-    void setAudioTimeline(std::shared_ptr<Audio::Timeline> timeline);
+    void setProject(std::shared_ptr<Audio::Project> project);
     void displayTracks();
 
     void refreshZoomLevel(double newZoomLevel);
@@ -36,7 +36,7 @@ public:
 signals:
 
 private:
-    std::shared_ptr<Audio::Timeline> mAudioTimeline;
+    std::shared_ptr<Audio::Project> mProject;
     QScrollArea mScrollArea;
     Graphics::ClipsGrid mClipsGrid;
     QGridLayout mMainLayout;

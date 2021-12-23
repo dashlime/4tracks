@@ -21,9 +21,9 @@ void ClipsGrid::refreshBpm(double bpm)
     refreshClips();
 }
 
-void ClipsGrid::setAudioTimeline(std::shared_ptr<Audio::Timeline> audioTimeline)
+void ClipsGrid::setProject(std::shared_ptr<Audio::Project> project)
 {
-    mAudioTimeline = audioTimeline;
+    mAudioTimeline = project;
     refreshClips();
 
     connect(&mPositionBarTimer, &QTimer::timeout, this, &ClipsGrid::drawPositionBar);

@@ -4,8 +4,9 @@
 #include <QMainWindow>
 #include <QFileDialog>
 #include "Graphics/graphics_timeline.h"
-#include "Audio/timeline.h"
+#include "Audio/project.h"
 #include "Audio/JuceIncludes.h"
+#include "Utils/projectsaver.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -20,10 +21,13 @@ public:
     ~MainWindow();
 
     void importFile();
+    void saveProject();
+
+    void updateTitle();
 
 private:
     Ui::MainWindow *ui;
-    std::shared_ptr<Audio::Timeline> mTimeline;
+    std::shared_ptr<Audio::Project> mProject;
     Graphics::Timeline mUiTimeline;
     juce::AudioSourcePlayer mPlayer;
     juce::AudioDeviceManager mDeviceManager;

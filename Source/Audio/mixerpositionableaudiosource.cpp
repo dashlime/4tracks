@@ -1,4 +1,4 @@
-#include "MixerPositionableAudioSource.h"
+#include "mixerpositionableaudiosource.h"
 
 MixerPositionableAudioSource::MixerPositionableAudioSource(double sampleRate)
 : currentSampleRate (sampleRate), bufferSizeExpected (0)

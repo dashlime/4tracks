@@ -1,7 +1,7 @@
 #ifndef GRAPHICS_CLIPSGRID_H
 #define GRAPHICS_CLIPSGRID_H
 
-#include "Audio/timeline.h"
+#include "Audio/project.h"
 #include "graphics_clip.h"
 #include "utils_functions.h"
 #include "positionbaroverlay.h"
@@ -21,7 +21,7 @@ public:
     explicit ClipsGrid(QWidget *parent = nullptr);
 
     void refreshBpm(double bpm);
-    void setAudioTimeline(std::shared_ptr<Audio::Timeline> audioTimeline);
+    void setProject(std::shared_ptr<Audio::Project> project);
 
     void refreshClips();
 
@@ -40,7 +40,7 @@ public slots:
 private:
     double mBpm;
 
-    std::shared_ptr<Audio::Timeline> mAudioTimeline;
+    std::shared_ptr<Audio::Project> mAudioTimeline;
     double mPixelsPerBeat;
 
     double mZoomLevel = 1.f;

@@ -33,9 +33,9 @@ Timeline::Timeline(QWidget *parent) : QWidget(parent)
     ));
 }
 
-void Timeline::setAudioTimeline(std::shared_ptr<Audio::Timeline> timeline)
+void Timeline::setProject(std::shared_ptr<Audio::Project> project)
 {
-    mAudioTimeline = timeline;
+    mProject = project;
 
     displayTracks();
 }
@@ -45,7 +45,7 @@ void Timeline::displayTracks()
     Utils::clearLayout(&mMainLayout);
     int i = 0;
 
-    for (auto track : mAudioTimeline->getTracks())
+    for (auto track : mProject->getTracks())
     {
         mMainLayout.addWidget(new Graphics::Track(track), i, 0, Qt::AlignTop);
         i++;
@@ -60,8 +60,8 @@ void Timeline::displayTracks()
     mScrollArea.setWidgetResizable(true);
     mScrollArea.setFocusPolicy(Qt::FocusPolicy::NoFocus);
 
-    mClipsGrid.refreshBpm(mAudioTimeline->getBpm());
-    mClipsGrid.setAudioTimeline(mAudioTimeline);
+    mClipsGrid.refreshBpm(mProject->getBpm());
+    mClipsGrid.setProject(mProject);
 
     refreshClipsGridGeometry();
 }
@@ -94,8 +94,8 @@ void Timeline::refreshClipsGridGeometry()
 
 void Timeline::refreshBpm()
 {
-    if (mAudioTimeline.get() != nullptr)
-        mClipsGrid.refreshBpm(mAudioTimeline->getBpm());
+    if (mProject.get() != nullptr)
+        mClipsGrid.refreshBpm(mProject->getBpm());
 }
 
 double Timeline::getDivision() const

@@ -1,4 +1,4 @@
-#include "ResamplingPositionableAudioSource.h"
+#include "resamplingpositionableaudiosource.h"
 
 ResamplingPositionableAudioSource::ResamplingPositionableAudioSource (juce::PositionableAudioSource* const inputSource,
                                               const bool deleteInputWhenDeleted,

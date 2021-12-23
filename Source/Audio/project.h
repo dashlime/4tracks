@@ -11,15 +11,21 @@
 
 namespace Audio {
 
-class Timeline : public juce::PositionableAudioSource
+class Project : public juce::PositionableAudioSource
 {
 public:
-    Timeline();
+    Project(QString projectName);
+
+    QString getProjectName() const;
+    void setProjectName(QString newProjectName);
 
     void addTrack(std::shared_ptr<AudioTrack> newTrack);
     void play();
     void pause();
     void stop();
+
+    void updateSavedState(int newSavedState);
+    int getSavedState() const;
 
     void setBpm(double newBpm);
     double getBpm() const;
@@ -38,12 +44,19 @@ public:
     void releaseResources() override;
     void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) override;
 
+    enum SavedState { SAVED, UNSAVED };
+
+    std::function<void()> savedStateChanged;
 private:
     QVector<std::shared_ptr<AudioTrack>> mTracks;
     MixerPositionableAudioSource mMixerAudioSource;
 
     bool mPlaying = false;
     double mBpm = 120;
+
+    int mSavedState = SAVED;
+
+    QString mProjectName;
 };
 
 }

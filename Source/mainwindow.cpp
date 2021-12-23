@@ -35,12 +35,10 @@ MainWindow::MainWindow(QWidget *parent)
                                     "}"
     ));
 
-    setWindowTitle("4tracks - Untitled project");
-
     ui->bpmSpin->setButtonSymbols(QSpinBox::NoButtons);
 
-    mTimeline = std::make_shared<Audio::Timeline>();
-    mTimeline->setBpm(145);
+    mProject = std::make_shared<Audio::Project>("Untitled Project");
+    mProject->setBpm(145);
     ui->bpmSpin->setRange(0, 512);
     ui->bpmSpin->setValue(145);
 
@@ -52,18 +50,24 @@ MainWindow::MainWindow(QWidget *parent)
 
     if (mDeviceManager.getCurrentAudioDevice() != nullptr)
     {
-        mPlayer.setSource(mTimeline.get());
+        mPlayer.setSource(mProject.get());
         mDeviceManager.addAudioCallback(&mPlayer);
 
-        mTimeline->prepareToPlay(mDeviceManager.getCurrentAudioDevice()->getCurrentBufferSizeSamples(), DEFAULT_SAMPLE_RATE);
+        mProject->prepareToPlay(mDeviceManager.getCurrentAudioDevice()->getCurrentBufferSizeSamples(), DEFAULT_SAMPLE_RATE);
     }
 
-    mUiTimeline.setAudioTimeline(mTimeline);
+    mUiTimeline.setProject(mProject);
 
     for (auto button : findChildren<QPushButton*>())
     {
         button->setFocusPolicy(Qt::NoFocus);
     }
+
+    updateTitle();
+
+    mProject->savedStateChanged = [=]() {
+        updateTitle();
+    };
 
     connect(ui->zoomPlusButton, &QPushButton::clicked, [=]() {
         mUiTimeline.refreshZoomLevel(mUiTimeline.getZoomLevel() * 2);
@@ -74,7 +78,7 @@ MainWindow::MainWindow(QWidget *parent)
     });
 
     connect(ui->bpmSpin, &QSpinBox::valueChanged, [=]() {
-        mTimeline->setBpm(ui->bpmSpin->value());
+        mProject->setBpm(ui->bpmSpin->value());
         mUiTimeline.refreshBpm();
     });
 
@@ -82,19 +86,23 @@ MainWindow::MainWindow(QWidget *parent)
         importFile();
     });
 
+    connect(ui->actionSave_project, &QAction::triggered, [=]() {
+        saveProject();
+    });
+
     connect(ui->playPauseButton, &QPushButton::clicked, [=]() {
-        if (!mTimeline->isPlaying()) {
-            mTimeline->play();
+        if (!mProject->isPlaying()) {
+            mProject->play();
             ui->playPauseButton->setText("Pause");
         }
         else {
-            mTimeline->pause();
+            mProject->pause();
             ui->playPauseButton->setText("Play");
         }
     });
 
     connect(ui->stopButton, &QPushButton::clicked, [=]() {
-        mTimeline->stop();
+        mProject->stop();
         ui->playPauseButton->setText("Play");
     });
 }
@@ -119,9 +127,32 @@ void MainWindow::importFile()
         {
             qDebug() << "Error when adding clip";
         }
-        mTimeline->addTrack(track);
+        mProject->addTrack(track);
 
         mUiTimeline.displayTracks();
     }
 
+}
+
+void MainWindow::saveProject()
+{
+    QFileDialog fileDialog;
+    fileDialog.setNameFilter("4tracks project files (*.4tpro)");
+    fileDialog.setFileMode(QFileDialog::AnyFile);
+    fileDialog.setAcceptMode(QFileDialog::AcceptSave);
+    fileDialog.setDefaultSuffix("4tpro");
+    if (fileDialog.exec()) {
+        if (fileDialog.selectedFiles().size() == 0)
+            return;
+
+        ProjectSaver saver(mProject);
+        saver.saveToFile(fileDialog.selectedFiles().at(0));
+
+        mProject->updateSavedState(Audio::Project::SAVED);
+    }
+}
+
+void MainWindow::updateTitle()
+{
+    setWindowTitle((mProject->getSavedState() == Audio::Project::SAVED ? "" : "*") + mProject->getProjectName() + " - 4tracks");
 }
