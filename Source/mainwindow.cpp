@@ -136,17 +136,27 @@ void MainWindow::importFile()
 
 void MainWindow::saveProject()
 {
-    QFileDialog fileDialog;
-    fileDialog.setNameFilter("4tracks project files (*.4tpro)");
-    fileDialog.setFileMode(QFileDialog::AnyFile);
-    fileDialog.setAcceptMode(QFileDialog::AcceptSave);
-    fileDialog.setDefaultSuffix("4tpro");
-    if (fileDialog.exec()) {
-        if (fileDialog.selectedFiles().size() == 0)
-            return;
+    if (currentProjectPath == "")
+    {
+        QFileDialog fileDialog;
+        fileDialog.setFileMode(QFileDialog::Directory);
+        fileDialog.setAcceptMode(QFileDialog::AcceptSave);
+        if (fileDialog.exec()) {
+            if (fileDialog.selectedFiles().size() == 0)
+                return;
 
+            ProjectSaver saver(mProject);
+            saver.saveToDirectory(fileDialog.selectedFiles().first());
+
+            mProject->updateSavedState(Audio::Project::SAVED);
+
+            currentProjectPath = fileDialog.selectedFiles().first();
+        }
+    }
+    else
+    {
         ProjectSaver saver(mProject);
-        saver.saveToFile(fileDialog.selectedFiles().at(0));
+        saver.saveToDirectory(currentProjectPath);
 
         mProject->updateSavedState(Audio::Project::SAVED);
     }

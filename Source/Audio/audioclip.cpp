@@ -10,6 +10,11 @@ AudioClip::AudioClip(std::shared_ptr<AudioTrack> parentTrack, QString filePath) 
     load();
 }
 
+QString AudioClip::getPath() const
+{
+    return mSourceFilePath;
+}
+
 int AudioClip::getType() const
 {
     return Clip::AUDIO_CLIP;

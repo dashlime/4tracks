@@ -31,5 +31,7 @@ private:
     Graphics::Timeline mUiTimeline;
     juce::AudioSourcePlayer mPlayer;
     juce::AudioDeviceManager mDeviceManager;
+
+    QString currentProjectPath = "";
 };
 #endif // MAINWINDOW_H

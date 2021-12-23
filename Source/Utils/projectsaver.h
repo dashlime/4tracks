@@ -2,7 +2,7 @@
 #define PROJECTSAVER_H
 
 #include "Audio/project.h"
-#include <QFile>
+#include <QDir>
 #include <QXmlStreamWriter>
 
 class ProjectSaver
@@ -10,7 +10,7 @@ class ProjectSaver
 public:
     ProjectSaver(std::shared_ptr<Audio::Project>);
 
-    void saveToFile(QFile file);
+    void saveToDirectory(QDir dir);
 
 private:
     std::shared_ptr<Audio::Project> mProject;

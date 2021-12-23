@@ -12,6 +12,8 @@ class AudioClip : public Clip, public juce::AudioSource
 public:
     AudioClip(std::shared_ptr<AudioTrack> parentTrack, QString filePath);
 
+    QString getPath() const;
+
     int getType() const override;
     juce::AudioBuffer<float>& getAudioBuffer();
 
