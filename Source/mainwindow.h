@@ -17,13 +17,16 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(QString projectToLoad = "", QWidget *parent = nullptr);
     ~MainWindow();
 
     void importFile();
     void saveProject();
+    void loadProject(QFile file = QFile());
 
     void updateTitle();
+
+    std::function<void(QString)> anotherInstanceRequired;
 
 private:
     Ui::MainWindow *ui;

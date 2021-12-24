@@ -47,6 +47,7 @@ public:
     enum SavedState { SAVED, UNSAVED };
 
     std::function<void()> savedStateChanged;
+    std::function<void()> trackAdded;
 private:
     QVector<std::shared_ptr<AudioTrack>> mTracks;
     MixerPositionableAudioSource mMixerAudioSource;

@@ -7,6 +7,11 @@ Clip::Clip(std::shared_ptr<AudioTrack> parentTrack) : mParentTrack(parentTrack)
 
 }
 
+void Clip::setName(QString name)
+{
+    mName = name;
+}
+
 QString Clip::getName() const
 {
     return mName;

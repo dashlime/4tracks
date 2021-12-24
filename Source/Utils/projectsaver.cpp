@@ -20,12 +20,14 @@ void ProjectSaver::saveToDirectory(QDir dir)
 
     writer.writeStartElement("project");
     writer.writeAttribute("projectname", mProject->getProjectName());
+    writer.writeAttribute("bpm", QString::number(mProject->getBpm()));
 
     for (auto track : mProject->getTracks())
     {
         writer.writeStartElement("track");
+        writer.writeAttribute("index", QString::number(track->getIndex()));
         writer.writeAttribute("name", track->getName());
-        writer.writeAttribute("type", track->getType() == Audio::AudioTrack::AUDIO_TRACK ? XML_AUDIO : XML_MIDI);
+        writer.writeAttribute("type", QString::number(track->getType()));
 
         int fileId = 0;
         for (auto clip : track->getClips())
@@ -43,7 +45,7 @@ void ProjectSaver::saveToDirectory(QDir dir)
             fileId ++;
 
             writer.writeStartElement("clip");
-            writer.writeAttribute("type", track->getType() == Audio::AudioTrack::AUDIO_TRACK ? XML_AUDIO : XML_MIDI);
+            writer.writeAttribute("type", QString::number(track->getType()));
             writer.writeAttribute("path", newFilePath);
             writer.writeAttribute("name", clip->getName());
             writer.writeEndElement();
@@ -62,4 +64,43 @@ void ProjectSaver::saveToDirectory(QDir dir)
     stream << result;
 
     projectFile.close();
+}
+
+void ProjectSaver::openProject(QFile projectFile)
+{
+    QDomDocument xmlBOM;
+
+    if (!projectFile.open(QIODevice::ReadOnly))
+        return;
+
+    xmlBOM.setContent(&projectFile);
+    projectFile.close();
+
+    QDomElement project = xmlBOM.documentElement();
+    mProject->setProjectName(project.attribute("projectname"));
+    mProject->setBpm(QString(project.attribute("bpm")).toDouble());
+
+    QDomElement domTrack = project.firstChild().toElement();
+
+    while (!domTrack.isNull())
+    {
+        int trackType = domTrack.attribute("type").toInt();
+        std::shared_ptr<Audio::AudioTrack> track = std::make_shared<Audio::AudioTrack>(domTrack.attribute("name"), domTrack.attribute("index").toDouble());
+
+        QDomElement domClip = domTrack.firstChild().toElement();
+        while (!domClip.isNull())
+        {
+            if (trackType == Audio::AudioTrack::AUDIO_TRACK)
+            {
+                std::shared_ptr<Audio::AudioClip> clip = std::make_shared<Audio::AudioClip>(track, domClip.attribute("path"));
+                clip->setName(domClip.attribute("name"));
+                track->addClip(clip);
+            }
+
+            domClip = domClip.nextSiblingElement();
+        }
+        mProject->addTrack(track);
+
+        domTrack = domTrack.nextSiblingElement();
+    }
 }

@@ -15,6 +15,7 @@ class Clip
 public:
     Clip(std::shared_ptr<Audio::AudioTrack> parentTrack);
 
+    void setName(QString name);
     QString getName() const;
     QString getSourceFilePath() const;
     int getPositionInSamples() const;

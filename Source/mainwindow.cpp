@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->centralwidget->layout()->addWidget(&mUiTimeline);
 
+    // set default stylesheet
     setStyleSheet(QString::fromUtf8("QPushButton {"
                                         "background-color: #BDBDBD;"
                                         "border: 2px solid black;"
@@ -37,11 +38,18 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->bpmSpin->setButtonSymbols(QSpinBox::NoButtons);
 
+    for (auto button : findChildren<QPushButton*>())
+    {
+        button->setFocusPolicy(Qt::NoFocus);
+    }
+
+    // set new project settings
     mProject = std::make_shared<Audio::Project>("Untitled Project");
     mProject->setBpm(145);
     ui->bpmSpin->setRange(0, 512);
     ui->bpmSpin->setValue(145);
 
+    // initialise audio device
     mDeviceManager.initialise(0, 2, nullptr, false);
     auto setup = mDeviceManager.getAudioDeviceSetup();
     setup.bufferSize = 1024;
@@ -56,19 +64,22 @@ MainWindow::MainWindow(QWidget *parent)
         mProject->prepareToPlay(mDeviceManager.getCurrentAudioDevice()->getCurrentBufferSizeSamples(), DEFAULT_SAMPLE_RATE);
     }
 
+    // update UI
     mUiTimeline.setProject(mProject);
-
-    for (auto button : findChildren<QPushButton*>())
-    {
-        button->setFocusPolicy(Qt::NoFocus);
-    }
 
     updateTitle();
 
+    // listen for changes in project
     mProject->savedStateChanged = [=]() {
         updateTitle();
     };
 
+    mProject->trackAdded = [=]() {
+        mUiTimeline.displayTracks();
+        mProject->updateSavedState(Audio::Project::UNSAVED);
+    };
+
+    // connect main ui buttons / actions
     connect(ui->zoomPlusButton, &QPushButton::clicked, [=]() {
         mUiTimeline.refreshZoomLevel(mUiTimeline.getZoomLevel() * 2);
     });
@@ -84,6 +95,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->actionImport_file, &QAction::triggered, [=]() {
         importFile();
+    });
+
+    connect(ui->actionLoad_project, &QAction::triggered, [=]() {
+        loadProject();
     });
 
     connect(ui->actionSave_project, &QAction::triggered, [=]() {
@@ -105,6 +120,12 @@ MainWindow::MainWindow(QWidget *parent)
         mProject->stop();
         ui->playPauseButton->setText("Play");
     });
+
+    // finally load project if explicilty asked
+    if (projectToLoad != "")
+    {
+        loadProject(projectToLoad);
+    }
 }
 
 MainWindow::~MainWindow()
@@ -128,10 +149,7 @@ void MainWindow::importFile()
             qDebug() << "Error when adding clip";
         }
         mProject->addTrack(track);
-
-        mUiTimeline.displayTracks();
     }
-
 }
 
 void MainWindow::saveProject()
@@ -159,6 +177,41 @@ void MainWindow::saveProject()
         saver.saveToDirectory(currentProjectPath);
 
         mProject->updateSavedState(Audio::Project::SAVED);
+    }
+}
+
+void MainWindow::loadProject(QFile file)
+{
+    if (!file.exists())
+    {
+        QFileDialog fileDialog;
+        fileDialog.setNameFilter("4tracks project files (*.4tpro)");
+        fileDialog.setFileMode(QFileDialog::ExistingFile);
+        fileDialog.setAcceptMode(QFileDialog::AcceptOpen);
+        if (fileDialog.exec()) {
+            if (fileDialog.selectedFiles().size() == 0)
+                return;
+
+            if (currentProjectPath == "" && mProject->getSavedState() == Audio::Project::SAVED)
+            {
+                ProjectSaver saver(mProject);
+                saver.openProject(fileDialog.selectedFiles().first());
+                mProject->updateSavedState(Audio::Project::SAVED);
+                currentProjectPath = fileDialog.selectedFiles().first();
+            }
+            else
+            {
+                anotherInstanceRequired(fileDialog.selectedFiles().first());
+            }
+        }
+    }
+
+    else
+    {
+        ProjectSaver saver(mProject);
+        saver.openProject(file.fileName());
+        mProject->updateSavedState(Audio::Project::SAVED);
+        currentProjectPath = file.fileName();
     }
 }
 
