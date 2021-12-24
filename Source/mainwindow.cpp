@@ -7,8 +7,6 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
 {
     ui->setupUi(this);
 
-    ui->centralwidget->layout()->addWidget(&mUiTimeline);
-
     // set default stylesheet
     setStyleSheet(QString::fromUtf8("QPushButton {"
                                         "background-color: #BDBDBD;"
@@ -34,14 +32,36 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
                                     "QLabel {"
                                         "color: black;"
                                     "}"
+
+                                    "QScrollArea {"
+                                    "   border: none;"
+                                    "}"
+
+                                    "QScrollBar:vertical {"
+                                    "   background:rgba(0,0,0,0);"
+                                    "   width:8px;    "
+                                    "   margin: 0px 0px 0px 0px;"
+                                    "}"
+
+                                    "QScrollBar:horizontal {"
+                                    "   background:rgba(0,0,0,0);"
+                                    "   height:8px;    "
+                                    "   margin: 0px 0px 0px 0px;"
+                                    "}"
+
+                                    "QScrollBar::handle {"
+                                    "   background: #37474F;"
+                                    "   border-radius: 4px;"
+                                    "}"
+
+                                    "QScrollBar::add-line, QScrollBar::sub-line {"
+                                    "   background: none;"
+                                    "}"
+
+                                    "QScrollBar::left-arrow, QScrollBar::right-arrow, QScrollBar::down-arrow, QScrollBar::up-arrow, QScrollBar::add-page {"
+                                    "   background: none;"
+                                    "}"
     ));
-
-    ui->bpmSpin->setButtonSymbols(QSpinBox::NoButtons);
-
-    for (auto button : findChildren<QPushButton*>())
-    {
-        button->setFocusPolicy(Qt::NoFocus);
-    }
 
     // set new project settings
     mProject = std::make_shared<Audio::Project>("Untitled Project");
@@ -64,8 +84,21 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
         mProject->prepareToPlay(mDeviceManager.getCurrentAudioDevice()->getCurrentBufferSizeSamples(), DEFAULT_SAMPLE_RATE);
     }
 
-    // update UI
+    // init UI
+    ui->centralwidget->layout()->addWidget(&mTimelineVerticalScrollView);
+    mTimelineVerticalScrollView.setWidget(&mUiTimeline);
+    mTimelineVerticalScrollView.setWidgetResizable(true);
+
+    mUiTimeline.updateGeometry();
+
     mUiTimeline.setProject(mProject);
+
+    ui->bpmSpin->setButtonSymbols(QSpinBox::NoButtons);
+
+    for (auto button : findChildren<QPushButton*>())
+    {
+        button->setFocusPolicy(Qt::NoFocus);
+    }
 
     updateTitle();
 

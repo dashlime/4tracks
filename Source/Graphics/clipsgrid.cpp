@@ -9,9 +9,10 @@ ClipsGrid::ClipsGrid(QWidget *parent) : QWidget(parent)
     layout()->setSpacing(1);
 
     mPositionBarWidget.setParent(this);
-    mPositionBarWidget.setGeometry(geometry());
 
     setStyleSheet("background-color: #EEEEEE;");
+
+    updateGeometry();
 }
 
 void ClipsGrid::refreshBpm(double bpm)
@@ -124,8 +125,7 @@ void ClipsGrid::paintEvent(QPaintEvent *)
 
 void ClipsGrid::resizeEvent(QResizeEvent *event)
 {
-    //refreshClips();
-    mPositionBarWidget.setGeometry(geometry());
+    mPositionBarWidget.setGeometry(0, 0, width(), height());
 
     double samplesPerMinute = DEFAULT_SAMPLE_RATE*60;
     setMinimumSize((mAudioTimeline->getTotalLength()/samplesPerMinute)*mBpm*mPixelsPerBeat, 150 * (mAudioTimeline->getTracks().size() + 1));

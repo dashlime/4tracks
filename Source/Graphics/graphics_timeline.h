@@ -37,7 +37,6 @@ signals:
 
 private:
     std::shared_ptr<Audio::Project> mProject;
-    QScrollArea mScrollArea;
     Graphics::ClipsGrid mClipsGrid;
     QGridLayout mMainLayout;
 

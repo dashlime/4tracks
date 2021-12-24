@@ -32,6 +32,7 @@ private:
     Ui::MainWindow *ui;
     std::shared_ptr<Audio::Project> mProject;
     Graphics::Timeline mUiTimeline;
+    QScrollArea mTimelineVerticalScrollView;
     juce::AudioSourcePlayer mPlayer;
     juce::AudioDeviceManager mDeviceManager;
 
