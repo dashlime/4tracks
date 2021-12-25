@@ -230,11 +230,11 @@ void MainWindow::loadProject(QFile file)
                 ProjectSaver saver(mProject);
                 saver.openProject(fileDialog.selectedFiles().first());
                 mProject->updateSavedState(Audio::Project::SAVED);
-                currentProjectPath = fileDialog.selectedFiles().first();
+                currentProjectPath = QFileInfo(fileDialog.selectedFiles().first()).absolutePath();
             }
             else
             {
-                anotherInstanceRequired(fileDialog.selectedFiles().first());
+                currentProjectPath = QFileInfo(fileDialog.selectedFiles().first()).absolutePath();
             }
         }
     }
