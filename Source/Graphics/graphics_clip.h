@@ -1,7 +1,7 @@
 #ifndef GRAPHICS_GRAPHICS_CLIP_H
 #define GRAPHICS_GRAPHICS_CLIP_H
 
-#include <QWidget>
+#include <QtWidgets>
 #include <QGraphicsOpacityEffect>
 #include <QStyleOption>
 #include "Audio/audioclip.h"

@@ -65,9 +65,9 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
 
     // set new project settings
     mProject = std::make_shared<Audio::Project>("Untitled Project");
-    mProject->setBpm(145);
+    mProject->setBpm(120);
     ui->bpmSpin->setRange(0, 512);
-    ui->bpmSpin->setValue(145);
+    ui->bpmSpin->setValue(120);
 
     // initialise audio device
     mDeviceManager.initialise(0, 2, nullptr, false);
@@ -88,6 +88,8 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
     ui->centralwidget->layout()->addWidget(&mTimelineVerticalScrollView);
     mTimelineVerticalScrollView.setWidget(&mUiTimeline);
     mTimelineVerticalScrollView.setWidgetResizable(true);
+    mTimelineVerticalScrollView.setFocusPolicy(Qt::FocusPolicy::NoFocus);
+    mTimelineVerticalScrollView.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     mUiTimeline.updateGeometry();
 
@@ -176,7 +178,7 @@ void MainWindow::importFile()
         if (fileDialog.selectedFiles().size() == 0)
             return;
 
-        std::shared_ptr<Audio::AudioTrack> track = std::make_shared<Audio::AudioTrack>("Audio Track", 0);
+        std::shared_ptr<Audio::AudioTrack> track = std::make_shared<Audio::AudioTrack>("Audio Track", mProject->getTracks().size());
         if (track->addClip(std::make_shared<Audio::AudioClip>(track, fileDialog.selectedFiles().at(0))) == false)
         {
             qDebug() << "Error when adding clip";

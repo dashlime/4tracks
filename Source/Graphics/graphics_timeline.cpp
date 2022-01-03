@@ -6,7 +6,7 @@ Timeline::Timeline(QWidget *parent) : QWidget(parent)
 {
     setLayout(&mMainLayout);
     layout()->setSpacing(1);
-    layout()->setContentsMargins(0, 0, 0, 0);
+    layout()->setContentsMargins(0, 1, 0, 0);
 }
 
 void Timeline::setProject(std::shared_ptr<Audio::Project> project)
@@ -35,25 +35,17 @@ void Timeline::displayTracks()
 
     mClipsGrid.refreshBpm(mProject->getBpm());
     mClipsGrid.setProject(mProject);
-
-    refreshClipsGridGeometry();
 }
 
 void Timeline::refreshZoomLevel(double newZoomLevel)
 {
     mZoomLevel = newZoomLevel;
     mClipsGrid.refreshZoomLevel(mZoomLevel);
-
-    refreshClipsGridGeometry();
 }
 
 double Timeline::getZoomLevel() const
 {
     return mZoomLevel;
-}
-
-void Timeline::refreshClipsGridGeometry()
-{
 }
 
 void Timeline::refreshBpm()
@@ -69,8 +61,6 @@ double Timeline::getDivision() const
 
 void Timeline::resizeEvent(QResizeEvent *event)
 {
-    refreshClipsGridGeometry();
-
     setMinimumSize(DEFAULT_TRACK_HEIGHT, mClipsGrid.minimumHeight());
 }
 

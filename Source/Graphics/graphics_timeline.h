@@ -26,7 +26,6 @@ public:
     void refreshZoomLevel(double newZoomLevel);
     double getZoomLevel() const;
 
-    void refreshClipsGridGeometry();
     void refreshBpm();
 
     double getDivision() const;

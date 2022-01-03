@@ -78,14 +78,14 @@ void ProjectSaver::openProject(QFile projectFile)
 
     QDomElement project = xmlBOM.documentElement();
     mProject->setProjectName(project.attribute("projectname"));
-    mProject->setBpm(QString(project.attribute("bpm")).toDouble());
+    mProject->setBpm(project.attribute("bpm").toDouble());
 
     QDomElement domTrack = project.firstChild().toElement();
 
     while (!domTrack.isNull())
     {
         int trackType = domTrack.attribute("type").toInt();
-        std::shared_ptr<Audio::AudioTrack> track = std::make_shared<Audio::AudioTrack>(domTrack.attribute("name"), domTrack.attribute("index").toDouble());
+        std::shared_ptr<Audio::AudioTrack> track = std::make_shared<Audio::AudioTrack>(domTrack.attribute("name"), domTrack.attribute("index").toInt());
 
         QDomElement domClip = domTrack.firstChild().toElement();
         while (!domClip.isNull())

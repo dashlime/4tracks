@@ -4,10 +4,6 @@ namespace Graphics {
 
 ClipsGrid::ClipsGrid(QWidget *parent) : QWidget(parent)
 {
-    setLayout(new QGridLayout());
-    layout()->setContentsMargins(0, 0, 0, 0);
-    layout()->setSpacing(1);
-
     mPositionBarWidget.setParent(this);
 
     setStyleSheet("background-color: #EEEEEE;");
@@ -44,22 +40,16 @@ void ClipsGrid::refreshClips()
             for (auto clip : track->getClips())
             {
                 auto clipUi = std::make_shared<Clip>();
+                clipUi->setParent(this);
                 clipUi->setClip(clip);
 
                 clipUi->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-                ((QGridLayout*)layout())->addWidget(clipUi.get(), i, 0);
-                layout()->setAlignment(clipUi.get(), Qt::AlignTop | Qt::AlignLeft);
-
                 mClips.append(clipUi);
+                clipUi->show();
             }
             i++;
         }
-
-        QWidget *spacerWidget = new QWidget();
-        spacerWidget->setStyleSheet("background-color: rgba(0,0,0,0)");
-        spacerWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        ((QGridLayout*) layout())->addWidget(spacerWidget, i, 0);
 
         double samplesPerMinute = DEFAULT_SAMPLE_RATE*60;
 
@@ -69,11 +59,9 @@ void ClipsGrid::refreshClips()
             double clipPosition = double(clip->getPositionInSamples()/samplesPerMinute)*mBpm*mPixelsPerBeat;
             double clipLength = double(clip->getLengthInSamples()/samplesPerMinute)*mBpm*mPixelsPerBeat;
 
-            clipUi->setGeometry(clipPosition, clip->getParentTrack()->getIndex()*(DEFAULT_TRACK_HEIGHT+1)+1, clipLength, DEFAULT_TRACK_HEIGHT);
-            clipUi->setMinimumSize(clipLength, DEFAULT_TRACK_HEIGHT);
+            clipUi->setGeometry(clipPosition, clip->getParentTrack()->getIndex()*(DEFAULT_TRACK_HEIGHT+1), clipLength, DEFAULT_TRACK_HEIGHT);
         }
 
-        updateGeometry();
         update();
     }
 }
