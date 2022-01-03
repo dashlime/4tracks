@@ -236,7 +236,7 @@ void MainWindow::loadProject(QFile file)
             }
             else
             {
-                currentProjectPath = QFileInfo(fileDialog.selectedFiles().first()).absolutePath();
+                anotherInstanceRequired(fileDialog.selectedFiles().first());
             }
         }
     }
