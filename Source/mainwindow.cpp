@@ -65,7 +65,7 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
 
     // set new project settings
     mProject = std::make_shared<Audio::Project>("Untitled Project");
-    mProject->setBpm(120);
+    mProject->setBpm(120, false);
     ui->bpmSpin->setRange(0, 512);
     ui->bpmSpin->setValue(120);
 
@@ -95,12 +95,12 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
 
     mUiTimeline.setProject(mProject);
 
-    ui->bpmSpin->setButtonSymbols(QSpinBox::NoButtons);
-
     for (auto button : findChildren<QPushButton*>())
     {
         button->setFocusPolicy(Qt::NoFocus);
     }
+
+    ui->bpmSpin->setButtonSymbols(QSpinBox::NoButtons);
 
     updateTitle();
 
@@ -114,6 +114,10 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
         mProject->updateSavedState(Audio::Project::UNSAVED);
     };
 
+    mProject->bpmChanged = [=]() {
+        ui->bpmSpin->setValue(mProject->getBpm());
+    };
+
     // connect main ui buttons / actions
     connect(ui->zoomPlusButton, &QPushButton::clicked, [=]() {
         mUiTimeline.refreshZoomLevel(mUiTimeline.getZoomLevel() * 2);
@@ -124,7 +128,7 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
     });
 
     connect(ui->bpmSpin, &QSpinBox::valueChanged, [=]() {
-        mProject->setBpm(ui->bpmSpin->value());
+        mProject->setBpm(ui->bpmSpin->value(), false);
         mUiTimeline.refreshBpm();
     });
 

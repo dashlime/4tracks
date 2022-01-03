@@ -54,9 +54,11 @@ int Project::getSavedState() const
     return mSavedState;
 }
 
-void Project::setBpm(double newBpm)
+void Project::setBpm(double newBpm, bool propagateEvent)
 {
     mBpm = newBpm;
+    if (propagateEvent)
+        bpmChanged();
 }
 
 double Project::getBpm() const

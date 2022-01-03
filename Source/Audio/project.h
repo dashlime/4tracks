@@ -27,7 +27,7 @@ public:
     void updateSavedState(int newSavedState);
     int getSavedState() const;
 
-    void setBpm(double newBpm);
+    void setBpm(double newBpm, bool propagateEvent = true);
     double getBpm() const;
 
     QVector<std::shared_ptr<AudioTrack>> getTracks();
@@ -48,6 +48,7 @@ public:
 
     std::function<void()> savedStateChanged;
     std::function<void()> trackAdded;
+    std::function<void()> bpmChanged;
 private:
     QVector<std::shared_ptr<AudioTrack>> mTracks;
     MixerPositionableAudioSource mMixerAudioSource;
