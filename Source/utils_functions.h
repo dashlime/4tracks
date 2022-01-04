@@ -7,6 +7,8 @@
 
 #include <QLayout>
 
+#include "Audio/JuceIncludes.h"
+
 class Utils {
 public:
     static long search_closest(const std::vector<double>& sorted_array, double x) {

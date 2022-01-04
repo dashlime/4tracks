@@ -70,19 +70,7 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
     ui->bpmSpin->setValue(120);
 
     // initialise audio device
-    mDeviceManager.initialise(0, 2, nullptr, false);
-    auto setup = mDeviceManager.getAudioDeviceSetup();
-    setup.bufferSize = 1024;
-    setup.sampleRate = DEFAULT_SAMPLE_RATE;
-    mDeviceManager.setAudioDeviceSetup(setup, true);
-
-    if (mDeviceManager.getCurrentAudioDevice() != nullptr)
-    {
-        mPlayer.setSource(mProject.get());
-        mDeviceManager.addAudioCallback(&mPlayer);
-
-        mProject->prepareToPlay(mDeviceManager.getCurrentAudioDevice()->getCurrentBufferSizeSamples(), DEFAULT_SAMPLE_RATE);
-    }
+    reloadDeviceManager();
 
     // init UI
     ui->centralwidget->layout()->addWidget(&mTimelineVerticalScrollView);
@@ -144,6 +132,15 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
         saveProject();
     });
 
+    connect(ui->actionOptions, &QAction::triggered, [=]() {
+        SettingsDialog *dialog = new SettingsDialog();
+        dialog->setStyleSheet(styleSheet());
+        dialog->show();
+        dialog->settingsApplyed = [=]() {
+            reloadDeviceManager();
+        };
+    });
+
     connect(ui->playPauseButton, &QPushButton::clicked, [=]() {
         if (!mProject->isPlaying()) {
             mProject->play();
@@ -170,6 +167,30 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::reloadDeviceManager()
+{
+    juce::File dataDir = juce::File(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation).toStdString());
+    juce::File audioSettings = dataDir.getChildFile("Preferences/audio.xml");
+
+    if (audioSettings.exists())
+    {
+        mDeviceManager.initialise(0, 2, juce::parseXML(audioSettings).get(), false);
+    }
+    else
+    {
+        audioSettings.create();
+        mDeviceManager.initialise(0, 2, nullptr, false);
+    }
+
+    if (mDeviceManager.getCurrentAudioDevice() != nullptr)
+    {
+        mPlayer.setSource(mProject.get());
+        mDeviceManager.addAudioCallback(&mPlayer);
+
+        mProject->prepareToPlay(mDeviceManager.getCurrentAudioDevice()->getCurrentBufferSizeSamples(), DEFAULT_SAMPLE_RATE);
+    }
 }
 
 void MainWindow::importFile()

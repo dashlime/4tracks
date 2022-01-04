@@ -6,6 +6,7 @@
 #include "Graphics/graphics_timeline.h"
 #include "Audio/project.h"
 #include "Audio/JuceIncludes.h"
+#include "Graphics/settingsdialog.h"
 #include "Utils/projectsaver.h"
 
 QT_BEGIN_NAMESPACE
@@ -19,6 +20,8 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QString projectToLoad = "", QWidget *parent = nullptr);
     ~MainWindow();
+
+    void reloadDeviceManager();
 
     void importFile();
     void saveProject();
