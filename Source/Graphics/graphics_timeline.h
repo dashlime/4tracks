@@ -39,8 +39,11 @@ signals:
 private:
     std::shared_ptr<Audio::Project> mProject;
     Graphics::ClipsGrid mClipsGrid;
-    QGridLayout mMainLayout;
+    QHBoxLayout mMainLayout;
+    QVBoxLayout mTracksLayout;
     QPushButton mAddTrackButton;
+    QWidget mTracksWidget;
+
     QWidget mSpacerWidget;
 
     QVector<Track *> mTracks;

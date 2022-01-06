@@ -5,8 +5,17 @@ namespace Graphics {
 Timeline::Timeline(QWidget *parent) : QWidget(parent)
 {
     setLayout(&mMainLayout);
-    layout()->setSpacing(1);
+    layout()->setSpacing(0);
     layout()->setContentsMargins(10, 10, 0, 0);
+
+    mTracksWidget.setLayout(&mTracksLayout);
+    mTracksWidget.setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+
+    layout()->addWidget(&mTracksWidget);
+    layout()->addWidget(&mClipsGrid);
+
+    mTracksLayout.setSpacing(1);
+    mTracksLayout.setContentsMargins(0, 0, 0, 0);
 
     mAddTrackButton.setIcon(QIcon(":/icons/plus_button.png"));
     mAddTrackButton.setFixedSize(150, DEFAULT_TRACK_HEIGHT);
@@ -27,7 +36,7 @@ void Timeline::setProject(std::shared_ptr<Audio::Project> project)
 
 void Timeline::displayTracks()
 {
-    Utils::clearLayout(&mMainLayout);
+    Utils::clearLayout(&mTracksLayout);
     int i = 0;
 
     for (auto track : mTracks)
@@ -39,15 +48,13 @@ void Timeline::displayTracks()
     for (auto track : mProject->getTracks())
     {
         mTracks.append(new Graphics::Track(track));
-        mMainLayout.addWidget(mTracks.last(), i, 0, Qt::AlignTop);
+        mTracksLayout.addWidget(mTracks.last(), Qt::AlignTop);
         i++;
     }
 
-    mMainLayout.addWidget(&mAddTrackButton, i, 0);
+    mTracksLayout.addWidget(&mAddTrackButton, Qt::AlignTop);
 
-    mMainLayout.addWidget(&mSpacerWidget, i+1, 0);
-
-    mMainLayout.addWidget(&mClipsGrid, 0, 1, i+2, 1);
+    mTracksLayout.addWidget(&mSpacerWidget, Qt::AlignTop);
 
     mClipsGrid.refreshBpm(mProject->getBpm());
     mClipsGrid.setProject(mProject);
@@ -77,7 +84,8 @@ double Timeline::getDivision() const
 
 void Timeline::resizeEvent(QResizeEvent *event)
 {
-    setMinimumSize(DEFAULT_TRACK_HEIGHT, mClipsGrid.minimumHeight());
+    setMinimumSize(150, mClipsGrid.minimumHeight());
+    mMainLayout.setGeometry(geometry());
 }
 
 void Timeline::paintEvent(QPaintEvent *event)

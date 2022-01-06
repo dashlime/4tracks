@@ -37,8 +37,6 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
     mTimelineVerticalScrollView.setFocusPolicy(Qt::FocusPolicy::NoFocus);
     mTimelineVerticalScrollView.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    mUiTimeline.updateGeometry();
-
     mUiTimeline.setProject(mProject);
 
     for (auto button : findChildren<QPushButton*>())
