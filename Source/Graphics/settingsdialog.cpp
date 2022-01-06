@@ -7,6 +7,8 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    setWindowTitle("4tracks | Options");
+
     juce::File dataDir = juce::File(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation).toStdString());
     juce::File audioSettings = dataDir.getChildFile("Preferences/audio.xml");
 

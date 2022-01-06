@@ -21,6 +21,7 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
                                         "color: black;"
                                         "border: none;"
                                         "padding: 5px;"
+                                        "font-weight: 500;"
                                     "}"
 
                                     "QPushButton:hover:!pressed:!checked {"
@@ -78,6 +79,54 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
                                     "Graphics--Timeline {"
                                         "background-color: #F4F4F5;"
                                         "padding: 5px;"
+                                    "}"
+
+                                    "QDialog {"
+                                        "background-color: white;"
+                                    "}"
+
+                                    "QTabWidget::pane {"
+                                        "background-color: #F4F4F5;"
+                                        "border: none;"
+                                        "padding: 5px;"
+                                    "}"
+
+                                    "QTabBar::tab {"
+                                        "background-color: #D4D4D8;"
+                                        "margin-top: 2px;"
+                                        "border: none;"
+                                        "border-top-left-radius: 5px;"
+                                        "border-top-right-radius: 5px;"
+                                        "padding: 5px;"
+                                        "font-weight: 500;"
+                                    "}"
+
+                                    "QTabBar::tab:selected {"
+                                        "background-color: #F4F4F5;"
+                                    "}"
+
+                                    "QGroupBox {"
+                                        "border: none;"
+                                        "padding-top: 20px;"
+                                        "font-weight: 500;"
+                                    "}"
+
+                                    "QComboBox {"
+                                        "border: none;"
+                                        "background-color: #D4D4D8;"
+                                        "padding-right: 10px;"
+                                        "padding-left: 5px;"
+                                        "height: 25px;"
+                                        "font-weight: 500;"
+                                    "}"
+
+                                    "QComboBox::drop-down {"
+                                        "border: none;"
+                                    "}"
+
+                                    "QComboBox::down-arrow {"
+                                        "image: url(:/icons/combobox_down_arrow.png);"
+                                        "border: none;"
                                     "}"
     ));
 

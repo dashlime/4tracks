@@ -91,7 +91,7 @@ void ClipsGrid::paintEvent(QPaintEvent *)
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
-    p.setPen(QPen(QColor("#BDBDBD")));
+    p.setPen(QPen(QColor("#E4E4E7")));
 
     double division = getDivision();
 
