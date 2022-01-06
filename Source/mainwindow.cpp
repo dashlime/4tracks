@@ -122,9 +122,12 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
 
     // finally load project if explicilty asked
     if (projectToLoad != "")
-    {
         loadProject(projectToLoad);
-    }
+
+    // else add a default track to project
+    else
+        mProject->addTrack(std::make_shared<Audio::AudioTrack>("Track", 0));
+
 }
 
 MainWindow::~MainWindow()
