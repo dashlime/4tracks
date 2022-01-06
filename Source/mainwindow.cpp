@@ -99,6 +99,13 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
         };
     });
 
+    connect(ui->actionAbout, &QAction::triggered, [=]() {
+         QMessageBox* popup = new QMessageBox(this);
+         popup->setWindowTitle("4tracks | About");
+         popup->setText("4tracks is an open-source DAW, written using Qt and JUCE libraries. You can find git repository at https://github.com/devanonyme-fr/4tracks\nCurrent version : 0.1 dev");
+         popup->show();
+    });
+
     connect(ui->playButton, &QPushButton::toggled, [=](bool checked) {
         if (checked) {
             mProject->play();
