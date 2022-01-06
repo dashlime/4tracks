@@ -63,7 +63,7 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
                                     "}"
 
                                     "QScrollBar::handle {"
-                                    "   background: #37474F;"
+                                    "   background: #A1A1AA;"
                                     "   border-radius: 4px;"
                                     "}"
 
