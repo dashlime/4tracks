@@ -30,7 +30,6 @@ void AudioThumbnail::drawThumbnail(QPainter& p, QRect rect)
     int ratio = rect.height() / 2;
     double thumbnailValuesPerPixel = (double)mThumbnailValues.size() / (double)rect.width();
 
-    p.setPen(QPen(QColor("#000000")));
     p.translate(rect.topLeft());
     for (int i = 0; i < rect.width(); i++)
     {

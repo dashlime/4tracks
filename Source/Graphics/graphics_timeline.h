@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QScrollArea>
+#include <QStyleOption>
 #include "track.h"
 #include "clipsgrid.h"
 #include "../Audio/project.h"
@@ -31,6 +32,7 @@ public:
     double getDivision() const;
 
     void resizeEvent(QResizeEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
 
 signals:
 

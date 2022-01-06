@@ -6,8 +6,6 @@ ClipsGrid::ClipsGrid(QWidget *parent) : QWidget(parent)
 {
     mPositionBarWidget.setParent(this);
 
-    setStyleSheet("background-color: #EEEEEE;");
-
     updateGeometry();
 }
 

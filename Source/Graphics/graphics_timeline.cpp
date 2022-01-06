@@ -6,7 +6,7 @@ Timeline::Timeline(QWidget *parent) : QWidget(parent)
 {
     setLayout(&mMainLayout);
     layout()->setSpacing(1);
-    layout()->setContentsMargins(0, 1, 0, 0);
+    layout()->setContentsMargins(10, 10, 0, 0);
 }
 
 void Timeline::setProject(std::shared_ptr<Audio::Project> project)
@@ -62,6 +62,14 @@ double Timeline::getDivision() const
 void Timeline::resizeEvent(QResizeEvent *event)
 {
     setMinimumSize(DEFAULT_TRACK_HEIGHT, mClipsGrid.minimumHeight());
+}
+
+void Timeline::paintEvent(QPaintEvent *event)
+{
+    QStyleOption opt;
+    opt.initFrom(this);
+    QPainter p(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
 
 }

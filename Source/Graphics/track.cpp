@@ -12,7 +12,7 @@ Track::Track(std::shared_ptr<Audio::AudioTrack> track, QWidget *parent) :
 
     ui->trackName->setText(mAudioTrack->getName());
 
-    setStyleSheet("#Track { background-color: #BDBDBD; } #Track:focus { background-color: #9E9E9E; }");
+    setStyleSheet("Graphics--Track { background-color: rgba(34, 197, 94, 80%); } Graphics--Track:focus { background-color: rgba(34, 197, 94, 100%); } QLabel { color: white; }");
     setFixedHeight(DEFAULT_TRACK_HEIGHT);
 
     setFocusPolicy(Qt::FocusPolicy::ClickFocus);

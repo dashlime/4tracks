@@ -14,15 +14,10 @@ Clip::Clip(QWidget *parent) :
 
     setLayout(ui->verticalLayout);
 
-    mEffect = new QGraphicsOpacityEffect(this);
-    mEffect->setOpacity(0.8);
-    setGraphicsEffect(mEffect);
-
     setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+    setStyleSheet("Graphics--Clip { background-color: rgba(34, 197, 94, 50%); border: none; } Graphics--Clip:focus { border: 2px solid rgba(34, 197, 94, 100%); }");
 
-    setStyleSheet("background-color: white");
-
-    mLabel.setStyleSheet("background-color: #43A047; padding: 2px; color: white;");
+    mLabel.setStyleSheet("background-color: rgba(34, 197, 94, 100%); padding: 2px; color: white;");
     ui->verticalLayout->insertWidget(0, &mLabel);
     ui->verticalLayoutWidget->setStyleSheet("background-color: rgba(0,0,0,0)");
     mLabel.setFixedHeight(20);
@@ -58,6 +53,7 @@ void Clip::paintEvent(QPaintEvent *event)
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
+    p.setPen(QColorConstants::Black);
     if (mClip->getType() == Audio::Clip::AUDIO_CLIP)
         mAudioThumbnail.drawThumbnail(p, QRect(0, 20, width(), height()-20));
 }
@@ -69,14 +65,10 @@ void Clip::resizeEvent(QResizeEvent *event)
 
 void Clip::focusInEvent(QFocusEvent *event)
 {
-    mEffect->setOpacity(1);
-    setGraphicsEffect(mEffect);
 }
 
 void Clip::focusOutEvent(QFocusEvent *event)
 {
-    mEffect->setOpacity(0.8);
-    setGraphicsEffect(mEffect);
 }
 
 } // namespace Graphics

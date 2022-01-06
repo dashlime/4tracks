@@ -8,23 +8,36 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
     ui->setupUi(this);
 
     // set default stylesheet
-    setStyleSheet(QString::fromUtf8("QPushButton {"
-                                        "background-color: #BDBDBD;"
-                                        "border: 2px solid black;"
-                                        "border-radius: 5px;"
-                                        "color: black;"
-                                        "padding-left: 5px;"
-                                        "padding-right: 5px;"
+    QFont rubik("Roboto");
+
+    QApplication::setFont(rubik);
+
+    setStyleSheet(QString::fromUtf8("QMainWindow {"
+                                        "background-color: white;"
                                     "}"
 
-                                    "QPushButton:hover:!pressed {"
-                                        "background-color: #9E9E9E;"
+                                    "QPushButton {"
+                                        "background-color: #D4D4D8;"
+                                        "color: black;"
+                                        "border: none;"
+                                        "padding: 5px;"
+                                    "}"
+
+                                    "QPushButton:hover:!pressed:!checked {"
+                                        "background-color: #E4E4E7;"
+                                    "}"
+
+                                    "QPushButton:pressed {"
+                                        "background-color: #A1A1AA;"
+                                    "}"
+                                    "QPushButton:checked {"
+                                        "background-color: #A1A1AA;"
                                     "}"
 
                                     "QSpinBox {"
-                                        "background-color: #BDBDBD;"
-                                        "border: 2px solid black;"
-                                        "border-radius: 5px;"
+                                        "background-color: #D4D4D8;"
+                                        "border: none;"
+                                        "height: 25px;"
                                         "color: black;"
                                         "padding-right: 15px;"
                                     "}"
@@ -61,7 +74,16 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
                                     "QScrollBar::left-arrow, QScrollBar::right-arrow, QScrollBar::down-arrow, QScrollBar::up-arrow, QScrollBar::add-page {"
                                     "   background: none;"
                                     "}"
+
+                                    "Graphics--Timeline {"
+                                        "background-color: #F4F4F5;"
+                                        "padding: 5px;"
+                                    "}"
     ));
+
+    QFont font = ui->bpmSpin->font();
+    font.setWeight(QFont::Medium);
+    ui->bpmSpin->setFont(font);
 
     // set new project settings
     mProject = std::make_shared<Audio::Project>("Untitled Project");
@@ -141,20 +163,18 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
         };
     });
 
-    connect(ui->playPauseButton, &QPushButton::clicked, [=]() {
-        if (!mProject->isPlaying()) {
+    connect(ui->playButton, &QPushButton::toggled, [=](bool checked) {
+        if (checked) {
             mProject->play();
-            ui->playPauseButton->setText("Pause");
         }
         else {
             mProject->pause();
-            ui->playPauseButton->setText("Play");
         }
     });
 
     connect(ui->stopButton, &QPushButton::clicked, [=]() {
         mProject->stop();
-        ui->playPauseButton->setText("Play");
+        ui->playButton->setChecked(false);
     });
 
     // finally load project if explicilty asked
