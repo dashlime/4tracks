@@ -7,6 +7,15 @@ Timeline::Timeline(QWidget *parent) : QWidget(parent)
     setLayout(&mMainLayout);
     layout()->setSpacing(1);
     layout()->setContentsMargins(10, 10, 0, 0);
+
+    mAddTrackButton.setIcon(QIcon(":/icons/plus_button.png"));
+    mAddTrackButton.setFixedSize(150, DEFAULT_TRACK_HEIGHT);
+
+    connect(&mAddTrackButton, &QPushButton::pressed, [=]() {
+        mProject->addTrack(std::make_shared<Audio::AudioTrack>("Track", mProject->getTracks().size()));
+    });
+
+    mSpacerWidget.setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 }
 
 void Timeline::setProject(std::shared_ptr<Audio::Project> project)
@@ -21,17 +30,24 @@ void Timeline::displayTracks()
     Utils::clearLayout(&mMainLayout);
     int i = 0;
 
+    for (auto track : mTracks)
+    {
+        delete track;
+    }
+    mTracks.clear();
+
     for (auto track : mProject->getTracks())
     {
-        mMainLayout.addWidget(new Graphics::Track(track), i, 0, Qt::AlignTop);
+        mTracks.append(new Graphics::Track(track));
+        mMainLayout.addWidget(mTracks.last(), i, 0, Qt::AlignTop);
         i++;
     }
 
-    QWidget *spacerWidget = new QWidget();
-    spacerWidget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    mMainLayout.addWidget(spacerWidget, i, 0);
+    mMainLayout.addWidget(&mAddTrackButton, i, 0);
 
-    mMainLayout.addWidget(&mClipsGrid, 0, 1, i+1, 1);
+    mMainLayout.addWidget(&mSpacerWidget, i+1, 0);
+
+    mMainLayout.addWidget(&mClipsGrid, 0, 1, i+2, 1);
 
     mClipsGrid.refreshBpm(mProject->getBpm());
     mClipsGrid.setProject(mProject);

@@ -40,6 +40,10 @@ private:
     std::shared_ptr<Audio::Project> mProject;
     Graphics::ClipsGrid mClipsGrid;
     QGridLayout mMainLayout;
+    QPushButton mAddTrackButton;
+    QWidget mSpacerWidget;
+
+    QVector<Track *> mTracks;
 
     double mZoomLevel = 1.f;
 };
