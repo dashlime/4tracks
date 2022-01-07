@@ -22,9 +22,20 @@ Track::Track(std::shared_ptr<Audio::AudioTrack> track, QWidget *parent) :
     ui->volumeSlider->setMaximum(200);
     ui->volumeSlider->setValue(mAudioTrack->getVolume() * 100);
     ui->volumeSlider->getValueLabel()->setText(QString::number(juce::Decibels::gainToDecibels(double(ui->volumeSlider->value()) / 100), 'g', 2));
+
     connect(ui->volumeSlider, &QAbstractSlider::valueChanged, [=]() {
         mAudioTrack->setVolume(double(ui->volumeSlider->value()) / 100);
         ui->volumeSlider->getValueLabel()->setText(QString::number(juce::Decibels::gainToDecibels(double(ui->volumeSlider->value()) / 100), 'g', 2));
+    });
+
+    ui->panSlider->setMinimum(-100);
+    ui->panSlider->setMaximum(100);
+    ui->panSlider->setValue(mAudioTrack->getPan() * 100);
+    ui->panSlider->getValueLabel()->setText(QString::number(double(ui->panSlider->value()) / 10) + (ui->panSlider->value() > 0 ? "R" : "L"));
+
+    connect(ui->panSlider, &QAbstractSlider::valueChanged, [=]() {
+        mAudioTrack->setPan(double(ui->panSlider->value()) / 100);
+        ui->panSlider->getValueLabel()->setText(QString::number(double(ui->panSlider->value()) / 10) + (ui->panSlider->value() > 0 ? "R" : "L"));
     });
 }
 

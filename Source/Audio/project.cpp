@@ -43,6 +43,12 @@ void Project::stop()
     mMixerAudioSource.setNextReadPosition(0);
 }
 
+void Project::clearAllTracks()
+{
+    mMixerAudioSource.removeAllInputs();
+    mTracks.clear();
+}
+
 void Project::updateSavedState(int newSavedState)
 {
     mSavedState = newSavedState;

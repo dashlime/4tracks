@@ -124,7 +124,10 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
 
     // else add a default track to project
     else
+    {
         mProject->addTrack(std::make_shared<Audio::AudioTrack>("Track", 0));
+        mProject->updateSavedState(Audio::Project::SAVED);
+    }
 
 }
 
@@ -218,6 +221,8 @@ void MainWindow::loadProject(QFile file)
 
             if (currentProjectPath == "" && mProject->getSavedState() == Audio::Project::SAVED)
             {
+                mProject->clearAllTracks();
+
                 ProjectSaver saver(mProject);
                 saver.openProject(fileDialog.selectedFiles().first());
                 mProject->updateSavedState(Audio::Project::SAVED);

@@ -24,6 +24,8 @@ public:
     void pause();
     void stop();
 
+    void clearAllTracks();
+
     void updateSavedState(int newSavedState);
     int getSavedState() const;
 

@@ -62,6 +62,16 @@ double AudioTrack::getVolume() const
     return mVolume;
 }
 
+void AudioTrack::setPan(double newPan)
+{
+    mPan = newPan;
+}
+
+double AudioTrack::getPan() const
+{
+    return mPan;
+}
+
 void AudioTrack::resizeClipsWhenClipAdded(int newClipIndex)
 {
 
@@ -138,6 +148,13 @@ void AudioTrack::getNextAudioBlock(const juce::AudioSourceChannelInfo &bufferToF
         }
 
         bufferToFill.buffer->applyGain(mVolume);
+
+        // pan
+        if (mPan != 0)
+        {
+            bufferToFill.buffer->applyGain(0, 0, bufferToFill.buffer->getNumSamples(), 1-mPan);
+            bufferToFill.buffer->applyGain(1, 0, bufferToFill.buffer->getNumSamples(), 1+mPan);
+        }
     }
 
     setNextReadPosition(getNextReadPosition() + bufferToFill.numSamples);

@@ -27,6 +27,9 @@ public:
     void setVolume(double newVolume);
     double getVolume() const;
 
+    void setPan(double newPan);
+    double getPan() const;
+
     QVector<std::shared_ptr<Clip>> getClips();
 
     void setNextReadPosition(juce::int64 newPosition) override;
@@ -51,6 +54,7 @@ private:
 
     int mPositionInSamples = 0;
     double mVolume = 1;
+    double mPan = 0;
     int mIndex;
 };
 

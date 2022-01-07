@@ -68,10 +68,10 @@ void Slider::paintEvent(QPaintEvent *event)
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
     if (orientation() == Qt::Vertical)
-        p.fillRect(0, height(), width(), -double(height())/double(maximum() - minimum())*value(), QColor("#A1A1AA"));
+        p.fillRect(0, height(), width(), - double(height()) / double(maximum() - minimum()) * (value() - minimum()), QColor("#A1A1AA"));
 
     else if (orientation() == Qt::Horizontal)
-        p.fillRect(0, 0, double(width())/double(maximum() - minimum())*value(), height(), QColor("#A1A1AA"));
+        p.fillRect(0, 0, double(width()) / double(maximum() - minimum()) * (value() - minimum()), height(), QColor("#A1A1AA"));
 }
 
 void Slider::mousePressEvent(QMouseEvent *event)
@@ -80,10 +80,10 @@ void Slider::mousePressEvent(QMouseEvent *event)
         return;
 
     if (orientation() == Qt::Vertical)
-        setValue((height()-event->y())*(double(maximum() - minimum())/double(height())));
+        setValue((height() - event->y()) * (double(maximum() - minimum()) / double(height())) + minimum());
 
     else if (orientation() == Qt::Horizontal)
-        setValue(event->x()*(double(maximum() - minimum())/double(width())));
+        setValue(event->x() * (double(maximum() - minimum()) / double(width())) + minimum());
 
     repaint();
 }
