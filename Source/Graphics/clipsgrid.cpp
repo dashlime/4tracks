@@ -111,7 +111,6 @@ void ClipsGrid::paintEvent(QPaintEvent *)
 
 void ClipsGrid::resizeEvent(QResizeEvent *event)
 {
-    qDebug() << "resize clipsgrid called";
     mPositionBarWidget.setGeometry(0, 0, width(), height());
 
     double samplesPerMinute = DEFAULT_SAMPLE_RATE*60;

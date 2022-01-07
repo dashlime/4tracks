@@ -52,6 +52,16 @@ void AudioTrack::setIndex(int newPosition)
     mIndex = newPosition;
 }
 
+void AudioTrack::setVolume(double newVolume)
+{
+    mVolume = newVolume;
+}
+
+double AudioTrack::getVolume() const
+{
+    return mVolume;
+}
+
 void AudioTrack::resizeClipsWhenClipAdded(int newClipIndex)
 {
 
@@ -126,6 +136,8 @@ void AudioTrack::getNextAudioBlock(const juce::AudioSourceChannelInfo &bufferToF
         {
             std::dynamic_pointer_cast<AudioClip>(mClipPlaying)->getNextAudioBlock(bufferToFill);
         }
+
+        bufferToFill.buffer->applyGain(mVolume);
     }
 
     setNextReadPosition(getNextReadPosition() + bufferToFill.numSamples);

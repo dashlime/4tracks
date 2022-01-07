@@ -14,8 +14,18 @@ Track::Track(std::shared_ptr<Audio::AudioTrack> track, QWidget *parent) :
 
     setStyleSheet("Graphics--Track { background-color: rgba(34, 197, 94, 80%); } Graphics--Track:focus { background-color: rgba(34, 197, 94, 100%); } QLabel { color: white; }");
     setFixedHeight(DEFAULT_TRACK_HEIGHT);
+    setFixedWidth(150);
 
     setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+
+    ui->volumeSlider->setMinimum(0);
+    ui->volumeSlider->setMaximum(200);
+    ui->volumeSlider->setValue(mAudioTrack->getVolume() * 100);
+    ui->volumeSlider->getValueLabel()->setText(QString::number(juce::Decibels::gainToDecibels(double(ui->volumeSlider->value()) / 100), 'g', 2));
+    connect(ui->volumeSlider, &QAbstractSlider::valueChanged, [=]() {
+        mAudioTrack->setVolume(double(ui->volumeSlider->value()) / 100);
+        ui->volumeSlider->getValueLabel()->setText(QString::number(juce::Decibels::gainToDecibels(double(ui->volumeSlider->value()) / 100), 'g', 2));
+    });
 }
 
 Track::~Track()
