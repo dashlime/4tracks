@@ -34,15 +34,11 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
     ui->centralwidget->layout()->addWidget(&mTimelineVerticalScrollView);
     mTimelineVerticalScrollView.setWidget(&mUiTimeline);
     mTimelineVerticalScrollView.setWidgetResizable(true);
-    mTimelineVerticalScrollView.setFocusPolicy(Qt::FocusPolicy::NoFocus);
+    mTimelineVerticalScrollView.setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+    mTimelineVerticalScrollView.setFocus(Qt::NoFocusReason);
     mTimelineVerticalScrollView.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     mUiTimeline.setProject(mProject);
-
-    for (auto button : findChildren<QPushButton*>())
-    {
-        button->setFocusPolicy(Qt::NoFocus);
-    }
 
     ui->bpmSpin->setButtonSymbols(QSpinBox::NoButtons);
 

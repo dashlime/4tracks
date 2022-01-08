@@ -4,12 +4,12 @@ namespace Graphics {
 
 Slider::Slider(QWidget *parent) : QAbstractSlider(parent)
 {
-    setStyleSheet("background-color: #D4D4D8;");
+    setStyleSheet("background-color: #FFFFFF;");
 
     mLabel.setText("0");
-    mLabel.setStyleSheet("color: black; font-weight: 500; font-size: 9pt; margin: 0; padding: 0; background: none;");
+    mLabel.setStyleSheet("color: black; font-weight: 500; font-size: 8pt; margin: 0; padding: 0; background: none;");
 
-    setMinimumSize(20, 20);
+    setMinimumSize(14, 14);
     setOrientation(Qt::Vertical);
     sliderChange(SliderOrientationChange);
 }
@@ -68,10 +68,10 @@ void Slider::paintEvent(QPaintEvent *event)
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
     if (orientation() == Qt::Vertical)
-        p.fillRect(0, height(), width(), - double(height()) / double(maximum() - minimum()) * (value() - minimum()), QColor("#A1A1AA"));
+        p.fillRect(0, height(), width(), - double(height()) / double(maximum() - minimum()) * (value() - minimum()), QColor("#D4D4D8"));
 
     else if (orientation() == Qt::Horizontal)
-        p.fillRect(0, 0, double(width()) / double(maximum() - minimum()) * (value() - minimum()), height(), QColor("#A1A1AA"));
+        p.fillRect(0, 0, double(width()) / double(maximum() - minimum()) * (value() - minimum()), height(), QColor("#D4D4D8"));
 }
 
 void Slider::mousePressEvent(QMouseEvent *event)

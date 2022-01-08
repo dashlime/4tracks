@@ -6,25 +6,31 @@
 #include <QPainter>
 #include "Audio/audiotrack.h"
 
+
+namespace Graphics {
+
 namespace Ui {
 class Track;
 }
 
-namespace Graphics {
-    class Track : public QWidget
-    {
-        Q_OBJECT
+class Track : public QWidget
+{
+    Q_OBJECT
 
-    public:
-        explicit Track(std::shared_ptr<Audio::AudioTrack> track, QWidget *parent = nullptr);
-        ~Track();
+public:
+    explicit Track(std::shared_ptr<Audio::AudioTrack> track, QWidget *parent = nullptr);
+    ~Track();
 
-        void paintEvent(QPaintEvent *) override;
+    void setSelected(bool isSelected);
+    bool isSelected() const;
 
-    private:
-        Ui::Track *ui;
-        std::shared_ptr<Audio::AudioTrack> mAudioTrack;
-    };
+    void paintEvent(QPaintEvent *) override;
+
+private:
+    Ui::Track *ui;
+    std::shared_ptr<Audio::AudioTrack> mAudioTrack;
+    bool mSelected = false;
+};
 }
 
 #endif // TRACK_H

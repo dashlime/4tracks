@@ -5,14 +5,17 @@ namespace Graphics {
 Timeline::Timeline(QWidget *parent) : QWidget(parent)
 {
     setLayout(&mMainLayout);
-    layout()->setSpacing(0);
+    layout()->setSpacing(2);
     layout()->setContentsMargins(10, 10, 0, 0);
 
     mTracksWidget.setLayout(&mTracksLayout);
     mTracksWidget.setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 
+    mCurrentSelection = std::make_shared<Selection>();
+    mClipsGrid = std::make_unique<ClipsGrid>(mCurrentSelection);
+
     layout()->addWidget(&mTracksWidget);
-    layout()->addWidget(&mClipsGrid);
+    layout()->addWidget(mClipsGrid.get());
 
     mTracksLayout.setSpacing(1);
     mTracksLayout.setContentsMargins(0, 0, 0, 0);
@@ -23,6 +26,8 @@ Timeline::Timeline(QWidget *parent) : QWidget(parent)
     connect(&mAddTrackButton, &QPushButton::pressed, [=]() {
         mProject->addTrack(std::make_shared<Audio::AudioTrack>("Track", mProject->getTracks().size()));
     });
+
+    mAddTrackButton.setFocusPolicy(Qt::NoFocus);
 
     mSpacerWidget.setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 }
@@ -40,15 +45,14 @@ void Timeline::displayTracks()
     int i = 0;
 
     for (auto track : mTracks)
-    {
-        delete track;
-    }
+        track.reset();
+
     mTracks.clear();
 
     for (auto track : mProject->getTracks())
     {
-        mTracks.append(new Graphics::Track(track));
-        mTracksLayout.addWidget(mTracks.last(), Qt::AlignTop);
+        mTracks.push_back(std::make_shared<Graphics::Track>(track));
+        mTracksLayout.addWidget(mTracks.back().get(), Qt::AlignTop);
         i++;
     }
 
@@ -56,14 +60,14 @@ void Timeline::displayTracks()
 
     mTracksLayout.addWidget(&mSpacerWidget, Qt::AlignTop);
 
-    mClipsGrid.refreshBpm(mProject->getBpm());
-    mClipsGrid.setProject(mProject);
+    mClipsGrid->refreshBpm(mProject->getBpm());
+    mClipsGrid->setProject(mProject);
 }
 
 void Timeline::refreshZoomLevel(double newZoomLevel)
 {
     mZoomLevel = newZoomLevel;
-    mClipsGrid.refreshZoomLevel(mZoomLevel);
+    mClipsGrid->refreshZoomLevel(mZoomLevel);
 }
 
 double Timeline::getZoomLevel() const
@@ -74,26 +78,34 @@ double Timeline::getZoomLevel() const
 void Timeline::refreshBpm()
 {
     if (mProject.get() != nullptr)
-        mClipsGrid.refreshBpm(mProject->getBpm());
+        mClipsGrid->refreshBpm(mProject->getBpm());
 }
 
 double Timeline::getDivision() const
 {
-    return mClipsGrid.getDivision();
+    return mClipsGrid->getDivision();
 }
 
-void Timeline::resizeEvent(QResizeEvent *event)
+void Timeline::resizeEvent(QResizeEvent *)
 {
-    setMinimumSize(150, mClipsGrid.minimumHeight());
+    setMinimumSize(150, mClipsGrid->minimumHeight());
     mMainLayout.setGeometry(geometry());
 }
 
-void Timeline::paintEvent(QPaintEvent *event)
+void Timeline::mousePressEvent(QMouseEvent *event)
 {
-    QStyleOption opt;
-    opt.initFrom(this);
-    QPainter p(this);
-    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+    for (const auto &track : mTracks)
+    {
+        if (track->geometry().contains(event->pos()))
+        {
+            mCurrentSelection->setSelectionType(Selection::TracksSelected);
+            mCurrentSelection->addTrackToSelection(track);
+            return;
+        }
+    }
+
+    // nothing was selected
+    mCurrentSelection->setSelectionType(Selection::NoSelection);
 }
 
 }

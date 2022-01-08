@@ -14,7 +14,6 @@ Clip::Clip(QWidget *parent) :
 
     setLayout(ui->verticalLayout);
 
-    setFocusPolicy(Qt::FocusPolicy::ClickFocus);
     setStyleSheet("Graphics--Clip { background-color: rgba(34, 197, 94, 50%); border: none; } Graphics--Clip:focus { border: 2px solid rgba(34, 197, 94, 100%); }");
 
     mLabel.setStyleSheet("background-color: rgba(34, 197, 94, 100%); padding: 2px; color: white;");
@@ -27,6 +26,24 @@ Clip::Clip(QWidget *parent) :
 Clip::~Clip()
 {
     delete ui;
+}
+
+void Clip::setSelected(bool isSelected)
+{
+    mSelected = isSelected;
+
+    if (isSelected)
+        setStyleSheet("Graphics--Clip { background-color: rgba(34, 197, 94, 50%); border: 2px solid rgba(34, 197, 94, 100%); }");
+
+    else
+        setStyleSheet("Graphics--Clip { background-color: rgba(34, 197, 94, 50%); border: none; }");
+
+    repaint();
+}
+
+bool Clip::isSelected() const
+{
+    return mSelected;
 }
 
 void Clip::setClip(std::shared_ptr<Audio::Clip> clip)

@@ -5,7 +5,9 @@
 #include <QVBoxLayout>
 #include <QScrollArea>
 #include <QStyleOption>
+#include <vector>
 #include "track.h"
+#include "selection.h"
 #include "clipsgrid.h"
 #include "../Audio/project.h"
 #include "../Audio/clip.h"
@@ -32,13 +34,13 @@ public:
     double getDivision() const;
 
     void resizeEvent(QResizeEvent *event) override;
-    void paintEvent(QPaintEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
 
 signals:
 
 private:
     std::shared_ptr<Audio::Project> mProject;
-    Graphics::ClipsGrid mClipsGrid;
+    std::unique_ptr<ClipsGrid> mClipsGrid;
     QHBoxLayout mMainLayout;
     QVBoxLayout mTracksLayout;
     QPushButton mAddTrackButton;
@@ -46,7 +48,9 @@ private:
 
     QWidget mSpacerWidget;
 
-    QVector<Track *> mTracks;
+    std::shared_ptr<Selection> mCurrentSelection;
+
+    std::vector<std::shared_ptr<Track>> mTracks;
 
     double mZoomLevel = 1.f;
 };

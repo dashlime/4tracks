@@ -12,11 +12,9 @@ Track::Track(std::shared_ptr<Audio::AudioTrack> track, QWidget *parent) :
 
     ui->trackName->setText(mAudioTrack->getName());
 
-    setStyleSheet("Graphics--Track { background-color: rgba(34, 197, 94, 80%); } Graphics--Track:focus { background-color: rgba(34, 197, 94, 100%); } QLabel { color: white; }");
+    setStyleSheet("Graphics--Track { background-color: rgba(34, 197, 94, 100%); } QLabel { color: white; }");
     setFixedHeight(DEFAULT_TRACK_HEIGHT);
     setFixedWidth(150);
-
-    setFocusPolicy(Qt::FocusPolicy::ClickFocus);
 
     ui->volumeSlider->setMinimum(0);
     ui->volumeSlider->setMaximum(200);
@@ -42,6 +40,24 @@ Track::Track(std::shared_ptr<Audio::AudioTrack> track, QWidget *parent) :
 Track::~Track()
 {
     delete ui;
+}
+
+void Track::setSelected(bool isSelected)
+{
+    mSelected = isSelected;
+
+    if (isSelected)
+        setStyleSheet("Graphics--Track { background-color: rgba(34, 197, 94, 50%); } QLabel { color: white; }");
+
+    else
+        setStyleSheet("Graphics--Track { background-color: rgba(34, 197, 94, 100%); } QLabel { color: white; }");
+
+    repaint();
+}
+
+bool Track::isSelected() const
+{
+    return mSelected;
 }
 
 void Track::paintEvent(QPaintEvent *)

@@ -23,6 +23,9 @@ public:
     explicit Clip(QWidget *parent = nullptr);
     ~Clip();
 
+    void setSelected(bool isSelected);
+    bool isSelected() const;
+
     void setClip(std::shared_ptr<Audio::Clip> clip);
 
     std::shared_ptr<Audio::Clip> getAudioClip();
@@ -38,6 +41,8 @@ private:
     std::shared_ptr<Audio::Clip> mClip;
 
     QGraphicsOpacityEffect *mEffect;
+
+    bool mSelected = false;
 
     AudioThumbnail mAudioThumbnail;
 };

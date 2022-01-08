@@ -5,6 +5,8 @@
 #include "graphics_clip.h"
 #include "utils_functions.h"
 #include "positionbaroverlay.h"
+#include "selectionoverlay.h"
+#include "selection.h"
 
 #include <QWidget>
 #include <QStyleOption>
@@ -14,11 +16,11 @@
 
 namespace Graphics {
 
-class ClipsGrid : public QWidget
+class ClipsGrid : public QWidget, public Selection::Callback
 {
     Q_OBJECT
 public:
-    explicit ClipsGrid(QWidget *parent = nullptr);
+    explicit ClipsGrid(std::shared_ptr<Selection> currentSelection, QWidget *parent = nullptr);
 
     void refreshBpm(double bpm);
     void setProject(std::shared_ptr<Audio::Project> project);
@@ -30,24 +32,29 @@ public:
 
     double getDivision() const;
 
+    int roundPosition(int positionInSamples) const;
+
     void paintEvent(QPaintEvent *) override;
     void resizeEvent(QResizeEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+
+    void selectionChanged() override;
 
 public slots:
     void drawPositionBar();
 
 private:
     double mBpm;
-
-    std::shared_ptr<Audio::Project> mAudioTimeline;
+    double mZoomLevel = 1.f;
     double mPixelsPerBeat;
 
-    double mZoomLevel = 1.f;
+    std::shared_ptr<Selection> mCurrentSelection;
+    std::shared_ptr<Audio::Project> mProject;
 
     PositionBarOverlay mPositionBarWidget;
-
     QTimer mPositionBarTimer;
+    SelectionOverlay mSelectionOverlay;
 
     QVector<std::shared_ptr<Clip>> mClips;
 };
