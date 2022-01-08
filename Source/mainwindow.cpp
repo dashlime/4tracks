@@ -170,6 +170,20 @@ void MainWindow::importFile()
         if (fileDialog.selectedFiles().size() == 0)
             return;
 
+        // check if is there empty tracks to import file
+        for (auto track : mProject->getTracks())
+        {
+            if (track->getType() == Audio::AudioTrack::ANY_TRACK)
+            {
+                if (track->addClip(std::make_shared<Audio::AudioClip>(track, fileDialog.selectedFiles().at(0))) == false)
+                {
+                    qDebug() << "Error when adding clip";
+                }
+                return;
+            }
+        }
+
+        // else import it to a new track
         std::shared_ptr<Audio::AudioTrack> track = std::make_shared<Audio::AudioTrack>("Audio Track", mProject->getTracks().size());
         mProject->addTrack(track);
         if (track->addClip(std::make_shared<Audio::AudioClip>(track, fileDialog.selectedFiles().at(0))) == false)
