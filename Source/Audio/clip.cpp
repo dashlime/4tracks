@@ -30,6 +30,7 @@ int Clip::getPositionInSamples() const
 void Clip::setClipPositionInSamples(int newPosition)
 {
     mPositionInSamples = newPosition;
+    onClipMoved();
 }
 
 int Clip::getLengthInSamples() const

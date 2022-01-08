@@ -31,6 +31,8 @@ public:
 
     virtual void nextReadPositionChanged() {};
 
+    std::function<void()> onClipMoved;
+
     enum Type { AUDIO_CLIP, MIDI_CLIP };
 protected:
     QString mName;

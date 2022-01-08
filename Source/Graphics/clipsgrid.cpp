@@ -40,8 +40,15 @@ void ClipsGrid::refreshTracks()
 
                 clipUi->setClip(track->getClips().last());
 
+                clipUi->getAudioClip()->onClipMoved = [=]() {
+                    mProject->updateSavedState(Audio::Project::UNSAVED);
+                    refreshClipsGeometry();
+                };
+
                 mClips.append(clipUi);
                 refreshClipsGeometry();
+
+                mProject->updateSavedState(Audio::Project::UNSAVED);
             };
         }
 
@@ -191,17 +198,24 @@ void ClipsGrid::mouseMoveEvent(QMouseEvent *event)
         double samplesPerMinute = DEFAULT_SAMPLE_RATE*60;
         double samplesPerPixel = samplesPerMinute/mBpm/mPixelsPerBeat;
 
-        // move clip is needed
-        for (auto clip : mClips)
+        // move clip if needed
+        if (mMovingClip == nullptr)
         {
-            if (clip->shouldMoveClip(clickPosition) || mMovingClip != nullptr)
+            for (auto clip : mClips)
             {
-                mMovingClip = clip.get();
-                double clipPosition = double(clip->getAudioClip()->getPositionInSamples()/samplesPerMinute)*mBpm*mPixelsPerBeat;
-                double newPosition = clipPosition + roundPosition((event->position().x() - clickPosition.x()) * samplesPerPixel) / samplesPerMinute * mBpm * mPixelsPerBeat;
-                clip->setGeometry(newPosition, clip->y(), clip->width(), clip->height());
-                return;
+                qDebug() << clip->geometry().contains(clickPosition);
+                if ((clip->shouldMoveClip(clickPosition) && clip->geometry().contains(clickPosition)))
+                {
+                    mMovingClip = clip.get();
+                }
             }
+        }
+        if (mMovingClip != nullptr)
+        {
+            double clipPosition = double(mMovingClip->getAudioClip()->getPositionInSamples()/samplesPerMinute)*mBpm*mPixelsPerBeat;
+            double newPosition = clipPosition + roundPosition((event->position().x() - clickPosition.x()) * samplesPerPixel) / samplesPerMinute * mBpm * mPixelsPerBeat;
+            mMovingClip->setGeometry(newPosition, mMovingClip->y(), mMovingClip->width(), mMovingClip->height());
+            return;
         }
 
         // else set selection area

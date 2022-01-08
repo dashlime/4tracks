@@ -50,6 +50,7 @@ void ProjectSaver::saveToDirectory(QDir dir)
             writer.writeAttribute("type", QString::number(track->getType()));
             writer.writeAttribute("path", newFilePath);
             writer.writeAttribute("name", clip->getName());
+            writer.writeAttribute("position", QString::number(clip->getPositionInSamples()));
             writer.writeEndElement();
         }
 
@@ -96,8 +97,10 @@ void ProjectSaver::openProject(QFile projectFile)
             if (trackType == Audio::AudioTrack::AUDIO_TRACK)
             {
                 std::shared_ptr<Audio::AudioClip> clip = std::make_shared<Audio::AudioClip>(track, domClip.attribute("path"));
-                clip->setName(domClip.attribute("name"));
                 track->addClip(clip);
+
+                clip->setName(domClip.attribute("name"));
+                clip->setClipPositionInSamples(domClip.attribute("position").toInt());
             }
 
             domClip = domClip.nextSiblingElement();
