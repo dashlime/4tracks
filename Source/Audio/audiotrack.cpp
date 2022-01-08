@@ -34,6 +34,8 @@ bool AudioTrack::addClip(std::shared_ptr<Clip> clip)
     else
         return false;
 
+    onClipAdded();
+
     return true;
 }
 

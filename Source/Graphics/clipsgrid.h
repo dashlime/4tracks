@@ -25,7 +25,8 @@ public:
     void refreshBpm(double bpm);
     void setProject(std::shared_ptr<Audio::Project> project);
 
-    void refreshClips();
+    void refreshTracks();
+    void refreshClipsGeometry();
 
     void refreshZoomLevel(double newZoomLevel);
     double getZoomLevel() const;

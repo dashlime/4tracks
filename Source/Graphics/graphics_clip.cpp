@@ -16,11 +16,13 @@ Clip::Clip(QWidget *parent) :
 
     setStyleSheet("Graphics--Clip { background-color: rgba(34, 197, 94, 50%); border: none; } Graphics--Clip:focus { border: 2px solid rgba(34, 197, 94, 100%); }");
 
-    mLabel.setStyleSheet("background-color: rgba(34, 197, 94, 100%); padding: 2px; color: white;");
-    ui->verticalLayout->insertWidget(0, &mLabel);
     ui->verticalLayoutWidget->setStyleSheet("background-color: rgba(0,0,0,0)");
-    mLabel.setFixedHeight(20);
+    ui->verticalLayout->insertWidget(0, &mLabel);
+
     mLabel.setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+    mLabel.setFixedHeight(20);
+    mLabel.setStyleSheet("background-color: rgba(34, 197, 94, 100%); padding: 2px; color: white;");
+    mLabel.show();
 }
 
 Clip::~Clip()
@@ -38,7 +40,7 @@ void Clip::setSelected(bool isSelected)
     else
         setStyleSheet("Graphics--Clip { background-color: rgba(34, 197, 94, 50%); border: none; }");
 
-    repaint();
+    update();
 }
 
 bool Clip::isSelected() const
@@ -63,7 +65,7 @@ std::shared_ptr<Audio::Clip> Clip::getAudioClip()
     return mClip;
 }
 
-void Clip::paintEvent(QPaintEvent *event)
+void Clip::paintEvent(QPaintEvent *)
 {
     QStyleOption opt;
     opt.initFrom(this);
@@ -75,17 +77,10 @@ void Clip::paintEvent(QPaintEvent *event)
         mAudioThumbnail.drawThumbnail(p, QRect(0, 20, width(), height()-20));
 }
 
-void Clip::resizeEvent(QResizeEvent *event)
+void Clip::resizeEvent(QResizeEvent *)
 {
-    ui->verticalLayout->setGeometry(geometry());
-}
-
-void Clip::focusInEvent(QFocusEvent *event)
-{
-}
-
-void Clip::focusOutEvent(QFocusEvent *event)
-{
+    ui->verticalLayout->setGeometry(QRect(0, 0, width(), height()));
+    update();
 }
 
 } // namespace Graphics

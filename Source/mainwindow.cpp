@@ -167,11 +167,11 @@ void MainWindow::importFile()
             return;
 
         std::shared_ptr<Audio::AudioTrack> track = std::make_shared<Audio::AudioTrack>("Audio Track", mProject->getTracks().size());
+        mProject->addTrack(track);
         if (track->addClip(std::make_shared<Audio::AudioClip>(track, fileDialog.selectedFiles().at(0))) == false)
         {
             qDebug() << "Error when adding clip";
         }
-        mProject->addTrack(track);
     }
 }
 

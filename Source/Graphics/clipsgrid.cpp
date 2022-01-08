@@ -8,72 +8,69 @@ ClipsGrid::ClipsGrid(std::shared_ptr<Selection> currentSelection, QWidget *paren
     mSelectionOverlay.setParent(this);
 
     mCurrentSelection->setSelectionCallback(this);
-
-    updateGeometry();
 }
 
 void ClipsGrid::refreshBpm(double bpm)
 {
     mBpm = bpm;
     mPixelsPerBeat = mZoomLevel * DEFAULT_PIXEL_PER_BEAT_AMOUNT;
-    refreshClips();
+    refreshClipsGeometry();
 }
 
 void ClipsGrid::setProject(std::shared_ptr<Audio::Project> project)
 {
     mProject = project;
-    refreshClips();
+    refreshTracks();
 
     connect(&mPositionBarTimer, &QTimer::timeout, this, &ClipsGrid::drawPositionBar);
     mPositionBarTimer.start(100);
 }
 
-void ClipsGrid::refreshClips()
+void ClipsGrid::refreshTracks()
 {
-    mClips.clear();
     if (mProject.get() != nullptr)
     {
-        int i = 0;
-        Utils::clearLayout(layout(), true);
+        Utils::clearLayout(layout());
 
         for (auto track : mProject->getTracks())
         {
-            for (auto clip : track->getClips())
-            {
-                auto clipUi = std::make_shared<Clip>();
-                clipUi->setParent(this);
-                clipUi->setClip(clip);
+            track->onClipAdded = [=]() {
+                auto clipUi = std::make_shared<Clip>(this);
+                clipUi->show();
 
-                clipUi->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+                clipUi->setClip(track->getClips().last());
 
                 mClips.append(clipUi);
-                clipUi->show();
-            }
-            i++;
+                refreshClipsGeometry();
+            };
         }
-
-        double samplesPerMinute = DEFAULT_SAMPLE_RATE*60;
-
-        for (auto clipUi : mClips)
-        {
-            auto clip = clipUi->getAudioClip();
-            double clipPosition = double(clip->getPositionInSamples()/samplesPerMinute)*mBpm*mPixelsPerBeat;
-            double clipLength = double(clip->getLengthInSamples()/samplesPerMinute)*mBpm*mPixelsPerBeat;
-
-            clipUi->setGeometry(clipPosition, clip->getParentTrack()->getIndex()*(DEFAULT_TRACK_HEIGHT+1), clipLength, DEFAULT_TRACK_HEIGHT);
-        }
-        mPositionBarWidget.raise();
-        mSelectionOverlay.raise();
 
         update();
     }
+}
+
+void ClipsGrid::refreshClipsGeometry()
+{
+    double samplesPerMinute = DEFAULT_SAMPLE_RATE*60;
+
+    for (auto clipUi : mClips)
+    {
+        auto clip = clipUi->getAudioClip();
+        double clipPosition = double(clip->getPositionInSamples()/samplesPerMinute)*mBpm*mPixelsPerBeat;
+        double clipLength = double(clip->getLengthInSamples()/samplesPerMinute)*mBpm*mPixelsPerBeat;
+
+        clipUi->setGeometry(clipPosition, clip->getParentTrack()->getIndex()*(DEFAULT_TRACK_HEIGHT+1), clipLength, DEFAULT_TRACK_HEIGHT);
+    }
+
+    mPositionBarWidget.raise();
+    mSelectionOverlay.raise();
 }
 
 void ClipsGrid::refreshZoomLevel(double newZoomLevel)
 {
     mZoomLevel = newZoomLevel;
     mPixelsPerBeat = mZoomLevel * DEFAULT_PIXEL_PER_BEAT_AMOUNT;
-    refreshClips();
+    refreshClipsGeometry();
 }
 
 double ClipsGrid::getZoomLevel() const
