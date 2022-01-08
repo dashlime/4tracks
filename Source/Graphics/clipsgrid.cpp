@@ -142,6 +142,8 @@ void ClipsGrid::drawPositionBar()
 
 void ClipsGrid::mousePressEvent(QMouseEvent *event)
 {
+    clickPosition = event->pos();
+
     // set position marker
     double samplesPerMinute = DEFAULT_SAMPLE_RATE*60;
     double samplesPerPixel = samplesPerMinute/mBpm/mPixelsPerBeat;
@@ -165,6 +167,20 @@ void ClipsGrid::mousePressEvent(QMouseEvent *event)
     mCurrentSelection->setSelectionType(Selection::NoSelection);
 }
 
+void ClipsGrid::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (mMovingClip)
+    {
+        double samplesPerMinute = DEFAULT_SAMPLE_RATE*60;
+        double samplesPerPixel = samplesPerMinute/mBpm/mPixelsPerBeat;
+
+        double newClipPosition = mMovingClip->x() * samplesPerPixel;
+        mMovingClip->getAudioClip()->setClipPositionInSamples(newClipPosition);
+        mMovingClip = nullptr;
+
+    }
+}
+
 void ClipsGrid::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->buttons().testFlag(Qt::LeftButton))
@@ -175,6 +191,20 @@ void ClipsGrid::mouseMoveEvent(QMouseEvent *event)
         double samplesPerMinute = DEFAULT_SAMPLE_RATE*60;
         double samplesPerPixel = samplesPerMinute/mBpm/mPixelsPerBeat;
 
+        // move clip is needed
+        for (auto clip : mClips)
+        {
+            if (clip->shouldMoveClip(clickPosition) || mMovingClip != nullptr)
+            {
+                mMovingClip = clip.get();
+                double clipPosition = double(clip->getAudioClip()->getPositionInSamples()/samplesPerMinute)*mBpm*mPixelsPerBeat;
+                double newPosition = clipPosition + roundPosition((event->position().x() - clickPosition.x()) * samplesPerPixel) / samplesPerMinute * mBpm * mPixelsPerBeat;
+                clip->setGeometry(newPosition, clip->y(), clip->width(), clip->height());
+                return;
+            }
+        }
+
+        // else set selection area
         Selection::SelectionArea area = mCurrentSelection->getSelectedArea();
         if (mCurrentSelection->getSelectionType() != Selection::AreaSelected)
         {

@@ -38,6 +38,7 @@ public:
     void paintEvent(QPaintEvent *) override;
     void resizeEvent(QResizeEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
 
     void selectionChanged() override;
@@ -49,6 +50,9 @@ private:
     double mBpm;
     double mZoomLevel = 1.f;
     double mPixelsPerBeat;
+
+    Clip* mMovingClip = nullptr;
+    QPoint clickPosition;
 
     std::shared_ptr<Selection> mCurrentSelection;
     std::shared_ptr<Audio::Project> mProject;

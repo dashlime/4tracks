@@ -22,7 +22,7 @@ Clip::Clip(QWidget *parent) :
     mLabel.setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     mLabel.setFixedHeight(20);
     mLabel.setStyleSheet("background-color: rgba(34, 197, 94, 100%); padding: 2px; color: white;");
-    mLabel.show();
+    mLabel.setCursor(QCursor(Qt::CursorShape::OpenHandCursor));
 }
 
 Clip::~Clip()
@@ -63,6 +63,14 @@ void Clip::setClip(std::shared_ptr<Audio::Clip> clip)
 std::shared_ptr<Audio::Clip> Clip::getAudioClip()
 {
     return mClip;
+}
+
+bool Clip::shouldMoveClip(QPoint mousePosition) const
+{
+    if (mLabel.geometry().contains(mousePosition - geometry().topLeft()))
+        return true;
+
+    return false;
 }
 
 void Clip::paintEvent(QPaintEvent *)

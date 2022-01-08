@@ -30,6 +30,8 @@ public:
 
     std::shared_ptr<Audio::Clip> getAudioClip();
 
+    bool shouldMoveClip(QPoint mousePosition) const;
+
     void paintEvent(QPaintEvent *) override;
     void resizeEvent(QResizeEvent *) override;
 
