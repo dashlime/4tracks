@@ -17,6 +17,7 @@ QString Project::getProjectName() const
 void Project::setProjectName(QString newProjectName)
 {
     mProjectName = newProjectName;
+    projectNameChanged();
 }
 
 void Project::addTrack(std::shared_ptr<AudioTrack> newTrack)

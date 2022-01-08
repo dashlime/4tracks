@@ -49,6 +49,10 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
         updateTitle();
     };
 
+    mProject->projectNameChanged = [=]() {
+        updateTitle();
+    };
+
     mProject->trackAdded = [=]() {
         mUiTimeline.displayTracks();
         mProject->updateSavedState(Audio::Project::UNSAVED);

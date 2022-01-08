@@ -9,6 +9,8 @@ void ProjectSaver::saveToDirectory(QDir dir)
 {
     QDir::root().mkpath(dir.absolutePath() + "/Resources");
 
+    mProject->setProjectName(dir.dirName());
+
     QDir resourcesDir(dir.absolutePath() + "/Resources");
     QFile projectFile(dir.absoluteFilePath(dir.dirName() + ".4tpro"));
 

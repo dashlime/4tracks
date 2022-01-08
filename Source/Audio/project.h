@@ -49,6 +49,7 @@ public:
     enum SavedState { SAVED, UNSAVED };
 
     std::function<void()> savedStateChanged;
+    std::function<void()> projectNameChanged;
     std::function<void()> trackAdded;
     std::function<void()> bpmChanged;
 private:
