@@ -14,6 +14,7 @@ void ClipsGrid::refreshBpm(double bpm)
 {
     mBpm = bpm;
     mPixelsPerBeat = mZoomLevel * DEFAULT_PIXEL_PER_BEAT_AMOUNT;
+    onDivisionChanged();
     refreshClipsGeometry();
 }
 
@@ -77,12 +78,18 @@ void ClipsGrid::refreshZoomLevel(double newZoomLevel)
 {
     mZoomLevel = newZoomLevel;
     mPixelsPerBeat = mZoomLevel * DEFAULT_PIXEL_PER_BEAT_AMOUNT;
+    onDivisionChanged();
     refreshClipsGeometry();
 }
 
 double ClipsGrid::getZoomLevel() const
 {
     return mZoomLevel;
+}
+
+double ClipsGrid::getPixelsPerBeat() const
+{
+    return mPixelsPerBeat;
 }
 
 double ClipsGrid::getDivision() const

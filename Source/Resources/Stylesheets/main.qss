@@ -42,12 +42,18 @@ QLabel
 
 QScrollArea
 {
+    background-color: #ffffff;
+    border: none;
+}
+
+Graphics--Timeline
+{
     background-color: #F4F4F5;
     border: 3px solid #A1A1AA;
     border-radius: 3px;
 }
 
-QScrollArea:focus
+Graphics--Timeline:focus
 {
     border: 3px solid #71717A;
 }
@@ -80,12 +86,6 @@ QScrollBar::add-line, QScrollBar::sub-line
 QScrollBar::left-arrow, QScrollBar::right-arrow, QScrollBar::down-arrow, QScrollBar::up-arrow, QScrollBar::add-page
 {
     background: none;
-}
-
-Graphics--Timeline
-{
-    background-color: #F4F4F5;
-    padding: 5px;
 }
 
 QDialog

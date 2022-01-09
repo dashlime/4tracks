@@ -31,6 +31,8 @@ public:
     void refreshZoomLevel(double newZoomLevel);
     double getZoomLevel() const;
 
+    double getPixelsPerBeat() const;
+
     double getDivision() const;
 
     int roundPosition(int positionInSamples) const;
@@ -43,13 +45,15 @@ public:
 
     void selectionChanged() override;
 
+    std::function<void()> onDivisionChanged;
+
 public slots:
     void drawPositionBar();
 
 private:
     double mBpm;
     double mZoomLevel = 1.f;
-    double mPixelsPerBeat;
+    double mPixelsPerBeat = 0;
 
     Clip* mMovingClip = nullptr;
     QPoint clickPosition;

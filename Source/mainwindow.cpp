@@ -31,12 +31,7 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
     reloadDeviceManager();
 
     // init UI
-    ui->centralwidget->layout()->addWidget(&mTimelineVerticalScrollView);
-    mTimelineVerticalScrollView.setWidget(&mUiTimeline);
-    mTimelineVerticalScrollView.setWidgetResizable(true);
-    mTimelineVerticalScrollView.setFocusPolicy(Qt::FocusPolicy::ClickFocus);
-    mTimelineVerticalScrollView.setFocus(Qt::NoFocusReason);
-    mTimelineVerticalScrollView.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    ui->centralwidget->layout()->addWidget(&mUiTimeline);
 
     mUiTimeline.setProject(mProject);
 

@@ -1,23 +1,23 @@
 #ifndef GRAPHICS_TIMELINE_H
 #define GRAPHICS_TIMELINE_H
 
-#include <QWidget>
-#include <QVBoxLayout>
-#include <QScrollArea>
-#include <QStyleOption>
+#include <QtWidgets>
+#include <QtUiPlugin/QDesignerExportWidget>
 #include <vector>
+
 #include "track.h"
 #include "selection.h"
 #include "clipsgrid.h"
 #include "../Audio/project.h"
 #include "../Audio/clip.h"
 #include "utils_functions.h"
+#include "divisionsmarker.h"
 
 namespace Graphics {
     class Timeline;
 }
 
-class Graphics::Timeline : public QWidget
+class QDESIGNER_WIDGET_EXPORT Graphics::Timeline : public QWidget
 {
     Q_OBJECT
 public:
@@ -34,6 +34,7 @@ public:
     double getDivision() const;
 
     void resizeEvent(QResizeEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
 
 signals:
@@ -41,12 +42,21 @@ signals:
 private:
     std::shared_ptr<Audio::Project> mProject;
     std::unique_ptr<ClipsGrid> mClipsGrid;
-    QHBoxLayout mMainLayout;
+    QVBoxLayout mMainLayout;
     QVBoxLayout mTracksLayout;
+    QHBoxLayout mScrollLayout;
+    QHBoxLayout mDivisionsMarkerLayout;
     QPushButton mAddTrackButton;
     QWidget mTracksWidget;
+    QWidget mScrollWidget;
+    QWidget mDivisionsMarkerWidget;
 
-    QWidget mSpacerWidget;
+    QScrollArea mVerticalScrollView;
+
+    std::unique_ptr<DivisionsMarker> mDivisionsMarker;
+
+    QWidget mTracksSpacer;
+    QWidget mDivisionsMarkerSpacer;
 
     std::shared_ptr<Selection> mCurrentSelection;
 
