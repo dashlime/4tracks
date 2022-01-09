@@ -42,8 +42,13 @@ QLabel
 
 QScrollArea
 {
-    background-color: #ffffff;
+    background: transparent;
     border: none;
+}
+
+QScrollArea > QWidget > QWidget
+{
+    background: transparent;
 }
 
 Graphics--Timeline
