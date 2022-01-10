@@ -10,14 +10,6 @@ ClipsGrid::ClipsGrid(std::shared_ptr<Selection> currentSelection, QWidget *paren
     mCurrentSelection->setSelectionCallback(this);
 }
 
-void ClipsGrid::refreshBpm(double bpm)
-{
-    mBpm = bpm;
-    mPixelsPerBeat = mZoomLevel * DEFAULT_PIXEL_PER_BEAT_AMOUNT;
-    onDivisionChanged();
-    refreshClipsGeometry();
-}
-
 void ClipsGrid::setProject(std::shared_ptr<Audio::Project> project)
 {
     mProject = project;
@@ -25,6 +17,14 @@ void ClipsGrid::setProject(std::shared_ptr<Audio::Project> project)
 
     connect(&mPositionBarTimer, &QTimer::timeout, this, &ClipsGrid::drawPositionBar);
     mPositionBarTimer.start(100);
+}
+
+void ClipsGrid::refreshBpm(double bpm)
+{
+    mBpm = bpm;
+    mPixelsPerBeat = mZoomLevel * DEFAULT_PIXEL_PER_BEAT_AMOUNT;
+    onDivisionChanged();
+    refreshClipsGeometry();
 }
 
 void ClipsGrid::refreshTracks()
@@ -39,14 +39,14 @@ void ClipsGrid::refreshTracks()
                 auto clipUi = std::make_shared<Clip>(this);
                 clipUi->show();
 
-                clipUi->setClip(track->getClips().last());
+                clipUi->setClip(track->getClips().back());
 
-                clipUi->getAudioClip()->onClipMoved = [=]() {
+                clipUi->getClip()->onClipMoved = [=]() {
                     mProject->updateSavedState(Audio::Project::UNSAVED);
                     refreshClipsGeometry();
                 };
 
-                mClips.append(clipUi);
+                mClips.push_back(clipUi);
                 refreshClipsGeometry();
 
                 mProject->updateSavedState(Audio::Project::UNSAVED);
@@ -63,7 +63,7 @@ void ClipsGrid::refreshClipsGeometry()
 
     for (auto clipUi : mClips)
     {
-        auto clip = clipUi->getAudioClip();
+        auto clip = clipUi->getClip();
         double clipPosition = double(clip->getPositionInSamples()/samplesPerMinute)*mBpm*mPixelsPerBeat;
         double clipLength = double(clip->getLengthInSamples()/samplesPerMinute)*mBpm*mPixelsPerBeat;
 
@@ -110,6 +110,12 @@ int ClipsGrid::roundPosition(int positionInSamples) const
     return result;
 }
 
+void ClipsGrid::drawPositionBar()
+{
+    double samplesPerMinute = DEFAULT_SAMPLE_RATE*60;
+    mPositionBarWidget.barPositionChanged((mProject->getNextReadPosition()/samplesPerMinute)*mBpm*mPixelsPerBeat);
+}
+
 void ClipsGrid::paintEvent(QPaintEvent *)
 {
     QStyleOption opt;
@@ -127,7 +133,7 @@ void ClipsGrid::paintEvent(QPaintEvent *)
     }
     if (mProject.get() != nullptr)
     {
-        for (int i = 0; i < mProject->getTracks().size()+1; i++)
+        for (int i = 0; i < (int) mProject->getTracks().size()+1; i++)
         {
             p.drawLine(0, i*(DEFAULT_TRACK_HEIGHT+1), geometry().width(), i*(DEFAULT_TRACK_HEIGHT+1));
         }
@@ -146,12 +152,6 @@ void ClipsGrid::resizeEvent(QResizeEvent *)
     setMinimumSize((mProject->getTotalLength()/samplesPerMinute)*mBpm*mPixelsPerBeat, 150 * (mProject->getTracks().size() + 1));
 
     update();
-}
-
-void ClipsGrid::drawPositionBar()
-{
-    double samplesPerMinute = DEFAULT_SAMPLE_RATE*60;
-    mPositionBarWidget.barPositionChanged((mProject->getNextReadPosition()/samplesPerMinute)*mBpm*mPixelsPerBeat);
 }
 
 void ClipsGrid::mousePressEvent(QMouseEvent *event)
@@ -181,7 +181,7 @@ void ClipsGrid::mousePressEvent(QMouseEvent *event)
     mCurrentSelection->setSelectionType(Selection::NoSelection);
 }
 
-void ClipsGrid::mouseReleaseEvent(QMouseEvent *event)
+void ClipsGrid::mouseReleaseEvent(QMouseEvent *)
 {
     if (mMovingClip)
     {
@@ -189,7 +189,7 @@ void ClipsGrid::mouseReleaseEvent(QMouseEvent *event)
         double samplesPerPixel = samplesPerMinute/mBpm/mPixelsPerBeat;
 
         double newClipPosition = mMovingClip->x() * samplesPerPixel;
-        mMovingClip->getAudioClip()->setClipPositionInSamples(newClipPosition);
+        mMovingClip->getClip()->setClipPositionInSamples(newClipPosition);
         mMovingClip = nullptr;
 
     }
@@ -199,7 +199,7 @@ void ClipsGrid::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->buttons().testFlag(Qt::LeftButton))
     {
-        if (event->pos().y() > (DEFAULT_TRACK_HEIGHT + 1) * mProject->getTracks().size()-1)
+        if (event->pos().y() > (DEFAULT_TRACK_HEIGHT + 1) * (int) mProject->getTracks().size()-1)
             return;
 
         double samplesPerMinute = DEFAULT_SAMPLE_RATE*60;
@@ -219,7 +219,7 @@ void ClipsGrid::mouseMoveEvent(QMouseEvent *event)
         }
         if (mMovingClip != nullptr)
         {
-            double clipPosition = double(mMovingClip->getAudioClip()->getPositionInSamples()/samplesPerMinute)*mBpm*mPixelsPerBeat;
+            double clipPosition = double(mMovingClip->getClip()->getPositionInSamples()/samplesPerMinute)*mBpm*mPixelsPerBeat;
             double newPosition = clipPosition + roundPosition((event->position().x() - clickPosition.x()) * samplesPerPixel) / samplesPerMinute * mBpm * mPixelsPerBeat;
             mMovingClip->setGeometry(newPosition, mMovingClip->y(), mMovingClip->width(), mMovingClip->height());
             return;
@@ -242,7 +242,6 @@ void ClipsGrid::mouseMoveEvent(QMouseEvent *event)
 
 void ClipsGrid::selectionChanged()
 {
-    // draw selection
     double samplesPerMinute = DEFAULT_SAMPLE_RATE*60;
 
     Selection::SelectionArea area = mCurrentSelection->getSelectedArea();

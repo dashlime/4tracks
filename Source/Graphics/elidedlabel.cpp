@@ -29,7 +29,8 @@ void ElidedLabel::paintEvent(QPaintEvent *event)
 
     QTextLayout textLayout(content, painter.font());
     textLayout.beginLayout();
-    forever {
+    forever
+    {
         QTextLine line = textLayout.createLine();
 
         if (!line.isValid())
@@ -38,10 +39,13 @@ void ElidedLabel::paintEvent(QPaintEvent *event)
         line.setLineWidth(width());
         int nextLineY = y + lineSpacing;
 
-        if (height() >= nextLineY + lineSpacing) {
+        if (height() >= nextLineY + lineSpacing)
+        {
             line.draw(&painter, QPoint(0, y));
             y = nextLineY;
-        } else {
+        }
+        else
+        {
             QString lastLine = content.mid(line.textStart());
             QString elidedLastLine = fontMetrics.elidedText(lastLine, Qt::ElideRight, width());
             painter.drawText(QPoint(0, y + fontMetrics.ascent()), elidedLastLine);
@@ -51,7 +55,8 @@ void ElidedLabel::paintEvent(QPaintEvent *event)
         }
     }
     textLayout.endLayout();
-    if (didElide != elided) {
+    if (didElide != elided)
+    {
         elided = didElide;
         emit elisionChanged(didElide);
     }

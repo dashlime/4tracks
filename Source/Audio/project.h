@@ -20,11 +20,15 @@ public:
     void setProjectName(QString newProjectName);
 
     void addTrack(std::shared_ptr<AudioTrack> newTrack);
+    std::vector<std::shared_ptr<AudioTrack>> getTracks();
+
+    void clearAllTracks();
+
     void play();
     void pause();
     void stop();
 
-    void clearAllTracks();
+    bool isPlaying() const;
 
     void updateSavedState(int newSavedState);
     int getSavedState() const;
@@ -32,15 +36,11 @@ public:
     void setBpm(double newBpm, bool propagateEvent = true);
     double getBpm() const;
 
-    QVector<std::shared_ptr<AudioTrack>> getTracks();
-
-    bool isPlaying() const;
-
     void setNextReadPosition(juce::int64 newPosition) override;
     juce::int64 getNextReadPosition() const override;
     juce::int64 getTotalLength() const override;
     bool isLooping() const override;
-    void setLooping(bool shouldLoop) override;
+    void setLooping(bool) override;
 
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
     void releaseResources() override;
@@ -53,7 +53,7 @@ public:
     std::function<void()> trackAdded;
     std::function<void()> bpmChanged;
 private:
-    QVector<std::shared_ptr<AudioTrack>> mTracks;
+    std::vector<std::shared_ptr<AudioTrack>> mTracks;
     MixerPositionableAudioSource mMixerAudioSource;
 
     bool mPlaying = false;

@@ -17,6 +17,8 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
 
     setStyleSheet(mainStyleSheet.readAll());
 
+    mainStyleSheet.close();
+
     QFont font = ui->bpmSpin->font();
     font.setWeight(QFont::Medium);
     ui->bpmSpin->setFont(font);
@@ -57,7 +59,28 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
         ui->bpmSpin->setValue(mProject->getBpm());
     };
 
-    // connect main ui buttons / actions
+    connectUIActions();
+
+    // finally load project if explicilty asked
+    if (projectToLoad != "")
+        loadProject(projectToLoad);
+
+    // else add a default track to project
+    else
+    {
+        mProject->addTrack(std::make_shared<Audio::AudioTrack>("Track", 0));
+        mProject->updateSavedState(Audio::Project::SAVED);
+    }
+
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+void MainWindow::connectUIActions()
+{
     connect(ui->zoomPlusButton, &QPushButton::clicked, [=]() {
         mUiTimeline.refreshZoomLevel(mUiTimeline.getZoomLevel() * 2);
     });
@@ -112,23 +135,6 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
         mProject->stop();
         ui->playButton->setChecked(false);
     });
-
-    // finally load project if explicilty asked
-    if (projectToLoad != "")
-        loadProject(projectToLoad);
-
-    // else add a default track to project
-    else
-    {
-        mProject->addTrack(std::make_shared<Audio::AudioTrack>("Track", 0));
-        mProject->updateSavedState(Audio::Project::SAVED);
-    }
-
-}
-
-MainWindow::~MainWindow()
-{
-    delete ui;
 }
 
 void MainWindow::reloadDeviceManager()

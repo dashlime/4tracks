@@ -60,7 +60,7 @@ void Clip::setClip(std::shared_ptr<Audio::Clip> clip)
     update();
 }
 
-std::shared_ptr<Audio::Clip> Clip::getAudioClip()
+std::shared_ptr<Audio::Clip> Clip::getClip()
 {
     return mClip;
 }

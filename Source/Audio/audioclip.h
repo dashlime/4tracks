@@ -15,6 +15,7 @@ public:
     QString getPath() const;
 
     int getType() const override;
+
     juce::AudioBuffer<float>& getAudioBuffer();
 
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;

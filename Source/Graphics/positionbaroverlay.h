@@ -13,6 +13,7 @@ public:
     explicit PositionBarOverlay(QWidget *parent = nullptr);
 
     void barPositionChanged(double newPosition);
+
     void paintEvent(QPaintEvent *) override;
 
 signals:

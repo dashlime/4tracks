@@ -10,6 +10,7 @@ class DivisionsMarker : public QWidget
     Q_OBJECT
 public:
     explicit DivisionsMarker(double division, double pixelsPerBeat, QWidget *parent = nullptr);
+
     void refresh(double newDivision, double pixelsPerBeat);
 
     void paintEvent(QPaintEvent *) override;

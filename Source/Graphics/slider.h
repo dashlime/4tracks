@@ -22,7 +22,7 @@ public:
     QLabel* getValueLabel();
 
     void sliderChange(QAbstractSlider::SliderChange change) override;
-    void paintEvent(QPaintEvent *event) override;
+    void paintEvent(QPaintEvent *) override;
     void mousePressEvent(QMouseEvent *event) override;
 
 private:

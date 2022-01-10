@@ -27,8 +27,7 @@ public:
     bool isSelected() const;
 
     void setClip(std::shared_ptr<Audio::Clip> clip);
-
-    std::shared_ptr<Audio::Clip> getAudioClip();
+    std::shared_ptr<Audio::Clip> getClip();
 
     bool shouldMoveClip(QPoint mousePosition) const;
 

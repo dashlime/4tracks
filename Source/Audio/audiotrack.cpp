@@ -9,6 +9,11 @@ AudioTrack::AudioTrack(QString name, int index) : mName(name), mIndex(index)
 
 }
 
+QString AudioTrack::getName() const
+{
+    return mName;
+}
+
 int AudioTrack::getType() const
 {
     if (mClips.size() == 0)
@@ -21,16 +26,16 @@ bool AudioTrack::addClip(std::shared_ptr<Clip> clip)
 {
     if (clip->getType() == Clip::AUDIO_CLIP && getType() == AUDIO_TRACK)
     {
-        mClips.append(clip);
+        mClips.push_back(clip);
         resizeClipsWhenClipAdded(mClips.size() - 1);
     }
     else if (clip->getType() == Clip::MIDI_CLIP && getType() == MIDI_TRACK)
     {
-        mClips.append(clip);
+        mClips.push_back(clip);
         resizeClipsWhenClipAdded(mClips.size() - 1);
     }
     else if (getType() == ANY_TRACK)
-        mClips.append(clip);
+        mClips.push_back(clip);
     else
         return false;
 
@@ -39,9 +44,9 @@ bool AudioTrack::addClip(std::shared_ptr<Clip> clip)
     return true;
 }
 
-QString AudioTrack::getName() const
+std::vector<std::shared_ptr<Clip>> AudioTrack::getClips()
 {
-    return mName;
+    return mClips;
 }
 
 int AudioTrack::getIndex() const
@@ -77,11 +82,6 @@ double AudioTrack::getPan() const
 void AudioTrack::resizeClipsWhenClipAdded(int newClipIndex)
 {
 
-}
-
-QVector<std::shared_ptr<Clip>> AudioTrack::getClips()
-{
-    return mClips;
 }
 
 void AudioTrack::setNextReadPosition(juce::int64 newPosition)
@@ -120,7 +120,7 @@ bool AudioTrack::isLooping() const
     return false;
 }
 
-void AudioTrack::setLooping(bool shouldLoop) {}
+void AudioTrack::setLooping(bool) {}
 
 void AudioTrack::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 {

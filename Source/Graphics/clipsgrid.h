@@ -22,9 +22,9 @@ class ClipsGrid : public QWidget, public Selection::Callback
 public:
     explicit ClipsGrid(std::shared_ptr<Selection> currentSelection, QWidget *parent = nullptr);
 
-    void refreshBpm(double bpm);
     void setProject(std::shared_ptr<Audio::Project> project);
 
+    void refreshBpm(double bpm);
     void refreshTracks();
     void refreshClipsGeometry();
 
@@ -32,7 +32,6 @@ public:
     double getZoomLevel() const;
 
     double getPixelsPerBeat() const;
-
     double getDivision() const;
 
     int roundPosition(int positionInSamples) const;
@@ -40,7 +39,7 @@ public:
     void paintEvent(QPaintEvent *) override;
     void resizeEvent(QResizeEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
-    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *) override;
     void mouseMoveEvent(QMouseEvent *event) override;
 
     void selectionChanged() override;
@@ -65,7 +64,7 @@ private:
     QTimer mPositionBarTimer;
     SelectionOverlay mSelectionOverlay;
 
-    QVector<std::shared_ptr<Clip>> mClips;
+    std::vector<std::shared_ptr<Clip>> mClips;
 };
 
 } // namespace Graphics

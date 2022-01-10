@@ -17,9 +17,12 @@ public:
 
     void setName(QString name);
     QString getName() const;
+
     QString getSourceFilePath() const;
+
     int getPositionInSamples() const;
     void setClipPositionInSamples(int newPosition);
+
     int getLengthInSamples() const;
 
     void setReadPosition(int newPosition);
@@ -28,7 +31,6 @@ public:
     std::shared_ptr<Audio::AudioTrack> getParentTrack();
 
     virtual int getType() const = 0;
-
     virtual void nextReadPositionChanged() {};
 
     std::function<void()> onClipMoved;

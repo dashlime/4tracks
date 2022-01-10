@@ -17,6 +17,7 @@ public:
     explicit SettingsDialog(QWidget *parent = nullptr);
     ~SettingsDialog();
 
+    void connectUIElements();
     void refreshUI();
 
     std::function<void()> settingsApplyed;

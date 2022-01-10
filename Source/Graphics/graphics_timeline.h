@@ -23,6 +23,8 @@ class QDESIGNER_WIDGET_EXPORT Graphics::Timeline : public QWidget
 public:
     Timeline(QWidget *parent = nullptr);
 
+    void initializeLayouts();
+
     void setProject(std::shared_ptr<Audio::Project> project);
     void displayTracks();
 
@@ -33,8 +35,8 @@ public:
 
     double getDivision() const;
 
-    void resizeEvent(QResizeEvent *event) override;
-    void paintEvent(QPaintEvent *event) override;
+    void resizeEvent(QResizeEvent *) override;
+    void paintEvent(QPaintEvent *) override;
     void mousePressEvent(QMouseEvent *event) override;
 
 signals:

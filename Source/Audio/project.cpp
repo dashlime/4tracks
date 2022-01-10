@@ -22,10 +22,21 @@ void Project::setProjectName(QString newProjectName)
 
 void Project::addTrack(std::shared_ptr<AudioTrack> newTrack)
 {
-    mTracks.append(newTrack);
+    mTracks.push_back(newTrack);
     mMixerAudioSource.addInputSource(newTrack.get(), false);
 
     trackAdded();
+}
+
+std::vector<std::shared_ptr<AudioTrack>> Project::getTracks()
+{
+    return mTracks;
+}
+
+void Project::clearAllTracks()
+{
+    mMixerAudioSource.removeAllInputs();
+    mTracks.clear();
 }
 
 void Project::play()
@@ -42,12 +53,6 @@ void Project::stop()
 {
     mPlaying = false;
     mMixerAudioSource.setNextReadPosition(0);
-}
-
-void Project::clearAllTracks()
-{
-    mMixerAudioSource.removeAllInputs();
-    mTracks.clear();
 }
 
 void Project::updateSavedState(int newSavedState)
@@ -71,11 +76,6 @@ void Project::setBpm(double newBpm, bool propagateEvent)
 double Project::getBpm() const
 {
     return mBpm;
-}
-
-QVector<std::shared_ptr<AudioTrack>> Project::getTracks()
-{
-    return mTracks;
 }
 
 bool Project::isPlaying() const
@@ -103,7 +103,7 @@ bool Project::isLooping() const
     return false;
 }
 
-void Project::setLooping(bool shouldLoop) {}
+void Project::setLooping(bool) {}
 
 void Project::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 {

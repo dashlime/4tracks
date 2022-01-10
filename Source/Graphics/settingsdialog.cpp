@@ -36,7 +36,16 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
         close();
     });
 
-    // connect inputs
+    connectUIElements();
+}
+
+SettingsDialog::~SettingsDialog()
+{
+    delete ui;
+}
+
+void SettingsDialog::connectUIElements()
+{
     connect(ui->audioDriverComboBox, &QComboBox::currentTextChanged, [=](QString driver) {
         if (driver.isEmpty())
             return;
@@ -108,11 +117,6 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
         refreshUI();
     });
-}
-
-SettingsDialog::~SettingsDialog()
-{
-    delete ui;
 }
 
 void SettingsDialog::refreshUI()

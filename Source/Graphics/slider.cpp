@@ -60,7 +60,7 @@ void Slider::sliderChange(QAbstractSlider::SliderChange change)
     }
 }
 
-void Slider::paintEvent(QPaintEvent *event)
+void Slider::paintEvent(QPaintEvent *)
 {
     QStyleOption opt;
     opt.initFrom(this);
@@ -80,10 +80,10 @@ void Slider::mousePressEvent(QMouseEvent *event)
         return;
 
     if (orientation() == Qt::Vertical)
-        setValue((height() - event->y()) * (double(maximum() - minimum()) / double(height())) + minimum());
+        setValue((height() - event->pos().y()) * (double(maximum() - minimum()) / double(height())) + minimum());
 
     else if (orientation() == Qt::Horizontal)
-        setValue(event->x() * (double(maximum() - minimum()) / double(width())) + minimum());
+        setValue(event->pos().x() * (double(maximum() - minimum()) / double(width())) + minimum());
 
     repaint();
 }

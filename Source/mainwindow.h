@@ -21,6 +21,8 @@ public:
     MainWindow(QString projectToLoad = "", QWidget *parent = nullptr);
     ~MainWindow();
 
+    void connectUIActions();
+
     void reloadDeviceManager();
 
     void importFile();

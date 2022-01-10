@@ -17,9 +17,11 @@ class AudioTrack : public juce::PositionableAudioSource
 public:
     AudioTrack(QString name, int index);
 
-    int getType() const;
-    bool addClip(std::shared_ptr<Clip> clip);
     QString getName() const;
+    int getType() const;
+
+    bool addClip(std::shared_ptr<Clip> clip);
+    std::vector<std::shared_ptr<Clip>> getClips();
 
     int getIndex() const;
     void setIndex(int newPosition);
@@ -30,13 +32,11 @@ public:
     void setPan(double newPan);
     double getPan() const;
 
-    QVector<std::shared_ptr<Clip>> getClips();
-
     void setNextReadPosition(juce::int64 newPosition) override;
     juce::int64 getNextReadPosition() const override;
     juce::int64 getTotalLength() const override;
     bool isLooping() const override;
-    void setLooping(bool shouldLoop) override;
+    void setLooping(bool) override;
 
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
     void releaseResources() override;
@@ -50,7 +50,7 @@ private:
     void resizeClipsWhenClipAdded(int newClipIndex);
 
     QString mName;
-    QVector<std::shared_ptr<Clip>> mClips;
+    std::vector<std::shared_ptr<Clip>> mClips;
 
     std::shared_ptr<Clip> mClipPlaying;
 

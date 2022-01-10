@@ -24,7 +24,20 @@ Timeline::Timeline(QWidget *parent) : QWidget(parent)
     mVerticalScrollView.setFocus(Qt::NoFocusReason);
     mVerticalScrollView.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    // layouts initialization
+    initializeLayouts();
+
+    // connect signals
+    connect(&mAddTrackButton, &QPushButton::pressed, [=]() {
+        mProject->addTrack(std::make_shared<Audio::AudioTrack>("Track", mProject->getTracks().size()));
+    });
+
+    mClipsGrid->onDivisionChanged = [=]() {
+        mDivisionsMarker->refresh(mClipsGrid->getDivision(), mClipsGrid->getPixelsPerBeat());
+    };
+}
+
+void Timeline::initializeLayouts()
+{
     setLayout(&mMainLayout);
     layout()->setSpacing(0);
     layout()->setContentsMargins(10, 3, 3, 3);
@@ -54,15 +67,6 @@ Timeline::Timeline(QWidget *parent) : QWidget(parent)
 
     mScrollLayout.addWidget(&mTracksWidget);
     mScrollLayout.addWidget(mClipsGrid.get());
-
-    // connect signals
-    connect(&mAddTrackButton, &QPushButton::pressed, [=]() {
-        mProject->addTrack(std::make_shared<Audio::AudioTrack>("Track", mProject->getTracks().size()));
-    });
-
-    mClipsGrid->onDivisionChanged = [=]() {
-        mDivisionsMarker->refresh(mClipsGrid->getDivision(), mClipsGrid->getPixelsPerBeat());
-    };
 }
 
 void Timeline::setProject(std::shared_ptr<Audio::Project> project)
@@ -125,7 +129,7 @@ void Timeline::resizeEvent(QResizeEvent *)
     mMainLayout.setGeometry(QRect(0, 0, width(), height()));
 }
 
-void Timeline::paintEvent(QPaintEvent *event)
+void Timeline::paintEvent(QPaintEvent *)
 {
     QStyleOption opt;
     opt.initFrom(this);
