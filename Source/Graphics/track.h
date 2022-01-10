@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QStyleOption>
 #include <QPainter>
-#include "Audio/audiotrack.h"
+#include "Audio/track.h"
 
 
 namespace Graphics {

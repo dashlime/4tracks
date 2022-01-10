@@ -17,7 +17,7 @@ find_package(Qt6 COMPONENTS Xml)
 add_executable(4tracks
     Source/Audio/JuceIncludes.h
     Source/Audio/audioclip.cpp Source/Audio/audioclip.h
-    Source/Audio/audiotrack.cpp Source/Audio/audiotrack.h
+    Source/Audio/track.cpp Source/Audio/track.h
     Source/Audio/clip.cpp Source/Audio/clip.h
     Source/Audio/midiclip.cpp Source/Audio/midiclip.h
     Source/Audio/mixerpositionableaudiosource.cpp Source/Audio/mixerpositionableaudiosource.h
@@ -30,20 +30,20 @@ add_executable(4tracks
     Source/Graphics/clipsgrid.cpp Source/Graphics/clipsgrid.h
     Source/Graphics/divisionsmarker.cpp Source/Graphics/divisionsmarker.h
     Source/Graphics/elidedlabel.cpp Source/Graphics/elidedlabel.h
-    Source/Graphics/graphics_clip.cpp Source/Graphics/graphics_clip.h Source/Graphics/graphics_clip.ui
-    Source/Graphics/graphics_timeline.cpp Source/Graphics/graphics_timeline.h
+    Source/Graphics/clip.cpp Source/Graphics/clip.h Source/Graphics/clip.ui
+    Source/Graphics/timeline.cpp Source/Graphics/timeline.h
     Source/Graphics/positionbaroverlay.cpp Source/Graphics/positionbaroverlay.h
     Source/Graphics/selection.cpp Source/Graphics/selection.h
     Source/Graphics/selectionoverlay.cpp Source/Graphics/selectionoverlay.h
     Source/Graphics/settingsdialog.cpp Source/Graphics/settingsdialog.h Source/Graphics/settingsdialog.ui
     Source/Graphics/slider.cpp Source/Graphics/slider.h
     Source/Graphics/track.cpp Source/Graphics/track.h Source/Graphics/track.ui
+    Source/Graphics/mainwindow.cpp Source/Graphics/mainwindow.h Source/Graphics/mainwindow.ui
 
     Source/Utils/projectsaver.cpp Source/Utils/projectsaver.h
+    Source/Utils/utils_functions.h
 
     Source/main.cpp
-    Source/mainwindow.cpp Source/mainwindow.h Source/mainwindow.ui
-    Source/utils_functions.h
 
     Source/Resources/Icons/icons.qrc
     Source/Resources/Stylesheets/stylesheets.qrc

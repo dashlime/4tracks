@@ -2,7 +2,7 @@
 #define GRAPHICS_SELECTION_H
 
 #include "track.h"
-#include "graphics_clip.h"
+#include "clip.h"
 #include "selectionoverlay.h"
 
 namespace Graphics {

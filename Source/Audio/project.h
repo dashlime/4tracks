@@ -2,7 +2,7 @@
 #define TIMELINE_H
 
 #include "mixerpositionableaudiosource.h"
-#include "audiotrack.h"
+#include "track.h"
 #include "JuceIncludes.h"
 #include "Constants.h"
 

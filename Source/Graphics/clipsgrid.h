@@ -2,8 +2,8 @@
 #define GRAPHICS_CLIPSGRID_H
 
 #include "Audio/project.h"
-#include "graphics_clip.h"
-#include "utils_functions.h"
+#include "clip.h"
+#include "Utils/utils_functions.h"
 #include "positionbaroverlay.h"
 #include "selectionoverlay.h"
 #include "selection.h"
