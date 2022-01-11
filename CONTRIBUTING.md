@@ -7,19 +7,23 @@ Here are a set guidelines for contributing to 4tracks
 ## 4tracks design
 
 4tracks design is very simple : 
-* first, the project is divided in two main parts: Audio part, that handles all the audio engine and app logic, and Graphics part, that handles UI features
-* for Audio part, the structure is like:
-  Audio::Project
+First, the project is divided in two main parts: Audio part, that handles all the audio engine and app logic, and Graphics part, that handles UI features:
+for Audio part, the structure is like:
+```
+Audio::Project
   |---- Audio::Track (track 1)
         |---- Audio::Clip (clip 1)
         |---- Audio::Clip (clip 2)
-* for Graphics part, it is a little different:
-  MainWindow
+```
+for Graphics part, it is a little different:
+```
+MainWindow
   |---- Graphics::Timeline
         |---- Graphics::Track (track 1)
         |---- Graphics::ClipsGrid
               |---- Graphics::Clip (clip 1)
               |---- Graphics::Clip (clip 2)
+```
               
 ## Report bugs
 
