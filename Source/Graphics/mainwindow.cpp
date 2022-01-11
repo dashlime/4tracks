@@ -68,10 +68,11 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
     // else add a default track to project
     else
     {
-        mProject->addTrack(std::make_shared<Audio::AudioTrack>("Track", 0));
+        mProject->addTrack(std::make_shared<Audio::Track>("Track", 0));
         mProject->updateSavedState(Audio::Project::SAVED);
     }
 
+    mUiTimeline.setFocus();
 }
 
 MainWindow::~MainWindow()
@@ -174,7 +175,7 @@ void MainWindow::importFile()
         // check if is there empty tracks to import file
         for (auto track : mProject->getTracks())
         {
-            if (track->getType() == Audio::AudioTrack::ANY_TRACK)
+            if (track->getType() == Audio::Track::ANY_TRACK)
             {
                 if (track->addClip(std::make_shared<Audio::AudioClip>(track, fileDialog.selectedFiles().at(0))) == false)
                 {
@@ -185,7 +186,7 @@ void MainWindow::importFile()
         }
 
         // else import it to a new track
-        std::shared_ptr<Audio::AudioTrack> track = std::make_shared<Audio::AudioTrack>("Audio Track", mProject->getTracks().size());
+        std::shared_ptr<Audio::Track> track = std::make_shared<Audio::Track>("Audio Track", mProject->getTracks().size());
         mProject->addTrack(track);
         if (track->addClip(std::make_shared<Audio::AudioClip>(track, fileDialog.selectedFiles().at(0))) == false)
         {

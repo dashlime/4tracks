@@ -8,7 +8,7 @@ namespace Audio {
 class MidiClip : public Clip
 {
 public:
-    MidiClip(std::shared_ptr<AudioTrack> parentTrack);
+    MidiClip(std::shared_ptr<Track> parentTrack);
 
     int getType() const override;
 };

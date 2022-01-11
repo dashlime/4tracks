@@ -3,7 +3,7 @@
 
 namespace Graphics {
 
-Track::Track(std::shared_ptr<Audio::AudioTrack> track, QWidget *parent) :
+Track::Track(std::shared_ptr<Audio::Track> track, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Track),
     mAudioTrack(track)

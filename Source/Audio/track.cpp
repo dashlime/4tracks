@@ -4,17 +4,17 @@
 
 namespace Audio {
 
-AudioTrack::AudioTrack(QString name, int index) : mName(name), mIndex(index)
+Track::Track(QString name, int index) : mName(name), mIndex(index)
 {
 
 }
 
-QString AudioTrack::getName() const
+QString Track::getName() const
 {
     return mName;
 }
 
-int AudioTrack::getType() const
+int Track::getType() const
 {
     if (mClips.size() == 0)
         return ANY_TRACK;
@@ -22,7 +22,7 @@ int AudioTrack::getType() const
     return mClips.at(0)->getType() == Clip::AUDIO_CLIP ? AUDIO_TRACK : MIDI_TRACK;
 }
 
-bool AudioTrack::addClip(std::shared_ptr<Clip> clip)
+bool Track::addClip(std::shared_ptr<Clip> clip)
 {
     if (clip->getType() == Clip::AUDIO_CLIP && getType() == AUDIO_TRACK)
     {
@@ -39,52 +39,53 @@ bool AudioTrack::addClip(std::shared_ptr<Clip> clip)
     else
         return false;
 
-    onClipAdded();
+    if (onClipAdded != nullptr)
+        onClipAdded();
 
     return true;
 }
 
-std::vector<std::shared_ptr<Clip>> AudioTrack::getClips()
+std::vector<std::shared_ptr<Clip>> Track::getClips()
 {
     return mClips;
 }
 
-int AudioTrack::getIndex() const
+int Track::getIndex() const
 {
     return mIndex;
 }
 
-void AudioTrack::setIndex(int newPosition)
+void Track::setIndex(int newPosition)
 {
     mIndex = newPosition;
 }
 
-void AudioTrack::setVolume(double newVolume)
+void Track::setVolume(double newVolume)
 {
     mVolume = newVolume;
 }
 
-double AudioTrack::getVolume() const
+double Track::getVolume() const
 {
     return mVolume;
 }
 
-void AudioTrack::setPan(double newPan)
+void Track::setPan(double newPan)
 {
     mPan = newPan;
 }
 
-double AudioTrack::getPan() const
+double Track::getPan() const
 {
     return mPan;
 }
 
-void AudioTrack::resizeClipsWhenClipAdded(int newClipIndex)
+void Track::resizeClipsWhenClipAdded(int newClipIndex)
 {
 
 }
 
-void AudioTrack::setNextReadPosition(juce::int64 newPosition)
+void Track::setNextReadPosition(juce::int64 newPosition)
 {
     mPositionInSamples = newPosition;
     mClipPlaying = nullptr;
@@ -100,12 +101,12 @@ void AudioTrack::setNextReadPosition(juce::int64 newPosition)
         mClipPlaying->setReadPosition(newPosition);
 }
 
-juce::int64 AudioTrack::getNextReadPosition() const
+juce::int64 Track::getNextReadPosition() const
 {
     return mPositionInSamples;
 }
 
-juce::int64 AudioTrack::getTotalLength() const
+juce::int64 Track::getTotalLength() const
 {
     int max = 0;
     for (auto clip : mClips) {
@@ -115,14 +116,14 @@ juce::int64 AudioTrack::getTotalLength() const
     return max;
 }
 
-bool AudioTrack::isLooping() const
+bool Track::isLooping() const
 {
     return false;
 }
 
-void AudioTrack::setLooping(bool) {}
+void Track::setLooping(bool) {}
 
-void AudioTrack::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
+void Track::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 {
     mPositionInSamples = 0;
     if (getType() == AUDIO_TRACK)
@@ -134,10 +135,10 @@ void AudioTrack::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
     }
 }
 
-void AudioTrack::releaseResources()
+void Track::releaseResources()
 {}
 
-void AudioTrack::getNextAudioBlock(const juce::AudioSourceChannelInfo &bufferToFill)
+void Track::getNextAudioBlock(const juce::AudioSourceChannelInfo &bufferToFill)
 {
     if (mClipPlaying == nullptr)
         bufferToFill.clearActiveBufferRegion();

@@ -2,18 +2,17 @@
 #define CLIP_H
 
 #include <QString>
-#include <QResizeEvent>
 
 #include "JuceIncludes.h"
 
 namespace Audio {
 
-class AudioTrack;
+class Track;
 
 class Clip
 {
 public:
-    Clip(std::shared_ptr<Audio::AudioTrack> parentTrack);
+    Clip(std::shared_ptr<Audio::Track> parentTrack);
 
     void setName(QString name);
     QString getName() const;
@@ -28,7 +27,7 @@ public:
     void setReadPosition(int newPosition);
     int getReadPosition() const;
 
-    std::shared_ptr<Audio::AudioTrack> getParentTrack();
+    std::shared_ptr<Audio::Track> getParentTrack();
 
     virtual int getType() const = 0;
     virtual void nextReadPositionChanged() {};
@@ -43,7 +42,7 @@ protected:
     int mLengthInSamples = 0;
     int mNextReadPosition = 0;
 
-    std::shared_ptr<Audio::AudioTrack> mParentTrack;
+    std::shared_ptr<Audio::Track> mParentTrack;
 };
 
 }

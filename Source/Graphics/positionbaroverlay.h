@@ -1,8 +1,7 @@
 #ifndef GRAPHICS_POSITIONBAROVERLAY_H
 #define GRAPHICS_POSITIONBAROVERLAY_H
 
-#include <QWidget>
-#include <QPainter>
+#include <QtWidgets>
 
 namespace Graphics {
 

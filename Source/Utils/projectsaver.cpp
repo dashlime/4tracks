@@ -88,13 +88,13 @@ void ProjectSaver::openProject(QFile projectFile)
     while (!domTrack.isNull())
     {
         int trackType = domTrack.attribute("type").toInt();
-        std::shared_ptr<Audio::AudioTrack> track = std::make_shared<Audio::AudioTrack>(domTrack.attribute("name"), domTrack.attribute("index").toInt());
+        std::shared_ptr<Audio::Track> track = std::make_shared<Audio::Track>(domTrack.attribute("name"), domTrack.attribute("index").toInt());
         mProject->addTrack(track);
 
         QDomElement domClip = domTrack.firstChild().toElement();
         while (!domClip.isNull())
         {
-            if (trackType == Audio::AudioTrack::AUDIO_TRACK)
+            if (trackType == Audio::Track::AUDIO_TRACK)
             {
                 std::shared_ptr<Audio::AudioClip> clip = std::make_shared<Audio::AudioClip>(track, domClip.attribute("path"));
                 track->addClip(clip);

@@ -10,7 +10,7 @@ namespace Audio {
 class AudioClip : public Clip, public juce::AudioSource
 {
 public:
-    AudioClip(std::shared_ptr<AudioTrack> parentTrack, QString filePath);
+    AudioClip(std::shared_ptr<Track> parentTrack, QString filePath);
 
     QString getPath() const;
 

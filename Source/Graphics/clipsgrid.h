@@ -1,18 +1,14 @@
 #ifndef GRAPHICS_CLIPSGRID_H
 #define GRAPHICS_CLIPSGRID_H
 
+#include <QtWidgets>
+
 #include "Audio/project.h"
 #include "clip.h"
 #include "Utils/utils_functions.h"
 #include "positionbaroverlay.h"
 #include "selectionoverlay.h"
 #include "selection.h"
-
-#include <QWidget>
-#include <QStyleOption>
-#include <QLayout>
-#include <QPainter>
-#include <QTimer>
 
 namespace Graphics {
 

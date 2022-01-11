@@ -2,7 +2,7 @@
 
 namespace Audio {
 
-Clip::Clip(std::shared_ptr<AudioTrack> parentTrack) : mParentTrack(parentTrack)
+Clip::Clip(std::shared_ptr<Track> parentTrack) : mParentTrack(parentTrack)
 {
 
 }
@@ -49,7 +49,7 @@ int Clip::getReadPosition() const
     return mNextReadPosition;
 }
 
-std::shared_ptr<AudioTrack> Clip::getParentTrack()
+std::shared_ptr<Track> Clip::getParentTrack()
 {
     return mParentTrack;
 }

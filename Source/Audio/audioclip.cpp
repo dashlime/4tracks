@@ -2,7 +2,7 @@
 
 namespace Audio {
 
-AudioClip::AudioClip(std::shared_ptr<AudioTrack> parentTrack, QString filePath) : Clip(parentTrack)
+AudioClip::AudioClip(std::shared_ptr<Track> parentTrack, QString filePath) : Clip(parentTrack)
 {
     mSourceFilePath = filePath;
     mName = filePath;
@@ -22,6 +22,9 @@ int AudioClip::getType() const
 
 void AudioClip::load()
 {
+    if (mSourceFilePath == "")
+        return;
+
     juce::AudioFormatManager formatManager;
     formatManager.registerFormat(new juce::WavAudioFormat(), true);
 

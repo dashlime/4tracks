@@ -1,9 +1,10 @@
 #ifndef SETTINGSDIALOG_H
 #define SETTINGSDIALOG_H
 
-#include <QDialog>
-#include "Audio/JuceIncludes.h"
+#include <QtWidgets>
 #include <QStandardPaths>
+
+#include "Audio/JuceIncludes.h"
 
 namespace Ui {
 class SettingsDialog;

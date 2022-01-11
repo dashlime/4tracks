@@ -4,6 +4,8 @@ namespace Graphics {
 
 Timeline::Timeline(QWidget *parent) : QWidget(parent)
 {
+    setFocusPolicy(Qt::ClickFocus);
+
     // objects initialization
     mCurrentSelection = std::make_shared<Selection>();
     mClipsGrid = std::make_unique<ClipsGrid>(mCurrentSelection);
@@ -21,14 +23,13 @@ Timeline::Timeline(QWidget *parent) : QWidget(parent)
     mVerticalScrollView.setWidget(&mScrollWidget);
     mVerticalScrollView.setWidgetResizable(true);
     mVerticalScrollView.setFocusPolicy(Qt::FocusPolicy::NoFocus);
-    mVerticalScrollView.setFocus(Qt::NoFocusReason);
     mVerticalScrollView.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     initializeLayouts();
 
     // connect signals
     connect(&mAddTrackButton, &QPushButton::pressed, [=]() {
-        mProject->addTrack(std::make_shared<Audio::AudioTrack>("Track", mProject->getTracks().size()));
+        mProject->addTrack(std::make_shared<Audio::Track>("Track", mProject->getTracks().size()));
     });
 
     mClipsGrid->onDivisionChanged = [=]() {

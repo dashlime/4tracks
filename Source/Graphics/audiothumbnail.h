@@ -1,7 +1,7 @@
 #ifndef GRAPHICS_AUDIOTHUMBNAIL_H
 #define GRAPHICS_AUDIOTHUMBNAIL_H
 
-#include <QPainter>
+#include <QtWidgets>
 #include "Audio/audioclip.h"
 
 namespace Graphics {

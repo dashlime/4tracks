@@ -19,8 +19,8 @@ public:
     QString getProjectName() const;
     void setProjectName(QString newProjectName);
 
-    void addTrack(std::shared_ptr<AudioTrack> newTrack);
-    std::vector<std::shared_ptr<AudioTrack>> getTracks();
+    void addTrack(std::shared_ptr<Track> newTrack);
+    std::vector<std::shared_ptr<Track>> getTracks();
 
     void clearAllTracks();
 
@@ -53,7 +53,7 @@ public:
     std::function<void()> trackAdded;
     std::function<void()> bpmChanged;
 private:
-    std::vector<std::shared_ptr<AudioTrack>> mTracks;
+    std::vector<std::shared_ptr<Track>> mTracks;
     MixerPositionableAudioSource mMixerAudioSource;
 
     bool mPlaying = false;

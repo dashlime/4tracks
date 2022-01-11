@@ -1,8 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
-#include <QFileDialog>
+#include <QtWidgets>
+
 #include "Graphics/timeline.h"
 #include "Audio/project.h"
 #include "Audio/JuceIncludes.h"

@@ -2,8 +2,7 @@
 #define GRAPHICS_GRAPHICS_CLIP_H
 
 #include <QtWidgets>
-#include <QGraphicsOpacityEffect>
-#include <QStyleOption>
+
 #include "Audio/audioclip.h"
 #include "Audio/clip.h"
 #include "Graphics/elidedlabel.h"

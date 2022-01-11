@@ -1,11 +1,7 @@
 #ifndef GRAPHICS_ELIDEDLABEL_H
 #define GRAPHICS_ELIDEDLABEL_H
 
-#include <QFrame>
-#include <QObject>
-#include <QTextLine>
-#include <QPainter>
-#include <QTextLayout>
+#include <QtWidgets>
 
 namespace Graphics {
 

@@ -1,9 +1,8 @@
 #ifndef TRACK_H
 #define TRACK_H
 
-#include <QWidget>
-#include <QStyleOption>
-#include <QPainter>
+#include <QtWidgets>
+
 #include "Audio/track.h"
 
 
@@ -18,7 +17,7 @@ class Track : public QWidget
     Q_OBJECT
 
 public:
-    explicit Track(std::shared_ptr<Audio::AudioTrack> track, QWidget *parent = nullptr);
+    explicit Track(std::shared_ptr<Audio::Track> track, QWidget *parent = nullptr);
     ~Track();
 
     void setSelected(bool isSelected);
@@ -28,7 +27,7 @@ public:
 
 private:
     Ui::Track *ui;
-    std::shared_ptr<Audio::AudioTrack> mAudioTrack;
+    std::shared_ptr<Audio::Track> mAudioTrack;
     bool mSelected = false;
 };
 }

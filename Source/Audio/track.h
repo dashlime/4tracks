@@ -12,10 +12,10 @@
 
 namespace Audio {
 
-class AudioTrack : public juce::PositionableAudioSource
+class Track : public juce::PositionableAudioSource
 {
 public:
-    AudioTrack(QString name, int index);
+    Track(QString name, int index);
 
     QString getName() const;
     int getType() const;

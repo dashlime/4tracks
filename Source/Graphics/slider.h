@@ -1,15 +1,7 @@
 #ifndef GRAPHICS_SLIDER_H
 #define GRAPHICS_SLIDER_H
 
-#include <QAbstractSlider>
-#include <QObject>
-#include <QWidget>
-#include <QLabel>
-#include <QVBoxLayout>
-#include <QStyleOption>
-#include <QMouseEvent>
-#include <QPainter>
-#include <QDebug>
+#include <QtWidgets>
 
 namespace Graphics {
 

@@ -20,7 +20,7 @@ void Project::setProjectName(QString newProjectName)
     projectNameChanged();
 }
 
-void Project::addTrack(std::shared_ptr<AudioTrack> newTrack)
+void Project::addTrack(std::shared_ptr<Track> newTrack)
 {
     mTracks.push_back(newTrack);
     mMixerAudioSource.addInputSource(newTrack.get(), false);
@@ -28,7 +28,7 @@ void Project::addTrack(std::shared_ptr<AudioTrack> newTrack)
     trackAdded();
 }
 
-std::vector<std::shared_ptr<AudioTrack>> Project::getTracks()
+std::vector<std::shared_ptr<Track>> Project::getTracks()
 {
     return mTracks;
 }
