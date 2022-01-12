@@ -6,7 +6,6 @@ cd Includes
 git clone https://github.com/juce-framework/JUCE.git
 
 echo "Cloning finished !"
-echo "Building JUCE static lib ..."
+echo "Copying new CMakeLists to JUCE folder ..."
 cp -f ../juce_build_static_lib_cmake.txt JUCE/CMakeLists.txt
-cd ..
-
+echo "Setup finished ! Now open root CMakeLists.txt with qt creator (or another IDE with Qt >= 6), it will automatically build JUCE library"
