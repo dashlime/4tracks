@@ -17,8 +17,14 @@ To build this project, first clone it :
 git clone https://github.com/devanonyme-fr/4tracks
 ```
 
-Then, open it in qt creator by selecting 4tracks/CMakeLists.txt, and select Qt6 kit to build it
-You can also build it with cmake, but it isn't recommended.
+Then, run setup.sh script, it will automatically download JUCE library and setup CMakeLists.txt file
+
+```
+cd 4tracks
+./setup.sh
+```
+
+Then, open it in qt creator (or another IDE that supports Qt >= 6) by selecting 4tracks/CMakeLists.txt, and select Qt6 kit to build it
 
 ## Running the tests
 
