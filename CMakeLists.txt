@@ -16,11 +16,7 @@ find_package(Qt6 COMPONENTS Xml)
 
 include_directories(
     Source
-    Includes/JUCE_Modules
-)
-
-link_directories(
-    Libs
+    Includes/JUCE/modules
 )
 
 add_compile_definitions(
@@ -40,5 +36,6 @@ add_compile_definitions(
     _DEBUG=1
 )
 
+add_subdirectory(Includes/JUCE)
 add_subdirectory(Source)
 add_subdirectory(Tests)
