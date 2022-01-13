@@ -14,7 +14,7 @@ Clip::Clip(QWidget *parent) :
 
     setLayout(ui->verticalLayout);
 
-    setStyleSheet("Graphics--Clip { background-color: rgba(34, 197, 94, 50%); border: none; } Graphics--Clip:focus { border: 2px solid rgba(34, 197, 94, 100%); }");
+    setSelected(false);
 
     ui->verticalLayoutWidget->setStyleSheet("background-color: rgba(0,0,0,0)");
     ui->verticalLayout->insertWidget(0, &mLabel);
@@ -35,10 +35,10 @@ void Clip::setSelected(bool isSelected)
     mSelected = isSelected;
 
     if (isSelected)
-        setStyleSheet("Graphics--Clip { background-color: rgba(34, 197, 94, 50%); border: 2px solid rgba(34, 197, 94, 100%); }");
+        setStyleSheet("Graphics--Clip { background-color: rgba(34, 197, 94, 100%); }");
 
     else
-        setStyleSheet("Graphics--Clip { background-color: rgba(34, 197, 94, 50%); border: none; }");
+        setStyleSheet("Graphics--Clip { background-color: rgba(34, 197, 94, 50%); }");
 
     update();
 }

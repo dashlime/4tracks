@@ -12,7 +12,7 @@ Track::Track(std::shared_ptr<Audio::Track> track, QWidget *parent) :
 
     ui->trackName->setText(mAudioTrack->getName());
 
-    setStyleSheet("Graphics--Track { background-color: rgba(34, 197, 94, 100%); } QLabel { color: white; }");
+    setSelected(false);
     setFixedHeight(DEFAULT_TRACK_HEIGHT);
     setFixedWidth(150);
 
@@ -47,10 +47,10 @@ void Track::setSelected(bool isSelected)
     mSelected = isSelected;
 
     if (isSelected)
-        setStyleSheet("Graphics--Track { background-color: rgba(34, 197, 94, 50%); } QLabel { color: white; }");
+        setStyleSheet("Graphics--Track { background-color: #E4E4E7; } QLabel { padding-left: 2px; color: white; background-color: rgba(34, 197, 94, 50%); }");
 
     else
-        setStyleSheet("Graphics--Track { background-color: rgba(34, 197, 94, 100%); } QLabel { color: white; }");
+        setStyleSheet("Graphics--Track { background-color: #E4E4E7; } QLabel { padding-left: 2px; color: white; background-color: rgba(34, 197, 94, 100%);}");
 
     repaint();
 }

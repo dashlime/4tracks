@@ -29,7 +29,7 @@ void DivisionsMarker::paintEvent(QPaintEvent *)
 
     for (int i = 0; i*mPixelsPerBeat*mDivision < width(); i+=4)
     {
-        p.drawText(i*mPixelsPerBeat*mDivision, 10, QString::number(mDivision * i));
+        p.drawText(i*mPixelsPerBeat*mDivision, 10, QString::number(mDivision * i / 4));
     }
 }
 
