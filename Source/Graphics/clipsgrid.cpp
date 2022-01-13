@@ -210,7 +210,6 @@ void ClipsGrid::mouseMoveEvent(QMouseEvent *event)
         {
             for (auto clip : mClips)
             {
-                qDebug() << clip->geometry().contains(clickPosition);
                 if ((clip->shouldMoveClip(clickPosition) && clip->geometry().contains(clickPosition)))
                 {
                     mMovingClip = clip.get();

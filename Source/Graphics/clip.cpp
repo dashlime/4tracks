@@ -14,15 +14,16 @@ Clip::Clip(QWidget *parent) :
 
     setLayout(ui->verticalLayout);
 
-    setSelected(false);
+    setStyleSheet("Graphics--Clip { background-color: rgba(228, 228, 231, 50%); }");
 
     ui->verticalLayoutWidget->setStyleSheet("background-color: rgba(0,0,0,0)");
     ui->verticalLayout->insertWidget(0, &mLabel);
 
     mLabel.setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     mLabel.setFixedHeight(20);
-    mLabel.setStyleSheet("background-color: rgba(34, 197, 94, 100%); padding: 2px; color: white;");
     mLabel.setCursor(QCursor(Qt::CursorShape::OpenHandCursor));
+
+    setSelected(false);
 }
 
 Clip::~Clip()
@@ -35,10 +36,10 @@ void Clip::setSelected(bool isSelected)
     mSelected = isSelected;
 
     if (isSelected)
-        setStyleSheet("Graphics--Clip { background-color: rgba(34, 197, 94, 100%); }");
+        mLabel.setStyleSheet("background-color: rgba(34, 197, 94, 50%); padding: 2px; color: white;");
 
     else
-        setStyleSheet("Graphics--Clip { background-color: rgba(34, 197, 94, 50%); }");
+        mLabel.setStyleSheet("background-color: rgba(34, 197, 94, 100%); padding: 2px; color: white;");
 
     update();
 }
