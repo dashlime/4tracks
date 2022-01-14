@@ -6,15 +6,17 @@
 #include "Audio/track.h"
 
 
-namespace Graphics {
+namespace Graphics
+{
 
-namespace Ui {
+namespace Ui
+{
 class Track;
 }
 
-class Track : public QWidget
+class Track: public QWidget
 {
-    Q_OBJECT
+Q_OBJECT
 
 public:
     explicit Track(std::shared_ptr<Audio::Track> track, QWidget *parent = nullptr);

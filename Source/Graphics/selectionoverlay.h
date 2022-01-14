@@ -3,11 +3,12 @@
 
 #include <QtWidgets>
 
-namespace Graphics {
-
-class SelectionOverlay : public QWidget
+namespace Graphics
 {
-    Q_OBJECT
+
+class SelectionOverlay: public QWidget
+{
+Q_OBJECT
 public:
     explicit SelectionOverlay(QWidget *parent = nullptr);
 

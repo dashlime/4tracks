@@ -9,9 +9,10 @@
 
 #include <QVector>
 
-namespace Audio {
+namespace Audio
+{
 
-class Project : public juce::PositionableAudioSource
+class Project: public juce::PositionableAudioSource
 {
 public:
     Project(QString projectName);
@@ -44,9 +45,12 @@ public:
 
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
     void releaseResources() override;
-    void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) override;
+    void getNextAudioBlock(const juce::AudioSourceChannelInfo &bufferToFill) override;
 
-    enum SavedState { SAVED, UNSAVED };
+    enum SavedState
+    {
+        SAVED, UNSAVED
+    };
 
     std::function<void()> savedStateChanged;
     std::function<void()> projectNameChanged;

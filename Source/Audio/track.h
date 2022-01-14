@@ -10,9 +10,10 @@
 #include <QString>
 #include <QVector>
 
-namespace Audio {
+namespace Audio
+{
 
-class Track : public juce::PositionableAudioSource
+class Track: public juce::PositionableAudioSource
 {
 public:
     Track(QString name, int index);
@@ -40,11 +41,14 @@ public:
 
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
     void releaseResources() override;
-    void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) override;
+    void getNextAudioBlock(const juce::AudioSourceChannelInfo &bufferToFill) override;
 
     std::function<void()> onClipAdded;
     std::function<void()> onClipRemoved;
-    enum Type { ANY_TRACK, AUDIO_TRACK, MIDI_TRACK };
+    enum Type
+    {
+        ANY_TRACK, AUDIO_TRACK, MIDI_TRACK
+    };
 
 private:
     void resizeClipsWhenClipAdded(int newClipIndex);

@@ -10,11 +10,12 @@
 #include "selectionoverlay.h"
 #include "selection.h"
 
-namespace Graphics {
-
-class ClipsGrid : public QWidget, public Selection::Callback
+namespace Graphics
 {
-    Q_OBJECT
+
+class ClipsGrid: public QWidget, public Selection::Callback
+{
+Q_OBJECT
 public:
     explicit ClipsGrid(std::shared_ptr<Selection> currentSelection, QWidget *parent = nullptr);
 
@@ -50,7 +51,7 @@ private:
     double mZoomLevel = 1.f;
     double mPixelsPerBeat = 0;
 
-    Clip* mMovingClip = nullptr;
+    Clip *mMovingClip = nullptr;
     QPoint clickPosition;
 
     std::shared_ptr<Selection> mCurrentSelection;

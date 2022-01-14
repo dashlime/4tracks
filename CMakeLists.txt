@@ -37,5 +37,6 @@ add_compile_definitions(
 )
 
 add_subdirectory(Includes/JUCE)
+add_subdirectory(Includes/googletest)
 add_subdirectory(Source)
 add_subdirectory(Tests)

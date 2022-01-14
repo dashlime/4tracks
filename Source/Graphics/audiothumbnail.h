@@ -4,7 +4,8 @@
 #include <QtWidgets>
 #include "Audio/audioclip.h"
 
-namespace Graphics {
+namespace Graphics
+{
 
 class AudioThumbnail
 {
@@ -12,7 +13,7 @@ public:
     AudioThumbnail();
 
     void loadThumbnail(std::shared_ptr<Audio::AudioClip> clip, int sourceSamplesPerThumbnailSample);
-    void drawThumbnail(QPainter& p, QRect rect);
+    void drawThumbnail(QPainter &p, QRect rect);
 
 private:
     class MinMaxValues;
@@ -23,9 +24,13 @@ private:
 class AudioThumbnail::MinMaxValues
 {
 public:
-    MinMaxValues(float min, float max) : mMin(min), mMax(max) {};
-    float getMinValue() const {return mMin;};
-    float getMaxValue() const {return mMax;};
+    MinMaxValues(float min, float max)
+        : mMin(min), mMax(max)
+    {};
+    float getMinValue() const
+    { return mMin; };
+    float getMaxValue() const
+    { return mMax; };
 
 private:
     float mMin, mMax;

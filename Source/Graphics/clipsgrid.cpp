@@ -1,8 +1,10 @@
 #include "clipsgrid.h"
 
-namespace Graphics {
+namespace Graphics
+{
 
-ClipsGrid::ClipsGrid(std::shared_ptr<Selection> currentSelection, QWidget *parent) : QWidget(parent), mCurrentSelection(currentSelection)
+ClipsGrid::ClipsGrid(std::shared_ptr<Selection> currentSelection, QWidget *parent)
+    : QWidget(parent), mCurrentSelection(currentSelection)
 {
     mPositionBarWidget.setParent(this);
     mSelectionOverlay.setParent(this);
@@ -29,19 +31,19 @@ void ClipsGrid::refreshBpm(double bpm)
 
 void ClipsGrid::refreshTracks()
 {
-    if (mProject.get() != nullptr)
-    {
+    if (mProject.get() != nullptr) {
         Utils::clearLayout(layout());
 
-        for (auto track : mProject->getTracks())
-        {
-            track->onClipAdded = [=]() {
+        for (auto track : mProject->getTracks()) {
+            track->onClipAdded = [=]()
+            {
                 auto clipUi = std::make_shared<Clip>(this);
                 clipUi->show();
 
                 clipUi->setClip(track->getClips().back());
 
-                clipUi->getClip()->onClipMoved = [=]() {
+                clipUi->getClip()->onClipMoved = [=]()
+                {
                     mProject->updateSavedState(Audio::Project::UNSAVED);
                     refreshClipsGeometry();
                 };
@@ -59,15 +61,17 @@ void ClipsGrid::refreshTracks()
 
 void ClipsGrid::refreshClipsGeometry()
 {
-    double samplesPerMinute = DEFAULT_SAMPLE_RATE*60;
+    double samplesPerMinute = DEFAULT_SAMPLE_RATE * 60;
 
-    for (auto clipUi : mClips)
-    {
+    for (auto clipUi : mClips) {
         auto clip = clipUi->getClip();
-        double clipPosition = double(clip->getPositionInSamples()/samplesPerMinute)*mBpm*mPixelsPerBeat;
-        double clipLength = double(clip->getLengthInSamples()/samplesPerMinute)*mBpm*mPixelsPerBeat;
+        double clipPosition = double(clip->getPositionInSamples() / samplesPerMinute) * mBpm * mPixelsPerBeat;
+        double clipLength = double(clip->getLengthInSamples() / samplesPerMinute) * mBpm * mPixelsPerBeat;
 
-        clipUi->setGeometry(clipPosition, clip->getParentTrack()->getIndex()*(DEFAULT_TRACK_HEIGHT+1), clipLength, DEFAULT_TRACK_HEIGHT);
+        clipUi->setGeometry(clipPosition,
+                            clip->getParentTrack()->getIndex() * (DEFAULT_TRACK_HEIGHT + 1),
+                            clipLength,
+                            DEFAULT_TRACK_HEIGHT);
     }
 
     mPositionBarWidget.raise();
@@ -102,7 +106,7 @@ double ClipsGrid::getDivision() const
 
 int ClipsGrid::roundPosition(int positionInSamples) const
 {
-    double samplesPerMinute = DEFAULT_SAMPLE_RATE*60;
+    double samplesPerMinute = DEFAULT_SAMPLE_RATE * 60;
 
     double samplesInDivision = getDivision() / mBpm * samplesPerMinute;
     int result = round(positionInSamples / samplesInDivision) * samplesInDivision;
@@ -112,8 +116,8 @@ int ClipsGrid::roundPosition(int positionInSamples) const
 
 void ClipsGrid::drawPositionBar()
 {
-    double samplesPerMinute = DEFAULT_SAMPLE_RATE*60;
-    mPositionBarWidget.barPositionChanged((mProject->getNextReadPosition()/samplesPerMinute)*mBpm*mPixelsPerBeat);
+    double samplesPerMinute = DEFAULT_SAMPLE_RATE * 60;
+    mPositionBarWidget.barPositionChanged((mProject->getNextReadPosition() / samplesPerMinute) * mBpm * mPixelsPerBeat);
 }
 
 void ClipsGrid::paintEvent(QPaintEvent *)
@@ -127,15 +131,12 @@ void ClipsGrid::paintEvent(QPaintEvent *)
 
     double division = getDivision();
 
-    for (int i = 0; i*mPixelsPerBeat*division < geometry().width(); i++)
-    {
-        p.drawLine(i*mPixelsPerBeat*division, 0, i*mPixelsPerBeat*division, geometry().height());
+    for (int i = 0; i * mPixelsPerBeat * division < geometry().width(); i++) {
+        p.drawLine(i * mPixelsPerBeat * division, 0, i * mPixelsPerBeat * division, geometry().height());
     }
-    if (mProject.get() != nullptr)
-    {
-        for (int i = 0; i < (int) mProject->getTracks().size()+1; i++)
-        {
-            p.drawLine(0, i*(DEFAULT_TRACK_HEIGHT+1), geometry().width(), i*(DEFAULT_TRACK_HEIGHT+1));
+    if (mProject.get() != nullptr) {
+        for (int i = 0; i < (int) mProject->getTracks().size() + 1; i++) {
+            p.drawLine(0, i * (DEFAULT_TRACK_HEIGHT + 1), geometry().width(), i * (DEFAULT_TRACK_HEIGHT + 1));
         }
     }
     p.drawLine(0, geometry().height() - 1, geometry().width(), geometry().height() - 1);
@@ -148,8 +149,9 @@ void ClipsGrid::resizeEvent(QResizeEvent *)
     mPositionBarWidget.raise();
     mSelectionOverlay.raise();
 
-    double samplesPerMinute = DEFAULT_SAMPLE_RATE*60;
-    setMinimumSize((mProject->getTotalLength()/samplesPerMinute)*mBpm*mPixelsPerBeat, 150 * (mProject->getTracks().size() + 1));
+    double samplesPerMinute = DEFAULT_SAMPLE_RATE * 60;
+    setMinimumSize((mProject->getTotalLength() / samplesPerMinute) * mBpm * mPixelsPerBeat,
+                   150 * (mProject->getTracks().size() + 1));
 
     update();
 }
@@ -159,18 +161,16 @@ void ClipsGrid::mousePressEvent(QMouseEvent *event)
     clickPosition = event->pos();
 
     // set position marker
-    double samplesPerMinute = DEFAULT_SAMPLE_RATE*60;
-    double samplesPerPixel = samplesPerMinute/mBpm/mPixelsPerBeat;
+    double samplesPerMinute = DEFAULT_SAMPLE_RATE * 60;
+    double samplesPerPixel = samplesPerMinute / mBpm / mPixelsPerBeat;
 
     mProject->setNextReadPosition(roundPosition(event->pos().x() * samplesPerPixel));
 
     update();
 
     // selection system
-    for (const auto &clip : mClips)
-    {
-        if (clip->geometry().contains(event->pos()))
-        {
+    for (const auto &clip : mClips) {
+        if (clip->geometry().contains(event->pos())) {
             mCurrentSelection->setSelectionType(Selection::ClipsSelected);
             mCurrentSelection->addClipToSelection(clip);
             return;
@@ -183,10 +183,9 @@ void ClipsGrid::mousePressEvent(QMouseEvent *event)
 
 void ClipsGrid::mouseReleaseEvent(QMouseEvent *)
 {
-    if (mMovingClip)
-    {
-        double samplesPerMinute = DEFAULT_SAMPLE_RATE*60;
-        double samplesPerPixel = samplesPerMinute/mBpm/mPixelsPerBeat;
+    if (mMovingClip) {
+        double samplesPerMinute = DEFAULT_SAMPLE_RATE * 60;
+        double samplesPerPixel = samplesPerMinute / mBpm / mPixelsPerBeat;
 
         double newClipPosition = mMovingClip->x() * samplesPerPixel;
         mMovingClip->getClip()->setClipPositionInSamples(newClipPosition);
@@ -197,37 +196,34 @@ void ClipsGrid::mouseReleaseEvent(QMouseEvent *)
 
 void ClipsGrid::mouseMoveEvent(QMouseEvent *event)
 {
-    if (event->buttons().testFlag(Qt::LeftButton))
-    {
-        if (event->pos().y() > (DEFAULT_TRACK_HEIGHT + 1) * (int) mProject->getTracks().size()-1)
+    if (event->buttons().testFlag(Qt::LeftButton)) {
+        if (event->pos().y() > (DEFAULT_TRACK_HEIGHT + 1) * (int) mProject->getTracks().size() - 1)
             return;
 
-        double samplesPerMinute = DEFAULT_SAMPLE_RATE*60;
-        double samplesPerPixel = samplesPerMinute/mBpm/mPixelsPerBeat;
+        double samplesPerMinute = DEFAULT_SAMPLE_RATE * 60;
+        double samplesPerPixel = samplesPerMinute / mBpm / mPixelsPerBeat;
 
         // move clip if needed
-        if (mMovingClip == nullptr)
-        {
-            for (auto clip : mClips)
-            {
-                if ((clip->shouldMoveClip(clickPosition) && clip->geometry().contains(clickPosition)))
-                {
+        if (mMovingClip == nullptr) {
+            for (auto clip : mClips) {
+                if ((clip->shouldMoveClip(clickPosition) && clip->geometry().contains(clickPosition))) {
                     mMovingClip = clip.get();
                 }
             }
         }
-        if (mMovingClip != nullptr)
-        {
-            double clipPosition = double(mMovingClip->getClip()->getPositionInSamples()/samplesPerMinute)*mBpm*mPixelsPerBeat;
-            double newPosition = clipPosition + roundPosition((event->position().x() - clickPosition.x()) * samplesPerPixel) / samplesPerMinute * mBpm * mPixelsPerBeat;
+        if (mMovingClip != nullptr) {
+            double clipPosition =
+                double(mMovingClip->getClip()->getPositionInSamples() / samplesPerMinute) * mBpm * mPixelsPerBeat;
+            double newPosition = clipPosition
+                + roundPosition((event->position().x() - clickPosition.x()) * samplesPerPixel) / samplesPerMinute * mBpm
+                    * mPixelsPerBeat;
             mMovingClip->setGeometry(newPosition, mMovingClip->y(), mMovingClip->width(), mMovingClip->height());
             return;
         }
 
         // else set selection area
         Selection::SelectionArea area = mCurrentSelection->getSelectedArea();
-        if (mCurrentSelection->getSelectionType() != Selection::AreaSelected)
-        {
+        if (mCurrentSelection->getSelectionType() != Selection::AreaSelected) {
             mCurrentSelection->setSelectionType(Selection::AreaSelected);
             area.startTrackIndex = event->pos().y() / (DEFAULT_TRACK_HEIGHT + 1);
             area.startSample = roundPosition(event->pos().x() * samplesPerPixel);
@@ -241,7 +237,7 @@ void ClipsGrid::mouseMoveEvent(QMouseEvent *event)
 
 void ClipsGrid::selectionChanged()
 {
-    double samplesPerMinute = DEFAULT_SAMPLE_RATE*60;
+    double samplesPerMinute = DEFAULT_SAMPLE_RATE * 60;
 
     Selection::SelectionArea area = mCurrentSelection->getSelectedArea();
 
@@ -249,16 +245,14 @@ void ClipsGrid::selectionChanged()
     int w = double(area.nbSamples / samplesPerMinute) * mBpm * mPixelsPerBeat;
     int y, h;
 
-    if (area.nbTracks >= 0)
-    {
-        y = area.startTrackIndex * (DEFAULT_TRACK_HEIGHT+1);
-        h = (area.nbTracks + 1) * (DEFAULT_TRACK_HEIGHT+1);
+    if (area.nbTracks >= 0) {
+        y = area.startTrackIndex * (DEFAULT_TRACK_HEIGHT + 1);
+        h = (area.nbTracks + 1) * (DEFAULT_TRACK_HEIGHT + 1);
     }
 
-    else
-    {
-        y = (area.startTrackIndex + 1) * (DEFAULT_TRACK_HEIGHT+1);
-        h = (area.nbTracks - 1) * (DEFAULT_TRACK_HEIGHT+1);
+    else {
+        y = (area.startTrackIndex + 1) * (DEFAULT_TRACK_HEIGHT + 1);
+        h = (area.nbTracks - 1) * (DEFAULT_TRACK_HEIGHT + 1);
     }
 
     mSelectionOverlay.areaChanged(QRect(x, y, w, h));

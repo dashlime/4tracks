@@ -3,9 +3,11 @@
 
 #include <QDebug>
 
-namespace Graphics {
+namespace Graphics
+{
 
-Clip::Clip(QWidget *parent) :
+Clip::Clip(QWidget *parent)
+    :
     QWidget(parent),
     ui(new Ui::Clip),
     mLabel("New clip")
@@ -83,7 +85,7 @@ void Clip::paintEvent(QPaintEvent *)
 
     p.setPen(QColorConstants::Black);
     if (mClip->getType() == Audio::Clip::AUDIO_CLIP)
-        mAudioThumbnail.drawThumbnail(p, QRect(0, 20, width(), height()-20));
+        mAudioThumbnail.drawThumbnail(p, QRect(0, 20, width(), height() - 20));
 }
 
 void Clip::resizeEvent(QResizeEvent *)

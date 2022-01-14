@@ -2,9 +2,11 @@
 
 #include "QDebug"
 
-namespace Audio {
+namespace Audio
+{
 
-Project::Project(QString projectName) : mMixerAudioSource(DEFAULT_SAMPLE_RATE), mProjectName(projectName)
+Project::Project(QString projectName)
+    : mMixerAudioSource(DEFAULT_SAMPLE_RATE), mProjectName(projectName)
 {
 
 }
@@ -103,7 +105,8 @@ bool Project::isLooping() const
     return false;
 }
 
-void Project::setLooping(bool) {}
+void Project::setLooping(bool)
+{}
 
 void Project::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 {

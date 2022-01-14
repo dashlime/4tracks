@@ -8,15 +8,17 @@
 #include "Graphics/elidedlabel.h"
 #include "Graphics/audiothumbnail.h"
 
-namespace Graphics {
+namespace Graphics
+{
 
-namespace Ui {
+namespace Ui
+{
 class Clip;
 }
 
-class Clip : public QWidget
+class Clip: public QWidget
 {
-    Q_OBJECT
+Q_OBJECT
 
 public:
     explicit Clip(QWidget *parent = nullptr);
@@ -44,7 +46,6 @@ private:
 
     AudioThumbnail mAudioThumbnail;
 };
-
 
 } // namespace Graphics
 #endif // GRAPHICS_GRAPHICS_CLIP_H

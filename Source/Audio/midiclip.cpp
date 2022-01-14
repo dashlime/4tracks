@@ -1,8 +1,10 @@
 #include "midiclip.h"
 
-namespace Audio {
+namespace Audio
+{
 
-MidiClip::MidiClip(std::shared_ptr<Track> parentTrack) : Clip(parentTrack)
+MidiClip::MidiClip(std::shared_ptr<Track> parentTrack)
+    : Clip(parentTrack)
 {
 
 }

@@ -1,8 +1,10 @@
 #include "timeline.h"
 
-namespace Graphics {
+namespace Graphics
+{
 
-Timeline::Timeline(QWidget *parent) : QWidget(parent)
+Timeline::Timeline(QWidget *parent)
+    : QWidget(parent)
 {
     setFocusPolicy(Qt::ClickFocus);
 
@@ -28,11 +30,13 @@ Timeline::Timeline(QWidget *parent) : QWidget(parent)
     initializeLayouts();
 
     // connect signals
-    connect(&mAddTrackButton, &QPushButton::pressed, [=]() {
+    connect(&mAddTrackButton, &QPushButton::pressed, [=]()
+    {
         mProject->addTrack(std::make_shared<Audio::Track>("Track", mProject->getTracks().size()));
     });
 
-    mClipsGrid->onDivisionChanged = [=]() {
+    mClipsGrid->onDivisionChanged = [=]()
+    {
         mDivisionsMarker->refresh(mClipsGrid->getDivision(), mClipsGrid->getPixelsPerBeat());
     };
 }
@@ -87,8 +91,7 @@ void Timeline::displayTracks()
 
     mTracks.clear();
 
-    for (auto track : mProject->getTracks())
-    {
+    for (auto track : mProject->getTracks()) {
         mTracks.push_back(std::make_shared<Graphics::Track>(track));
         mTracksLayout.addWidget(mTracks.back().get(), Qt::AlignTop);
         i++;
@@ -140,10 +143,8 @@ void Timeline::paintEvent(QPaintEvent *)
 
 void Timeline::mousePressEvent(QMouseEvent *event)
 {
-    for (const auto &track : mTracks)
-    {
-        if (track->geometry().contains(event->pos()))
-        {
+    for (const auto &track : mTracks) {
+        if (track->geometry().contains(event->pos())) {
             mCurrentSelection->setSelectionType(Selection::TracksSelected);
             mCurrentSelection->addTrackToSelection(track);
             return;

@@ -3,9 +3,10 @@
 
 #include "clip.h"
 
-namespace Audio {
+namespace Audio
+{
 
-class MidiClip : public Clip
+class MidiClip: public Clip
 {
 public:
     MidiClip(std::shared_ptr<Track> parentTrack);

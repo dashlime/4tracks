@@ -1,8 +1,10 @@
 #include "slider.h"
 
-namespace Graphics {
+namespace Graphics
+{
 
-Slider::Slider(QWidget *parent) : QAbstractSlider(parent)
+Slider::Slider(QWidget *parent)
+    : QAbstractSlider(parent)
 {
     setStyleSheet("background-color: #FFFFFF;");
 
@@ -14,7 +16,7 @@ Slider::Slider(QWidget *parent) : QAbstractSlider(parent)
     sliderChange(SliderOrientationChange);
 }
 
-QLabel* Slider::getValueLabel()
+QLabel *Slider::getValueLabel()
 {
     return &mLabel;
 }
@@ -22,41 +24,39 @@ QLabel* Slider::getValueLabel()
 void Slider::sliderChange(QAbstractSlider::SliderChange change)
 {
     switch (change) {
-    case SliderRangeChange:
-        break;
+        case SliderRangeChange:
+            break;
 
-    case SliderOrientationChange:
-        if (layout() != nullptr)
-            layout()->removeWidget(&mLabel);
+        case SliderOrientationChange:
+            if (layout() != nullptr)
+                layout()->removeWidget(&mLabel);
 
-        if (orientation() == Qt::Vertical)
-        {
-            setLayout(new QVBoxLayout());
+            if (orientation() == Qt::Vertical) {
+                setLayout(new QVBoxLayout());
 
-            setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-            updateGeometry();
-        }
-        else if (orientation() == Qt::Horizontal)
-        {
-            setLayout(new QHBoxLayout());
+                setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+                updateGeometry();
+            }
+            else if (orientation() == Qt::Horizontal) {
+                setLayout(new QHBoxLayout());
 
-            setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
-            updateGeometry();
-        }
+                setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+                updateGeometry();
+            }
 
-        layout()->setContentsMargins(0,0,0,0);
-        layout()->setSpacing(0);
-        layout()->addWidget(&mLabel);
-        layout()->setAlignment(&mLabel, Qt::AlignCenter);
-        break;
+            layout()->setContentsMargins(0, 0, 0, 0);
+            layout()->setSpacing(0);
+            layout()->addWidget(&mLabel);
+            layout()->setAlignment(&mLabel, Qt::AlignCenter);
+            break;
 
-    case SliderStepsChange:
-        break;
+        case SliderStepsChange:
+            break;
 
-    case SliderValueChange:
-        mLabel.setText(QString::number(value()));
-        emit valueChanged(value());
-        break;
+        case SliderValueChange:
+            mLabel.setText(QString::number(value()));
+            emit valueChanged(value());
+            break;
     }
 }
 
@@ -68,10 +68,18 @@ void Slider::paintEvent(QPaintEvent *)
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
     if (orientation() == Qt::Vertical)
-        p.fillRect(0, height(), width(), - double(height()) / double(maximum() - minimum()) * (value() - minimum()), QColor("#D4D4D8"));
+        p.fillRect(0,
+                   height(),
+                   width(),
+                   -double(height()) / double(maximum() - minimum()) * (value() - minimum()),
+                   QColor("#D4D4D8"));
 
     else if (orientation() == Qt::Horizontal)
-        p.fillRect(0, 0, double(width()) / double(maximum() - minimum()) * (value() - minimum()), height(), QColor("#D4D4D8"));
+        p.fillRect(0,
+                   0,
+                   double(width()) / double(maximum() - minimum()) * (value() - minimum()),
+                   height(),
+                   QColor("#D4D4D8"));
 }
 
 void Slider::mousePressEvent(QMouseEvent *event)

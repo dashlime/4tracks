@@ -6,20 +6,20 @@
 #include "JuceIncludes.h"
 #include <iostream>
 
-class MixerPositionableAudioSource : public juce::PositionableAudioSource
+class MixerPositionableAudioSource: public juce::PositionableAudioSource
 {
 public:
     MixerPositionableAudioSource(double sampleRate);
     ~MixerPositionableAudioSource();
 
     //Base functions
-    void addInputSource (juce::PositionableAudioSource* input, const bool deleteWhenRemoved);
-    void removeInputSource (juce::PositionableAudioSource* const input);
-    void removeInputSource (int const input);
+    void addInputSource(juce::PositionableAudioSource *input, const bool deleteWhenRemoved);
+    void removeInputSource(juce::PositionableAudioSource *const input);
+    void removeInputSource(int const input);
     void removeAllInputs();
-    void prepareToPlay (int samplesPerBlockExpected, double sampleRate);
+    void prepareToPlay(int samplesPerBlockExpected, double sampleRate);
     void releaseResources();
-    void getNextAudioBlock (const juce::AudioSourceChannelInfo& info);
+    void getNextAudioBlock(const juce::AudioSourceChannelInfo &info);
 
     //New functions
     juce::int64 getTotalLength() const;
@@ -28,7 +28,7 @@ public:
     bool isLooping() const;
 
 private:
-    juce::Array<juce::PositionableAudioSource*> inputs;
+    juce::Array<juce::PositionableAudioSource *> inputs;
     juce::BigInteger inputsToDelete;
     juce::CriticalSection lock;
     juce::AudioBuffer<float> tempBuffer;

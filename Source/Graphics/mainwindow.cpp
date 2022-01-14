@@ -2,8 +2,7 @@
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
@@ -42,20 +41,24 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
     updateTitle();
 
     // listen for changes in project
-    mProject->savedStateChanged = [=]() {
+    mProject->savedStateChanged = [=]()
+    {
         updateTitle();
     };
 
-    mProject->projectNameChanged = [=]() {
+    mProject->projectNameChanged = [=]()
+    {
         updateTitle();
     };
 
-    mProject->trackAdded = [=]() {
+    mProject->trackAdded = [=]()
+    {
         mUiTimeline.displayTracks();
         mProject->updateSavedState(Audio::Project::UNSAVED);
     };
 
-    mProject->bpmChanged = [=]() {
+    mProject->bpmChanged = [=]()
+    {
         ui->bpmSpin->setValue(mProject->getBpm());
     };
 
@@ -65,9 +68,8 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
     if (projectToLoad != "")
         loadProject(projectToLoad);
 
-    // else add a default track to project
-    else
-    {
+        // else add a default track to project
+    else {
         mProject->addTrack(std::make_shared<Audio::Track>("Track", 0));
         mProject->updateSavedState(Audio::Project::SAVED);
     }
@@ -82,48 +84,59 @@ MainWindow::~MainWindow()
 
 void MainWindow::connectUIActions()
 {
-    connect(ui->zoomPlusButton, &QPushButton::clicked, [=]() {
+    connect(ui->zoomPlusButton, &QPushButton::clicked, [=]()
+    {
         mUiTimeline.refreshZoomLevel(mUiTimeline.getZoomLevel() * 2);
     });
 
-    connect(ui->zoomLessButton, &QPushButton::clicked, [=]() {
+    connect(ui->zoomLessButton, &QPushButton::clicked, [=]()
+    {
         mUiTimeline.refreshZoomLevel(mUiTimeline.getZoomLevel() / 2);
     });
 
-    connect(ui->bpmSpin, &QSpinBox::valueChanged, [=]() {
+    connect(ui->bpmSpin, &QSpinBox::valueChanged, [=]()
+    {
         mProject->setBpm(ui->bpmSpin->value(), false);
         mUiTimeline.refreshBpm();
     });
 
-    connect(ui->actionImport_file, &QAction::triggered, [=]() {
+    connect(ui->actionImport_file, &QAction::triggered, [=]()
+    {
         importFile();
     });
 
-    connect(ui->actionLoad_project, &QAction::triggered, [=]() {
+    connect(ui->actionLoad_project, &QAction::triggered, [=]()
+    {
         loadProject();
     });
 
-    connect(ui->actionSave_project, &QAction::triggered, [=]() {
+    connect(ui->actionSave_project, &QAction::triggered, [=]()
+    {
         saveProject();
     });
 
-    connect(ui->actionOptions, &QAction::triggered, [=]() {
+    connect(ui->actionOptions, &QAction::triggered, [=]()
+    {
         SettingsDialog *dialog = new SettingsDialog();
         dialog->setStyleSheet(styleSheet());
         dialog->show();
-        dialog->settingsApplyed = [=]() {
+        dialog->settingsApplyed = [=]()
+        {
             reloadDeviceManager();
         };
     });
 
-    connect(ui->actionAbout, &QAction::triggered, [=]() {
-         QMessageBox* popup = new QMessageBox(this);
-         popup->setWindowTitle("4tracks | About");
-         popup->setText("4tracks is an open-source DAW, written using Qt and JUCE libraries. You can find git repository at https://github.com/devanonyme-fr/4tracks\nCurrent version : 0.1 dev");
-         popup->show();
+    connect(ui->actionAbout, &QAction::triggered, [=]()
+    {
+        QMessageBox *popup = new QMessageBox(this);
+        popup->setWindowTitle("4tracks | About");
+        popup->setText(
+            "4tracks is an open-source DAW, written using Qt and JUCE libraries. You can find git repository at https://github.com/devanonyme-fr/4tracks\nCurrent version : 0.1 dev");
+        popup->show();
     });
 
-    connect(ui->playButton, &QPushButton::toggled, [=](bool checked) {
+    connect(ui->playButton, &QPushButton::toggled, [=](bool checked)
+    {
         if (checked) {
             mProject->play();
         }
@@ -132,7 +145,8 @@ void MainWindow::connectUIActions()
         }
     });
 
-    connect(ui->stopButton, &QPushButton::clicked, [=]() {
+    connect(ui->stopButton, &QPushButton::clicked, [=]()
+    {
         mProject->stop();
         ui->playButton->setChecked(false);
     });
@@ -143,22 +157,20 @@ void MainWindow::reloadDeviceManager()
     juce::File dataDir = juce::File(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation).toStdString());
     juce::File audioSettings = dataDir.getChildFile("Preferences/audio.xml");
 
-    if (audioSettings.exists())
-    {
+    if (audioSettings.exists()) {
         mDeviceManager.initialise(0, 2, juce::parseXML(audioSettings).get(), false);
     }
-    else
-    {
+    else {
         audioSettings.create();
         mDeviceManager.initialise(0, 2, nullptr, false);
     }
 
-    if (mDeviceManager.getCurrentAudioDevice() != nullptr)
-    {
+    if (mDeviceManager.getCurrentAudioDevice() != nullptr) {
         mPlayer.setSource(mProject.get());
         mDeviceManager.addAudioCallback(&mPlayer);
 
-        mProject->prepareToPlay(mDeviceManager.getCurrentAudioDevice()->getCurrentBufferSizeSamples(), DEFAULT_SAMPLE_RATE);
+        mProject
+            ->prepareToPlay(mDeviceManager.getCurrentAudioDevice()->getCurrentBufferSizeSamples(), DEFAULT_SAMPLE_RATE);
     }
 }
 
@@ -173,12 +185,10 @@ void MainWindow::importFile()
             return;
 
         // check if is there empty tracks to import file
-        for (auto track : mProject->getTracks())
-        {
-            if (track->getType() == Audio::Track::ANY_TRACK)
-            {
-                if (track->addClip(std::make_shared<Audio::AudioClip>(track, fileDialog.selectedFiles().at(0))) == false)
-                {
+        for (auto track : mProject->getTracks()) {
+            if (track->getType() == Audio::Track::ANY_TRACK) {
+                if (track->addClip(std::make_shared<Audio::AudioClip>(track, fileDialog.selectedFiles().at(0)))
+                    == false) {
                     qDebug() << "Error when adding clip";
                 }
                 return;
@@ -186,10 +196,10 @@ void MainWindow::importFile()
         }
 
         // else import it to a new track
-        std::shared_ptr<Audio::Track> track = std::make_shared<Audio::Track>("Audio Track", mProject->getTracks().size());
+        std::shared_ptr<Audio::Track>
+            track = std::make_shared<Audio::Track>("Audio Track", mProject->getTracks().size());
         mProject->addTrack(track);
-        if (track->addClip(std::make_shared<Audio::AudioClip>(track, fileDialog.selectedFiles().at(0))) == false)
-        {
+        if (track->addClip(std::make_shared<Audio::AudioClip>(track, fileDialog.selectedFiles().at(0))) == false) {
             qDebug() << "Error when adding clip";
         }
     }
@@ -197,8 +207,7 @@ void MainWindow::importFile()
 
 void MainWindow::saveProject()
 {
-    if (currentProjectPath == "")
-    {
+    if (currentProjectPath == "") {
         QFileDialog fileDialog;
         fileDialog.setFileMode(QFileDialog::Directory);
         fileDialog.setAcceptMode(QFileDialog::AcceptSave);
@@ -214,8 +223,7 @@ void MainWindow::saveProject()
             currentProjectPath = fileDialog.selectedFiles().first();
         }
     }
-    else
-    {
+    else {
         ProjectSaver saver(mProject);
         saver.saveToDirectory(currentProjectPath);
 
@@ -225,8 +233,7 @@ void MainWindow::saveProject()
 
 void MainWindow::loadProject(QFile file)
 {
-    if (!file.exists())
-    {
+    if (!file.exists()) {
         QFileDialog fileDialog;
         fileDialog.setNameFilter("4tracks project files (*.4tpro)");
         fileDialog.setFileMode(QFileDialog::ExistingFile);
@@ -235,8 +242,7 @@ void MainWindow::loadProject(QFile file)
             if (fileDialog.selectedFiles().size() == 0)
                 return;
 
-            if (currentProjectPath == "" && mProject->getSavedState() == Audio::Project::SAVED)
-            {
+            if (currentProjectPath == "" && mProject->getSavedState() == Audio::Project::SAVED) {
                 mProject->clearAllTracks();
 
                 ProjectSaver saver(mProject);
@@ -244,15 +250,13 @@ void MainWindow::loadProject(QFile file)
                 mProject->updateSavedState(Audio::Project::SAVED);
                 currentProjectPath = QFileInfo(fileDialog.selectedFiles().first()).absolutePath();
             }
-            else
-            {
+            else {
                 anotherInstanceRequired(fileDialog.selectedFiles().first());
             }
         }
     }
 
-    else
-    {
+    else {
         ProjectSaver saver(mProject);
         saver.openProject(file.fileName());
         mProject->updateSavedState(Audio::Project::SAVED);
@@ -262,5 +266,6 @@ void MainWindow::loadProject(QFile file)
 
 void MainWindow::updateTitle()
 {
-    setWindowTitle((mProject->getSavedState() == Audio::Project::SAVED ? "" : "*") + mProject->getProjectName() + " - 4tracks");
+    setWindowTitle(
+        (mProject->getSavedState() == Audio::Project::SAVED ? "" : "*") + mProject->getProjectName() + " - 4tracks");
 }

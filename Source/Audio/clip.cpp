@@ -1,8 +1,10 @@
 #include "clip.h"
 
-namespace Audio {
+namespace Audio
+{
 
-Clip::Clip(std::shared_ptr<Track> parentTrack) : mParentTrack(parentTrack)
+Clip::Clip(std::shared_ptr<Track> parentTrack)
+    : mParentTrack(parentTrack)
 {
 
 }

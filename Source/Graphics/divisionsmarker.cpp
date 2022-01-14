@@ -1,8 +1,10 @@
 #include "divisionsmarker.h"
 
-namespace Graphics {
+namespace Graphics
+{
 
-DivisionsMarker::DivisionsMarker(double division, double pixelsPerBeat, QWidget *parent) : QWidget(parent), mDivision(division), mPixelsPerBeat(pixelsPerBeat)
+DivisionsMarker::DivisionsMarker(double division, double pixelsPerBeat, QWidget *parent)
+    : QWidget(parent), mDivision(division), mPixelsPerBeat(pixelsPerBeat)
 {
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     setFixedHeight(10);
@@ -27,9 +29,8 @@ void DivisionsMarker::paintEvent(QPaintEvent *)
     font.setPixelSize(10);
     p.setFont(font);
 
-    for (int i = 0; i*mPixelsPerBeat*mDivision < width(); i+=4)
-    {
-        p.drawText(i*mPixelsPerBeat*mDivision, 10, QString::number(mDivision * i / 4));
+    for (int i = 0; i * mPixelsPerBeat * mDivision < width(); i += 4) {
+        p.drawText(i * mPixelsPerBeat * mDivision, 10, QString::number(mDivision * i / 4));
     }
 }
 

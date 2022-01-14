@@ -3,11 +3,12 @@
 
 #include <QtWidgets>
 
-namespace Graphics {
-
-class PositionBarOverlay : public QWidget
+namespace Graphics
 {
-    Q_OBJECT
+
+class PositionBarOverlay: public QWidget
+{
+Q_OBJECT
 public:
     explicit PositionBarOverlay(QWidget *parent = nullptr);
 

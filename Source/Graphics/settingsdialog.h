@@ -6,13 +6,14 @@
 
 #include "Audio/JuceIncludes.h"
 
-namespace Ui {
+namespace Ui
+{
 class SettingsDialog;
 }
 
-class SettingsDialog : public QDialog
+class SettingsDialog: public QDialog
 {
-    Q_OBJECT
+Q_OBJECT
 
 public:
     explicit SettingsDialog(QWidget *parent = nullptr);

@@ -3,11 +3,12 @@
 
 #include <QtWidgets>
 
-namespace Graphics {
-
-class DivisionsMarker : public QWidget
+namespace Graphics
 {
-    Q_OBJECT
+
+class DivisionsMarker: public QWidget
+{
+Q_OBJECT
 public:
     explicit DivisionsMarker(double division, double pixelsPerBeat, QWidget *parent = nullptr);
 

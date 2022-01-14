@@ -5,7 +5,8 @@
 
 #include "JuceIncludes.h"
 
-namespace Audio {
+namespace Audio
+{
 
 class Track;
 
@@ -30,11 +31,15 @@ public:
     std::shared_ptr<Audio::Track> getParentTrack();
 
     virtual int getType() const = 0;
-    virtual void nextReadPositionChanged() {};
+    virtual void nextReadPositionChanged()
+    {};
 
     std::function<void()> onClipMoved;
 
-    enum Type { AUDIO_CLIP, MIDI_CLIP };
+    enum Type
+    {
+        AUDIO_CLIP, MIDI_CLIP
+    };
 protected:
     QString mName;
     QString mSourceFilePath;

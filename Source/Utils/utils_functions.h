@@ -9,9 +9,11 @@
 
 #include "Audio/JuceIncludes.h"
 
-class Utils {
+class Utils
+{
 public:
-    static long search_closest(const std::vector<double>& sorted_array, double x) {
+    static long search_closest(const std::vector<double> &sorted_array, double x)
+    {
 
         auto iter_geq = std::lower_bound(
             sorted_array.begin(),
@@ -32,17 +34,18 @@ public:
 
         return iter_geq - sorted_array.begin();
     }
-    static void clearLayout(QLayout *layout, bool deleteWidget = false) {
+    static void clearLayout(QLayout *layout, bool deleteWidget = false)
+    {
         if (layout == NULL)
             return;
         QLayoutItem *item;
-        while((item = layout->takeAt(0))) {
+        while ((item = layout->takeAt(0))) {
             if (item->layout()) {
                 clearLayout(item->layout());
                 delete item->layout();
             }
             if (item->widget() && deleteWidget) {
-               delete item->widget();
+                delete item->widget();
             }
             delete item;
         }

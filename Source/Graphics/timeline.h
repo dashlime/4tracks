@@ -13,13 +13,14 @@
 #include "Utils/utils_functions.h"
 #include "divisionsmarker.h"
 
-namespace Graphics {
-    class Timeline;
+namespace Graphics
+{
+class Timeline;
 }
 
-class QDESIGNER_WIDGET_EXPORT Graphics::Timeline : public QWidget
+class QDESIGNER_WIDGET_EXPORT Graphics::Timeline: public QWidget
 {
-    Q_OBJECT
+Q_OBJECT
 public:
     Timeline(QWidget *parent = nullptr);
 

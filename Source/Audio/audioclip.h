@@ -5,9 +5,10 @@
 #include "resamplingpositionableaudiosource.h"
 #include "Constants.h"
 
-namespace Audio {
+namespace Audio
+{
 
-class AudioClip : public Clip, public juce::AudioSource
+class AudioClip: public Clip, public juce::AudioSource
 {
 public:
     AudioClip(std::shared_ptr<Track> parentTrack, QString filePath);
@@ -16,11 +17,11 @@ public:
 
     int getType() const override;
 
-    juce::AudioBuffer<float>& getAudioBuffer();
+    juce::AudioBuffer<float> &getAudioBuffer();
 
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
     void releaseResources() override;
-    void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) override;
+    void getNextAudioBlock(const juce::AudioSourceChannelInfo &bufferToFill) override;
 
     void nextReadPositionChanged() override;
 private:

@@ -1,8 +1,10 @@
 #include "selectionoverlay.h"
 
-namespace Graphics {
+namespace Graphics
+{
 
-SelectionOverlay::SelectionOverlay(QWidget *parent) : QWidget(parent)
+SelectionOverlay::SelectionOverlay(QWidget *parent)
+    : QWidget(parent)
 {
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_TransparentForMouseEvents);

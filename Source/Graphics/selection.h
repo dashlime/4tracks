@@ -5,16 +5,21 @@
 #include "clip.h"
 #include "selectionoverlay.h"
 
-namespace Graphics {
+namespace Graphics
+{
 
 class Selection
 {
 public:
-    enum SelectionType { NoSelection, TracksSelected, ClipsSelected, AreaSelected };
+    enum SelectionType
+    {
+        NoSelection, TracksSelected, ClipsSelected, AreaSelected
+    };
     class Callback
     {
     public:
-        Callback() {}
+        Callback()
+        {}
 
         virtual void selectionChanged() = 0;
     };

@@ -2,20 +2,25 @@
 
 #include "JuceIncludes.h"
 
-class ResamplingPositionableAudioSource : public juce::PositionableAudioSource
+class ResamplingPositionableAudioSource: public juce::PositionableAudioSource
 {
 public:
-    ResamplingPositionableAudioSource(juce::PositionableAudioSource *inputSource, bool deleteInputWhenDeleted, double sourceSampleRate, double sampleRate = 44100, int numChannels = 2);
+    ResamplingPositionableAudioSource(juce::PositionableAudioSource *inputSource,
+                                      bool deleteInputWhenDeleted,
+                                      double sourceSampleRate,
+                                      double sampleRate = 44100,
+                                      int numChannels = 2);
     ~ResamplingPositionableAudioSource() override;
 
     void setResamplingRatio(double samplesInPerOutputSample);
-    double getResamplingRatio() const noexcept                  { return ratio; }
+    double getResamplingRatio() const noexcept
+    { return ratio; }
 
     void flushBuffers();
 
-    void prepareToPlay (int samplesPerBlockExpected, double sampleRate) override;
+    void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
     void releaseResources() override;
-    void getNextAudioBlock (const juce::AudioSourceChannelInfo&) override;
+    void getNextAudioBlock(const juce::AudioSourceChannelInfo &) override;
 
     void setNextReadPosition(juce::int64 newPosition) override
     {
@@ -35,8 +40,10 @@ public:
         return (juce::int64) ((double) input->getTotalLength() * r);
     }
 
-    bool isLooping() const override { return input->isLooping(); }
-    void setLooping(bool shouldLoop) override { input->setLooping(shouldLoop); }
+    bool isLooping() const override
+    { return input->isLooping(); }
+    void setLooping(bool shouldLoop) override
+    { input->setLooping(shouldLoop); }
 
 private:
     juce::OptionalScopedPointer<juce::PositionableAudioSource> input;
@@ -48,13 +55,13 @@ private:
     juce::SpinLock ratioLock;
     juce::CriticalSection callbackLock;
     const int numChannels;
-    juce::HeapBlock<float*> destBuffers;
-    juce::HeapBlock<const float*> srcBuffers;
+    juce::HeapBlock<float *> destBuffers;
+    juce::HeapBlock<const float *> srcBuffers;
 
     double sourceSampleRate = 0.0, sampleRate = 0.0;
 
-    void setFilterCoefficients (double c1, double c2, double c3, double c4, double c5, double c6);
-    void createLowPass (double proportionalRate);
+    void setFilterCoefficients(double c1, double c2, double c3, double c4, double c5, double c6);
+    void createLowPass(double proportionalRate);
 
     struct FilterState
     {
@@ -64,7 +71,7 @@ private:
     juce::HeapBlock<FilterState> filterStates;
     void resetFilters();
 
-    void applyFilter (float* samples, int num, FilterState& fs);
+    void applyFilter(float *samples, int num, FilterState &fs);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ResamplingPositionableAudioSource)
 };

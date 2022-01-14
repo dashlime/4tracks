@@ -3,15 +3,16 @@
 
 #include <QtWidgets>
 
-namespace Graphics {
-
-class Slider : public QAbstractSlider
+namespace Graphics
 {
-    Q_OBJECT
+
+class Slider: public QAbstractSlider
+{
+Q_OBJECT
 public:
     Slider(QWidget *parent = nullptr);
 
-    QLabel* getValueLabel();
+    QLabel *getValueLabel();
 
     void sliderChange(QAbstractSlider::SliderChange change) override;
     void paintEvent(QPaintEvent *) override;

@@ -2,9 +2,11 @@
 
 #include "QDebug"
 
-namespace Audio {
+namespace Audio
+{
 
-Track::Track(QString name, int index) : mName(name), mIndex(index)
+Track::Track(QString name, int index)
+    : mName(name), mIndex(index)
 {
 
 }
@@ -24,13 +26,11 @@ int Track::getType() const
 
 bool Track::addClip(std::shared_ptr<Clip> clip)
 {
-    if (clip->getType() == Clip::AUDIO_CLIP && getType() == AUDIO_TRACK)
-    {
+    if (clip->getType() == Clip::AUDIO_CLIP && getType() == AUDIO_TRACK) {
         mClips.push_back(clip);
         resizeClipsWhenClipAdded(mClips.size() - 1);
     }
-    else if (clip->getType() == Clip::MIDI_CLIP && getType() == MIDI_TRACK)
-    {
+    else if (clip->getType() == Clip::MIDI_CLIP && getType() == MIDI_TRACK) {
         mClips.push_back(clip);
         resizeClipsWhenClipAdded(mClips.size() - 1);
     }
@@ -91,7 +91,8 @@ void Track::setNextReadPosition(juce::int64 newPosition)
     mClipPlaying = nullptr;
 
     for (auto clip : mClips) {
-        if (clip->getPositionInSamples() <= mPositionInSamples && clip->getPositionInSamples() + clip->getLengthInSamples() >= mPositionInSamples) {
+        if (clip->getPositionInSamples() <= mPositionInSamples
+            && clip->getPositionInSamples() + clip->getLengthInSamples() >= mPositionInSamples) {
             mClipPlaying = clip;
             break;
         }
@@ -121,15 +122,14 @@ bool Track::isLooping() const
     return false;
 }
 
-void Track::setLooping(bool) {}
+void Track::setLooping(bool)
+{}
 
 void Track::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 {
     mPositionInSamples = 0;
-    if (getType() == AUDIO_TRACK)
-    {
-        for (auto clip : mClips)
-        {
+    if (getType() == AUDIO_TRACK) {
+        for (auto clip : mClips) {
             std::dynamic_pointer_cast<AudioClip>(clip)->prepareToPlay(samplesPerBlockExpected, sampleRate);
         }
     }
@@ -145,18 +145,16 @@ void Track::getNextAudioBlock(const juce::AudioSourceChannelInfo &bufferToFill)
 
 
     else {
-        if (getType() == AUDIO_TRACK)
-        {
+        if (getType() == AUDIO_TRACK) {
             std::dynamic_pointer_cast<AudioClip>(mClipPlaying)->getNextAudioBlock(bufferToFill);
         }
 
         bufferToFill.buffer->applyGain(mVolume);
 
         // pan
-        if (mPan != 0)
-        {
-            bufferToFill.buffer->applyGain(0, 0, bufferToFill.buffer->getNumSamples(), 1-mPan);
-            bufferToFill.buffer->applyGain(1, 0, bufferToFill.buffer->getNumSamples(), 1+mPan);
+        if (mPan != 0) {
+            bufferToFill.buffer->applyGain(0, 0, bufferToFill.buffer->getNumSamples(), 1 - mPan);
+            bufferToFill.buffer->applyGain(1, 0, bufferToFill.buffer->getNumSamples(), 1 + mPan);
         }
     }
 

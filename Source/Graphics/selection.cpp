@@ -1,8 +1,10 @@
 #include "selection.h"
 
-namespace Graphics {
+namespace Graphics
+{
 
-Selection::Selection() {}
+Selection::Selection()
+{}
 
 void Selection::setSelectionCallback(Callback *callback)
 {
