@@ -41,7 +41,7 @@ public:
 
     void selectionChanged() override;
 
-    std::function<void()> onDivisionChanged;
+    std::function<void()> divisionChanged;
 
 public slots:
     void drawPositionBar();

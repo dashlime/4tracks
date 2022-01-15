@@ -39,8 +39,8 @@ bool Track::addClip(std::shared_ptr<Clip> clip)
     else
         return false;
 
-    if (onClipAdded != nullptr)
-        onClipAdded();
+    if (clipAdded != nullptr)
+        clipAdded();
 
     return true;
 }

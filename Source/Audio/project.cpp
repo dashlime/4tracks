@@ -27,7 +27,8 @@ void Project::addTrack(std::shared_ptr<Track> newTrack)
     mTracks.push_back(newTrack);
     mMixerAudioSource.addInputSource(newTrack.get(), false);
 
-    trackAdded();
+    if (trackAdded != nullptr)
+        trackAdded();
 }
 
 std::vector<std::shared_ptr<Track>> Project::getTracks()

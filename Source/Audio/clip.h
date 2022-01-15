@@ -34,7 +34,7 @@ public:
     virtual void nextReadPositionChanged()
     {};
 
-    std::function<void()> onClipMoved;
+    std::function<void()> clipMoved;
 
     enum Type
     {

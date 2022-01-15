@@ -25,7 +25,7 @@ void ClipsGrid::refreshBpm(double bpm)
 {
     mBpm = bpm;
     mPixelsPerBeat = mZoomLevel * DEFAULT_PIXEL_PER_BEAT_AMOUNT;
-    onDivisionChanged();
+    divisionChanged();
     refreshClipsGeometry();
 }
 
@@ -35,14 +35,14 @@ void ClipsGrid::refreshTracks()
         Utils::clearLayout(layout());
 
         for (auto track : mProject->getTracks()) {
-            track->onClipAdded = [=]()
+            track->clipAdded = [=]()
             {
                 auto clipUi = std::make_shared<Clip>(this);
                 clipUi->show();
 
                 clipUi->setClip(track->getClips().back());
 
-                clipUi->getClip()->onClipMoved = [=]()
+                clipUi->getClip()->clipMoved = [=]()
                 {
                     mProject->updateSavedState(Audio::Project::UNSAVED);
                     refreshClipsGeometry();
@@ -82,7 +82,7 @@ void ClipsGrid::refreshZoomLevel(double newZoomLevel)
 {
     mZoomLevel = newZoomLevel;
     mPixelsPerBeat = mZoomLevel * DEFAULT_PIXEL_PER_BEAT_AMOUNT;
-    onDivisionChanged();
+    divisionChanged();
     refreshClipsGeometry();
 }
 

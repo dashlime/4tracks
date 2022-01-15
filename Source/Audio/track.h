@@ -43,8 +43,8 @@ public:
     void releaseResources() override;
     void getNextAudioBlock(const juce::AudioSourceChannelInfo &bufferToFill) override;
 
-    std::function<void()> onClipAdded;
-    std::function<void()> onClipRemoved;
+    std::function<void()> clipAdded;
+    std::function<void()> clipRemoved;
     enum Type
     {
         ANY_TRACK, AUDIO_TRACK, MIDI_TRACK

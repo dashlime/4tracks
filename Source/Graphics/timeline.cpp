@@ -35,7 +35,7 @@ Timeline::Timeline(QWidget *parent)
         mProject->addTrack(std::make_shared<Audio::Track>("Track", mProject->getTracks().size()));
     });
 
-    mClipsGrid->onDivisionChanged = [=]()
+    mClipsGrid->divisionChanged = [=]()
     {
         mDivisionsMarker->refresh(mClipsGrid->getDivision(), mClipsGrid->getPixelsPerBeat());
     };

@@ -1,7 +1,21 @@
 #include "gtest/gtest.h"
 
-class AudioEngineTests: public ::testing::Test
+#include "Audio/project.h"
+
+class TrackTests: public ::testing::Test
 {
 public:
-    void SetUp();
+    void SetUp() override;
+    void TearDown() override;
+
+    std::shared_ptr<Audio::Track> mTrackToTest;
+};
+
+class ProjectTests: public ::testing::Test
+{
+public:
+    void SetUp() override;
+    void TearDown() override;
+
+    std::unique_ptr<Audio::Project> mProjectToTest;
 };
