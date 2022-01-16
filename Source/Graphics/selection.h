@@ -25,16 +25,17 @@ public:
     };
 
     Selection();
+
     void setSelectionCallback(Callback *callback);
 
     void setSelectionType(SelectionType type);
     SelectionType getSelectionType() const;
 
-    void addTrackToSelection(std::shared_ptr<Track> newTrack);
-    std::vector<std::shared_ptr<Track>> getSelectedTracks() const;
+    void addTrackToSelection(QPointer<Track> newTrack);
+    std::vector<QPointer<Track>> getSelectedTracks() const;
 
-    void addClipToSelection(std::shared_ptr<Clip> newClip);
-    std::vector<std::shared_ptr<Clip>> getSelectedClips() const;
+    void addClipToSelection(QPointer<Clip> newClip);
+    std::vector<QPointer<Clip>> getSelectedClips() const;
 
     struct SelectionArea
     {
@@ -53,8 +54,8 @@ public:
 
 private:
     SelectionType mSelectionType;
-    std::vector<std::shared_ptr<Track>> mTracksSelected;
-    std::vector<std::shared_ptr<Clip>> mClipsSelected;
+    std::vector<QPointer<Track>> mTracksSelected;
+    std::vector<QPointer<Clip>> mClipsSelected;
     SelectionArea mSelectedArea;
     Callback *mCallback = nullptr;
 };

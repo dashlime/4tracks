@@ -3,7 +3,7 @@
 namespace Audio
 {
 
-MidiClip::MidiClip(std::shared_ptr<Track> parentTrack)
+MidiClip::MidiClip(std::weak_ptr<Track> parentTrack)
     : Clip(parentTrack)
 {
 

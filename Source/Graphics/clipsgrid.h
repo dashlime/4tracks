@@ -61,7 +61,7 @@ private:
     QTimer mPositionBarTimer;
     SelectionOverlay mSelectionOverlay;
 
-    std::vector<std::shared_ptr<Clip>> mClips;
+    std::vector<QPointer<Clip>> mClips;
 };
 
 } // namespace Graphics

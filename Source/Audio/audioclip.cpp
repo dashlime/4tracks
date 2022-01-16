@@ -3,7 +3,7 @@
 namespace Audio
 {
 
-AudioClip::AudioClip(std::shared_ptr<Track> parentTrack, QString filePath)
+AudioClip::AudioClip(std::weak_ptr<Track> parentTrack, QString filePath)
     : Clip(parentTrack)
 {
     mSourceFilePath = filePath;

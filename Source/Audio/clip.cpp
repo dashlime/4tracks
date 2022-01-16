@@ -3,7 +3,7 @@
 namespace Audio
 {
 
-Clip::Clip(std::shared_ptr<Track> parentTrack)
+Clip::Clip(std::weak_ptr<Track> parentTrack)
     : mParentTrack(parentTrack)
 {
 
@@ -51,7 +51,7 @@ int Clip::getReadPosition() const
     return mNextReadPosition;
 }
 
-std::shared_ptr<Track> Clip::getParentTrack()
+std::weak_ptr<Track> Clip::getParentTrack()
 {
     return mParentTrack;
 }

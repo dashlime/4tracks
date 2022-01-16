@@ -10,8 +10,8 @@ Timeline::Timeline(QWidget *parent)
 
     // objects initialization
     mCurrentSelection = std::make_shared<Selection>();
-    mClipsGrid = std::make_unique<ClipsGrid>(mCurrentSelection);
-    mDivisionsMarker = std::make_unique<DivisionsMarker>(mClipsGrid->getDivision(), mClipsGrid->getPixelsPerBeat());
+    mClipsGrid = new ClipsGrid(mCurrentSelection);
+    mDivisionsMarker = new DivisionsMarker(mClipsGrid->getDivision(), mClipsGrid->getPixelsPerBeat());
 
     mAddTrackButton.setFocusPolicy(Qt::NoFocus);
     mAddTrackButton.setIcon(QIcon(":/icons/plus_button.png"));
@@ -84,17 +84,15 @@ void Timeline::setProject(std::shared_ptr<Audio::Project> project)
 void Timeline::displayTracks()
 {
     Utils::clearLayout(&mTracksLayout);
-    int i = 0;
 
     for (auto track : mTracks)
-        track.reset();
+        track.clear();
 
     mTracks.clear();
 
-    for (auto track : mProject->getTracks()) {
-        mTracks.push_back(std::make_shared<Graphics::Track>(track));
+    for (const auto& track : mProject->getTracks()) {
+        mTracks.push_back(new Graphics::Track(track));
         mTracksLayout.addWidget(mTracks.back().get(), Qt::AlignTop);
-        i++;
     }
 
     mTracksLayout.addWidget(&mAddTrackButton, Qt::AlignTop);

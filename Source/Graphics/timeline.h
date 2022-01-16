@@ -43,27 +43,27 @@ public:
 signals:
 
 private:
+    std::shared_ptr<Selection> mCurrentSelection;
+
+    QScrollArea mVerticalScrollView;
+    QWidget mScrollWidget;
+
     std::shared_ptr<Audio::Project> mProject;
-    std::unique_ptr<ClipsGrid> mClipsGrid;
+    QPointer<ClipsGrid> mClipsGrid;
+
+    QWidget mDivisionsMarkerWidget;
+    QWidget mDivisionsMarkerSpacer;
+    QPointer<DivisionsMarker> mDivisionsMarker;
+
+    QWidget mTracksWidget;
+    QWidget mTracksSpacer;
+    std::vector<QPointer<Track>> mTracks;
+
     QVBoxLayout mMainLayout;
     QVBoxLayout mTracksLayout;
     QHBoxLayout mScrollLayout;
     QHBoxLayout mDivisionsMarkerLayout;
     QPushButton mAddTrackButton;
-    QWidget mTracksWidget;
-    QWidget mScrollWidget;
-    QWidget mDivisionsMarkerWidget;
-
-    QScrollArea mVerticalScrollView;
-
-    std::unique_ptr<DivisionsMarker> mDivisionsMarker;
-
-    QWidget mTracksSpacer;
-    QWidget mDivisionsMarkerSpacer;
-
-    std::shared_ptr<Selection> mCurrentSelection;
-
-    std::vector<std::shared_ptr<Track>> mTracks;
 
     double mZoomLevel = 1.f;
 };

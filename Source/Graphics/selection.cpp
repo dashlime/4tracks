@@ -26,7 +26,7 @@ Selection::SelectionType Selection::getSelectionType() const
     return mSelectionType;
 }
 
-void Selection::addTrackToSelection(std::shared_ptr<Track> newTrack)
+void Selection::addTrackToSelection(QPointer<Track> newTrack)
 {
     if (mSelectionType != TracksSelected)
         return;
@@ -38,12 +38,12 @@ void Selection::addTrackToSelection(std::shared_ptr<Track> newTrack)
         mCallback->selectionChanged();
 }
 
-std::vector<std::shared_ptr<Track>> Selection::getSelectedTracks() const
+std::vector<QPointer<Track>> Selection::getSelectedTracks() const
 {
     return mTracksSelected;
 }
 
-void Selection::addClipToSelection(std::shared_ptr<Clip> newClip)
+void Selection::addClipToSelection(QPointer<Clip> newClip)
 {
     if (mSelectionType != ClipsSelected)
         return;
@@ -55,7 +55,7 @@ void Selection::addClipToSelection(std::shared_ptr<Clip> newClip)
         mCallback->selectionChanged();
 }
 
-std::vector<std::shared_ptr<Clip>> Selection::getSelectedClips() const
+std::vector<QPointer<Clip>> Selection::getSelectedClips() const
 {
     return mClipsSelected;
 }

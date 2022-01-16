@@ -31,16 +31,16 @@ void ClipsGrid::refreshBpm(double bpm)
 
 void ClipsGrid::refreshTracks()
 {
-    if (mProject.get() != nullptr) {
+    if (mProject != nullptr) {
         Utils::clearLayout(layout());
 
-        for (auto track : mProject->getTracks()) {
-            track->clipAdded = [=]()
+        for (std::weak_ptr<Audio::Track> track : mProject->getTracks()) {
+            track.lock()->clipAdded = [=]()
             {
-                auto clipUi = std::make_shared<Clip>(this);
+                QPointer<Clip> clipUi = new Clip(this);
                 clipUi->show();
 
-                clipUi->setClip(track->getClips().back());
+                clipUi->setClip(track.lock()->getClips().back());
 
                 clipUi->getClip()->clipMoved = [=]()
                 {
@@ -69,7 +69,7 @@ void ClipsGrid::refreshClipsGeometry()
         double clipLength = double(clip->getLengthInSamples() / samplesPerMinute) * mBpm * mPixelsPerBeat;
 
         clipUi->setGeometry(clipPosition,
-                            clip->getParentTrack()->getIndex() * (DEFAULT_TRACK_HEIGHT + 1),
+                            clip->getParentTrack().lock()->getIndex() * (DEFAULT_TRACK_HEIGHT + 1),
                             clipLength,
                             DEFAULT_TRACK_HEIGHT);
     }

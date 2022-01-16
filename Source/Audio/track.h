@@ -8,7 +8,7 @@
 #include "mixerpositionableaudiosource.h"
 
 #include <QString>
-#include <QVector>
+#include <QDebug>
 
 namespace Audio
 {

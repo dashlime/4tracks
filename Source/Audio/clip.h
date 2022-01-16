@@ -13,7 +13,7 @@ class Track;
 class Clip
 {
 public:
-    Clip(std::shared_ptr<Audio::Track> parentTrack);
+    Clip(std::weak_ptr<Track> parentTrack);
 
     void setName(QString name);
     QString getName() const;
@@ -28,7 +28,7 @@ public:
     void setReadPosition(int newPosition);
     int getReadPosition() const;
 
-    std::shared_ptr<Audio::Track> getParentTrack();
+    std::weak_ptr<Track> getParentTrack();
 
     virtual int getType() const = 0;
     virtual void nextReadPositionChanged()
@@ -47,7 +47,7 @@ protected:
     int mLengthInSamples = 0;
     int mNextReadPosition = 0;
 
-    std::shared_ptr<Audio::Track> mParentTrack;
+    std::weak_ptr<Track> mParentTrack;
 };
 
 }
