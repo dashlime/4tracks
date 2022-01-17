@@ -74,7 +74,7 @@ void Timeline::initializeLayouts()
     mScrollLayout.addWidget(mClipsGrid.get());
 }
 
-void Timeline::setProject(std::shared_ptr<Audio::Project> project)
+void Timeline::setProject(const std::shared_ptr<Audio::Project>& project)
 {
     mProject = project;
 
@@ -116,7 +116,7 @@ double Timeline::getZoomLevel() const
 
 void Timeline::refreshBpm()
 {
-    if (mProject.get() != nullptr)
+    if (mProject != nullptr)
         mClipsGrid->refreshBpm(mProject->getBpm());
 }
 

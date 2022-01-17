@@ -16,27 +16,27 @@ namespace Audio
 class Track: public juce::PositionableAudioSource
 {
 public:
-    Track(QString name, int index);
+    Track(const QString& name, int index);
 
-    QString getName() const;
-    int getType() const;
+    [[nodiscard]] QString getName() const;
+    [[nodiscard]] int getType() const;
 
-    bool addClip(std::shared_ptr<Clip> clip);
+    bool addClip(const std::shared_ptr<Clip>& clip);
     std::vector<std::shared_ptr<Clip>> getClips();
 
-    int getIndex() const;
+    [[nodiscard]] int getIndex() const;
     void setIndex(int newPosition);
 
     void setVolume(double newVolume);
-    double getVolume() const;
+    [[nodiscard]] double getVolume() const;
 
     void setPan(double newPan);
-    double getPan() const;
+    [[nodiscard]] double getPan() const;
 
     void setNextReadPosition(juce::int64 newPosition) override;
-    juce::int64 getNextReadPosition() const override;
-    juce::int64 getTotalLength() const override;
-    bool isLooping() const override;
+    [[nodiscard]] juce::int64 getNextReadPosition() const override;
+    [[nodiscard]] juce::int64 getTotalLength() const override;
+    [[nodiscard]] bool isLooping() const override;
     void setLooping(bool) override;
 
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;

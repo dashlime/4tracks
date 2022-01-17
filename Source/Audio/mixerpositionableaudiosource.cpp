@@ -2,8 +2,7 @@
 
 MixerPositionableAudioSource::MixerPositionableAudioSource(double sampleRate)
     : currentSampleRate(sampleRate), bufferSizeExpected(0)
-{
-}
+{}
 
 MixerPositionableAudioSource::~MixerPositionableAudioSource()
 {

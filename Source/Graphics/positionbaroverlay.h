@@ -12,13 +12,13 @@ Q_OBJECT
 public:
     explicit PositionBarOverlay(QWidget *parent = nullptr);
 
-    void barPositionChanged(double newPosition);
+    void barPositionChanged(int newPosition);
 
     void paintEvent(QPaintEvent *) override;
 
 signals:
 private:
-    double mPosition = 0;
+    int mPosition = 0;
 };
 
 } // namespace Graphics

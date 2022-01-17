@@ -13,24 +13,24 @@ class Track;
 class Clip
 {
 public:
-    Clip(std::weak_ptr<Track> parentTrack);
+    explicit Clip(const std::weak_ptr<Track>& parentTrack);
 
-    void setName(QString name);
-    QString getName() const;
+    void setName(const QString& name);
+    [[nodiscard]] QString getName() const;
 
-    QString getSourceFilePath() const;
+    [[nodiscard]] QString getSourceFilePath() const;
 
-    int getPositionInSamples() const;
-    void setClipPositionInSamples(int newPosition);
+    [[nodiscard]] juce::int64 getPositionInSamples() const;
+    void setClipPositionInSamples(juce::int64 newPosition);
 
-    int getLengthInSamples() const;
+    [[nodiscard]] juce::int64 getLengthInSamples() const;
 
-    void setReadPosition(int newPosition);
-    int getReadPosition() const;
+    void setReadPosition(juce::int64 newPosition);
+    [[nodiscard]] juce::int64 getReadPosition() const;
 
     std::weak_ptr<Track> getParentTrack();
 
-    virtual int getType() const = 0;
+    [[nodiscard]] virtual int getType() const = 0;
     virtual void nextReadPositionChanged()
     {};
 
@@ -43,9 +43,9 @@ public:
 protected:
     QString mName;
     QString mSourceFilePath;
-    int mPositionInSamples = 0;
-    int mLengthInSamples = 0;
-    int mNextReadPosition = 0;
+    juce::int64 mPositionInSamples = 0;
+    juce::int64 mLengthInSamples = 0;
+    juce::int64 mNextReadPosition = 0;
 
     std::weak_ptr<Track> mParentTrack;
 };

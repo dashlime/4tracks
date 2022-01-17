@@ -3,12 +3,9 @@
 namespace Graphics
 {
 
-AudioThumbnail::AudioThumbnail()
-{
+AudioThumbnail::AudioThumbnail() = default;
 
-}
-
-void AudioThumbnail::loadThumbnail(std::shared_ptr<Audio::AudioClip> clip, int sourceSamplesPerThumbnailSample)
+void AudioThumbnail::loadThumbnail(const std::shared_ptr<Audio::AudioClip>& clip, int sourceSamplesPerThumbnailSample)
 {
     int thumbnailSamples = clip->getAudioBuffer().getNumSamples() / sourceSamplesPerThumbnailSample;
 
@@ -20,20 +17,22 @@ void AudioThumbnail::loadThumbnail(std::shared_ptr<Audio::AudioClip> clip, int s
             min = value < min ? value : min;
             max = value > max ? value : max;
         }
-        mThumbnailValues.push_back(MinMaxValues(min, max));
+        mThumbnailValues.emplace_back(min, max);
     }
 }
 
 void AudioThumbnail::drawThumbnail(QPainter &p, QRect rect)
 {
-    int ratio = rect.height() / 2;
+    float verticalCenter = (float) rect.height() / 2;
+    float ratio = verticalCenter;
+
     double thumbnailValuesPerPixel = (double) mThumbnailValues.size() / (double) rect.width();
 
     p.translate(rect.topLeft());
     for (int i = 0; i < rect.width(); i++) {
         float min = mThumbnailValues.at(i * thumbnailValuesPerPixel).getMinValue();
         float max = mThumbnailValues.at(i * thumbnailValuesPerPixel).getMaxValue();
-        p.drawLine(i, min * ratio + rect.height() / 2, i, max * ratio + rect.height() / 2);
+        p.drawLine(i, int(min * ratio + verticalCenter), i, int(max * ratio + verticalCenter));
     }
 }
 

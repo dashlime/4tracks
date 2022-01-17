@@ -22,15 +22,15 @@ Q_OBJECT
 
 public:
     explicit Clip(QWidget *parent = nullptr);
-    ~Clip();
+    ~Clip() override;
 
     void setSelected(bool isSelected);
-    bool isSelected() const;
+    [[nodiscard]] bool isSelected() const;
 
-    void setClip(std::shared_ptr<Audio::Clip> clip);
+    void setClip(const std::shared_ptr<Audio::Clip>& clip);
     std::shared_ptr<Audio::Clip> getClip();
 
-    bool shouldMoveClip(QPoint mousePosition) const;
+    [[nodiscard]] bool shouldMoveClip(QPoint mousePosition) const;
 
     void paintEvent(QPaintEvent *) override;
     void resizeEvent(QResizeEvent *) override;
@@ -39,8 +39,6 @@ private:
     Ui::Clip *ui;
     ElidedLabel mLabel;
     std::shared_ptr<Audio::Clip> mClip;
-
-    QGraphicsOpacityEffect *mEffect;
 
     bool mSelected = false;
 

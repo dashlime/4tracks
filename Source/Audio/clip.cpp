@@ -3,13 +3,11 @@
 namespace Audio
 {
 
-Clip::Clip(std::weak_ptr<Track> parentTrack)
+Clip::Clip(const std::weak_ptr<Track>& parentTrack)
     : mParentTrack(parentTrack)
-{
+{}
 
-}
-
-void Clip::setName(QString name)
+void Clip::setName(const QString& name)
 {
     mName = name;
 }
@@ -24,29 +22,29 @@ QString Clip::getSourceFilePath() const
     return mSourceFilePath;
 }
 
-int Clip::getPositionInSamples() const
+juce::int64 Clip::getPositionInSamples() const
 {
     return mPositionInSamples;
 }
 
-void Clip::setClipPositionInSamples(int newPosition)
+void Clip::setClipPositionInSamples(juce::int64 newPosition)
 {
     mPositionInSamples = newPosition;
     clipMoved();
 }
 
-int Clip::getLengthInSamples() const
+juce::int64 Clip::getLengthInSamples() const
 {
     return mLengthInSamples;
 }
 
-void Clip::setReadPosition(int newPosition)
+void Clip::setReadPosition(juce::int64 newPosition)
 {
     mNextReadPosition = newPosition;
     nextReadPositionChanged();
 }
 
-int Clip::getReadPosition() const
+juce::int64 Clip::getReadPosition() const
 {
     return mNextReadPosition;
 }

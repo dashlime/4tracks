@@ -19,11 +19,11 @@ class Track: public QWidget
 Q_OBJECT
 
 public:
-    explicit Track(std::shared_ptr<Audio::Track> track, QWidget *parent = nullptr);
-    ~Track();
+    explicit Track(const std::shared_ptr<Audio::Track>& track, QWidget *parent = nullptr);
+    ~Track() override;
 
     void setSelected(bool isSelected);
-    bool isSelected() const;
+    [[nodiscard]] bool isSelected() const;
 
     void paintEvent(QPaintEvent *) override;
 

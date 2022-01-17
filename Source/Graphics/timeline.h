@@ -22,19 +22,19 @@ class QDESIGNER_WIDGET_EXPORT Graphics::Timeline: public QWidget
 {
 Q_OBJECT
 public:
-    Timeline(QWidget *parent = nullptr);
+    explicit Timeline(QWidget *parent = nullptr);
 
     void initializeLayouts();
 
-    void setProject(std::shared_ptr<Audio::Project> project);
+    void setProject(const std::shared_ptr<Audio::Project>& project);
     void displayTracks();
 
     void refreshZoomLevel(double newZoomLevel);
-    double getZoomLevel() const;
+    [[nodiscard]] double getZoomLevel() const;
 
     void refreshBpm();
 
-    double getDivision() const;
+    [[nodiscard]] double getDivision() const;
 
     void resizeEvent(QResizeEvent *) override;
     void paintEvent(QPaintEvent *) override;
@@ -68,4 +68,4 @@ private:
     double mZoomLevel = 1.f;
 };
 
-#endif // TIMELINE_H
+#endif // GRAPHICS_TIMELINE_H

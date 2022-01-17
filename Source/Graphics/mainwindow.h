@@ -21,7 +21,7 @@ class MainWindow: public QMainWindow
 Q_OBJECT
 
 public:
-    MainWindow(QString projectToLoad = "", QWidget *parent = nullptr);
+    MainWindow(const QString& projectToLoad = "", QWidget *parent = nullptr);
     ~MainWindow();
 
     void connectUIActions();

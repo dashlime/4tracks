@@ -6,11 +6,11 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     MainWindow w;
-    w.anotherInstanceRequired = [=](QString projectFileToLoad)
+    w.anotherInstanceRequired = [=](const QString& projectFileToLoad)
     {
-        MainWindow *newWindow = new MainWindow(projectFileToLoad);
+        auto *newWindow = new MainWindow(projectFileToLoad);
         newWindow->show();
     };
     w.show();
-    return a.exec();
+    return QApplication::exec();
 }

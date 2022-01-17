@@ -18,8 +18,7 @@ public:
     class Callback
     {
     public:
-        Callback()
-        {}
+        Callback() = default;
 
         virtual void selectionChanged() = 0;
     };
@@ -29,13 +28,13 @@ public:
     void setSelectionCallback(Callback *callback);
 
     void setSelectionType(SelectionType type);
-    SelectionType getSelectionType() const;
+    [[nodiscard]] SelectionType getSelectionType() const;
 
     void addTrackToSelection(QPointer<Track> newTrack);
-    std::vector<QPointer<Track>> getSelectedTracks() const;
+    [[nodiscard]] std::vector<QPointer<Track>> getSelectedTracks() const;
 
     void addClipToSelection(QPointer<Clip> newClip);
-    std::vector<QPointer<Clip>> getSelectedClips() const;
+    [[nodiscard]] std::vector<QPointer<Clip>> getSelectedClips() const;
 
     struct SelectionArea
     {
@@ -48,7 +47,7 @@ public:
     void setSelectedArea(int startTrackIndex, int startSample, int nbTracks, int nbSamples);
     void setSelectedArea(SelectionArea area);
 
-    SelectionArea getSelectedArea() const;
+    [[nodiscard]] SelectionArea getSelectedArea() const;
 
     void clearSelection();
 

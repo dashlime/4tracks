@@ -17,21 +17,21 @@ class ClipsGrid: public QWidget, public Selection::Callback
 {
 Q_OBJECT
 public:
-    explicit ClipsGrid(std::shared_ptr<Selection> currentSelection, QWidget *parent = nullptr);
+    explicit ClipsGrid(const std::shared_ptr<Selection>& currentSelection, QWidget *parent = nullptr);
 
-    void setProject(std::shared_ptr<Audio::Project> project);
+    void setProject(const std::shared_ptr<Audio::Project>& project);
 
     void refreshBpm(double bpm);
     void refreshTracks();
     void refreshClipsGeometry();
 
     void refreshZoomLevel(double newZoomLevel);
-    double getZoomLevel() const;
+    [[nodiscard]] double getZoomLevel() const;
 
-    double getPixelsPerBeat() const;
-    double getDivision() const;
+    [[nodiscard]] double getPixelsPerBeat() const;
+    [[nodiscard]] double getDivision() const;
 
-    int roundPosition(int positionInSamples) const;
+    [[nodiscard]] int roundPosition(int positionInSamples) const;
 
     void paintEvent(QPaintEvent *) override;
     void resizeEvent(QResizeEvent *event) override;
@@ -47,7 +47,7 @@ public slots:
     void drawPositionBar();
 
 private:
-    double mBpm;
+    double mBpm = 0;
     double mZoomLevel = 1.f;
     double mPixelsPerBeat = 0;
 

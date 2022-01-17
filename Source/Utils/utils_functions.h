@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <vector>
-#include <math.h>
+#include <cmath>
 
 #include <QLayout>
 
@@ -36,7 +36,7 @@ public:
     }
     static void clearLayout(QLayout *layout, bool deleteWidget = false)
     {
-        if (layout == NULL)
+        if (layout == nullptr)
             return;
         QLayoutItem *item;
         while ((item = layout->takeAt(0))) {

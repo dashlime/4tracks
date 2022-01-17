@@ -15,12 +15,12 @@ namespace Audio
 class Project: public juce::PositionableAudioSource
 {
 public:
-    Project(QString projectName);
+    explicit Project(const QString& projectName);
 
     QString getProjectName() const;
-    void setProjectName(QString newProjectName);
+    void setProjectName(const QString& newProjectName);
 
-    void addTrack(std::shared_ptr<Track> newTrack);
+    void addTrack(const std::shared_ptr<Track>& newTrack);
     std::vector<std::shared_ptr<Track>> getTracks();
 
     void clearAllTracks();

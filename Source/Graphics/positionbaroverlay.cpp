@@ -10,7 +10,7 @@ PositionBarOverlay::PositionBarOverlay(QWidget *parent)
     setAttribute(Qt::WA_TransparentForMouseEvents);
 }
 
-void PositionBarOverlay::barPositionChanged(double newPosition)
+void PositionBarOverlay::barPositionChanged(int newPosition)
 {
     mPosition = newPosition;
     update();

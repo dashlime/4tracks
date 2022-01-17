@@ -4,7 +4,7 @@
 namespace Graphics
 {
 
-Track::Track(std::shared_ptr<Audio::Track> track, QWidget *parent)
+Track::Track(const std::shared_ptr<Audio::Track>& track, QWidget *parent)
     :
     QWidget(parent),
     ui(new Ui::Track),
@@ -20,7 +20,7 @@ Track::Track(std::shared_ptr<Audio::Track> track, QWidget *parent)
 
     ui->volumeSlider->setMinimum(0);
     ui->volumeSlider->setMaximum(200);
-    ui->volumeSlider->setValue(mAudioTrack->getVolume() * 100);
+    ui->volumeSlider->setValue((int) mAudioTrack->getVolume() * 100);
     ui->volumeSlider->getValueLabel()
         ->setText(QString::number(juce::Decibels::gainToDecibels(double(ui->volumeSlider->value()) / 100), 'g', 2));
 
@@ -33,7 +33,7 @@ Track::Track(std::shared_ptr<Audio::Track> track, QWidget *parent)
 
     ui->panSlider->setMinimum(-100);
     ui->panSlider->setMaximum(100);
-    ui->panSlider->setValue(mAudioTrack->getPan() * 100);
+    ui->panSlider->setValue((int) mAudioTrack->getPan() * 100);
     ui->panSlider->getValueLabel()
         ->setText(QString::number(double(ui->panSlider->value()) / 10) + (ui->panSlider->value() > 0 ? "R" : "L"));
 

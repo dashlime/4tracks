@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
+MainWindow::MainWindow(const QString& projectToLoad, QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -59,12 +59,12 @@ MainWindow::MainWindow(QString projectToLoad, QWidget *parent)
 
     mProject->bpmChanged = [=]()
     {
-        ui->bpmSpin->setValue(mProject->getBpm());
+        ui->bpmSpin->setValue((int)mProject->getBpm());
     };
 
     connectUIActions();
 
-    // finally load project if explicilty asked
+    // finally, load project if explicitly asked
     if (projectToLoad != "")
         loadProject(projectToLoad);
 
@@ -117,7 +117,7 @@ void MainWindow::connectUIActions()
 
     connect(ui->actionOptions, &QAction::triggered, [=]()
     {
-        SettingsDialog *dialog = new SettingsDialog();
+        auto *dialog = new SettingsDialog();
         dialog->setStyleSheet(styleSheet());
         dialog->show();
         dialog->settingsApplyed = [=]()
@@ -128,7 +128,7 @@ void MainWindow::connectUIActions()
 
     connect(ui->actionAbout, &QAction::triggered, [=]()
     {
-        QMessageBox *popup = new QMessageBox(this);
+        auto *popup = new QMessageBox(this);
         popup->setWindowTitle("4tracks | About");
         popup->setText(
             "4tracks is an open-source DAW, written using Qt and JUCE libraries. You can find git repository at https://github.com/devanonyme-fr/4tracks\nCurrent version : 0.1 dev");
@@ -181,11 +181,11 @@ void MainWindow::importFile()
     fileDialog.setFileMode(QFileDialog::ExistingFile);
     fileDialog.setAcceptMode(QFileDialog::AcceptOpen);
     if (fileDialog.exec()) {
-        if (fileDialog.selectedFiles().size() == 0)
+        if (fileDialog.selectedFiles().empty())
             return;
 
         // check if is there empty tracks to import file
-        for (auto track : mProject->getTracks()) {
+        for (const auto& track : mProject->getTracks()) {
             if (track->getType() == Audio::Track::ANY_TRACK) {
                 if (!track->addClip(std::make_shared<Audio::AudioClip>(track, fileDialog.selectedFiles().at(0)))) {
                     qDebug() << "Error when adding clip";
@@ -211,7 +211,7 @@ void MainWindow::saveProject()
         fileDialog.setFileMode(QFileDialog::Directory);
         fileDialog.setAcceptMode(QFileDialog::AcceptSave);
         if (fileDialog.exec()) {
-            if (fileDialog.selectedFiles().size() == 0)
+            if (fileDialog.selectedFiles().empty())
                 return;
 
             ProjectSaver saver(mProject);
@@ -238,7 +238,7 @@ void MainWindow::loadProject(QFile file)
         fileDialog.setFileMode(QFileDialog::ExistingFile);
         fileDialog.setAcceptMode(QFileDialog::AcceptOpen);
         if (fileDialog.exec()) {
-            if (fileDialog.selectedFiles().size() == 0)
+            if (fileDialog.selectedFiles().empty())
                 return;
 
             if (currentProjectPath == "" && mProject->getSavedState() == Audio::Project::SAVED) {

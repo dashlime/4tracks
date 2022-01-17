@@ -1,15 +1,11 @@
 #include "track.h"
 
-#include "QDebug"
-
 namespace Audio
 {
 
-Track::Track(QString name, int index)
+Track::Track(const QString& name, int index)
     : mName(name), mIndex(index)
-{
-
-}
+{}
 
 QString Track::getName() const
 {
@@ -18,23 +14,21 @@ QString Track::getName() const
 
 int Track::getType() const
 {
-    if (mClips.size() == 0)
+    if (mClips.empty())
         return ANY_TRACK;
 
     return mClips.at(0)->getType() == Clip::AUDIO_CLIP ? AUDIO_TRACK : MIDI_TRACK;
 }
 
-bool Track::addClip(std::shared_ptr<Clip> clip)
+bool Track::addClip(const std::shared_ptr<Clip>& clip)
 {
     if (clip->getType() == Clip::AUDIO_CLIP && getType() == AUDIO_TRACK) {
         mClips.push_back(clip);
-        resizeClipsWhenClipAdded(mClips.size() - 1);
-    }
-    else if (clip->getType() == Clip::MIDI_CLIP && getType() == MIDI_TRACK) {
+        resizeClipsWhenClipAdded((int) mClips.size() - 1);
+    } else if (clip->getType() == Clip::MIDI_CLIP && getType() == MIDI_TRACK) {
         mClips.push_back(clip);
-        resizeClipsWhenClipAdded(mClips.size() - 1);
-    }
-    else if (getType() == ANY_TRACK)
+        resizeClipsWhenClipAdded((int) mClips.size() - 1);
+    } else if (getType() == ANY_TRACK)
         mClips.push_back(clip);
     else
         return false;
@@ -90,7 +84,7 @@ void Track::setNextReadPosition(juce::int64 newPosition)
     mPositionInSamples = newPosition;
     mClipPlaying = nullptr;
 
-    for (auto clip : mClips) {
+    for (const auto& clip : mClips) {
         if (clip->getPositionInSamples() <= mPositionInSamples
             && clip->getPositionInSamples() + clip->getLengthInSamples() >= mPositionInSamples) {
             mClipPlaying = clip;
@@ -109,8 +103,8 @@ juce::int64 Track::getNextReadPosition() const
 
 juce::int64 Track::getTotalLength() const
 {
-    int max = 0;
-    for (auto clip : mClips) {
+    juce::int64 max = 0;
+    for (const auto& clip : mClips) {
         max = juce::jmax(clip->getPositionInSamples() + clip->getLengthInSamples(), max);
     }
 
@@ -129,7 +123,7 @@ void Track::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 {
     mPositionInSamples = 0;
     if (getType() == AUDIO_TRACK) {
-        for (auto clip : mClips) {
+        for (const auto& clip : mClips) {
             std::dynamic_pointer_cast<AudioClip>(clip)->prepareToPlay(samplesPerBlockExpected, sampleRate);
         }
     }

@@ -1,8 +1,6 @@
 #include "clip.h"
 #include "ui_clip.h"
 
-#include <QDebug>
-
 namespace Graphics
 {
 
@@ -51,7 +49,7 @@ bool Clip::isSelected() const
     return mSelected;
 }
 
-void Clip::setClip(std::shared_ptr<Audio::Clip> clip)
+void Clip::setClip(const std::shared_ptr<Audio::Clip>& clip)
 {
     mClip = clip;
 

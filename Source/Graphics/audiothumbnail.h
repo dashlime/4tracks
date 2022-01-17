@@ -12,7 +12,7 @@ class AudioThumbnail
 public:
     AudioThumbnail();
 
-    void loadThumbnail(std::shared_ptr<Audio::AudioClip> clip, int sourceSamplesPerThumbnailSample);
+    void loadThumbnail(const std::shared_ptr<Audio::AudioClip>& clip, int sourceSamplesPerThumbnailSample);
     void drawThumbnail(QPainter &p, QRect rect);
 
 private:
@@ -27,9 +27,10 @@ public:
     MinMaxValues(float min, float max)
         : mMin(min), mMax(max)
     {};
-    float getMinValue() const
+
+    [[nodiscard]] float getMinValue() const
     { return mMin; };
-    float getMaxValue() const
+    [[nodiscard]] float getMaxValue() const
     { return mMax; };
 
 private:

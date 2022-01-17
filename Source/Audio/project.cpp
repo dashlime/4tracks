@@ -1,28 +1,24 @@
 #include "project.h"
 
-#include "QDebug"
-
 namespace Audio
 {
 
-Project::Project(QString projectName)
+Project::Project(const QString& projectName)
     : mMixerAudioSource(DEFAULT_SAMPLE_RATE), mProjectName(projectName)
-{
-
-}
+{}
 
 QString Project::getProjectName() const
 {
     return mProjectName;
 }
 
-void Project::setProjectName(QString newProjectName)
+void Project::setProjectName(const QString& newProjectName)
 {
     mProjectName = newProjectName;
     projectNameChanged();
 }
 
-void Project::addTrack(std::shared_ptr<Track> newTrack)
+void Project::addTrack(const std::shared_ptr<Track>& newTrack)
 {
     mTracks.push_back(newTrack);
     mMixerAudioSource.addInputSource(newTrack.get(), false);
