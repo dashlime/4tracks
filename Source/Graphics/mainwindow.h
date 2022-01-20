@@ -18,10 +18,10 @@ QT_END_NAMESPACE
 
 class MainWindow: public QMainWindow
 {
-Q_OBJECT
+    Q_OBJECT
 
 public:
-    MainWindow(const QString& projectToLoad = "", QWidget *parent = nullptr);
+    MainWindow(const QString &projectToLoad = "", QWidget *parent = nullptr);
     ~MainWindow();
 
     void connectUIActions();

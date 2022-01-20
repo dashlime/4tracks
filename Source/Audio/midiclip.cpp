@@ -3,7 +3,7 @@
 namespace Audio
 {
 
-MidiClip::MidiClip(const std::weak_ptr<Track>& parentTrack)
+MidiClip::MidiClip(const std::weak_ptr<Track> &parentTrack)
     : Clip(parentTrack)
 {}
 

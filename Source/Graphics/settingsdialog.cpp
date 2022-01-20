@@ -47,7 +47,7 @@ SettingsDialog::~SettingsDialog()
 
 void SettingsDialog::connectUIElements()
 {
-    connect(ui->audioDriverComboBox, &QComboBox::currentTextChanged, [=](const QString& driver)
+    connect(ui->audioDriverComboBox, &QComboBox::currentTextChanged, [=](const QString &driver)
     {
         if (driver.isEmpty())
             return;
@@ -56,7 +56,7 @@ void SettingsDialog::connectUIElements()
         refreshUI();
     });
 
-    connect(ui->inputDeviceComboBox, &QComboBox::currentTextChanged, [=](const QString& device)
+    connect(ui->inputDeviceComboBox, &QComboBox::currentTextChanged, [=](const QString &device)
     {
         if (device.isEmpty())
             return;
@@ -72,7 +72,7 @@ void SettingsDialog::connectUIElements()
         refreshUI();
     });
 
-    connect(ui->outputDeviceComboBox, &QComboBox::currentTextChanged, [=](const QString& device)
+    connect(ui->outputDeviceComboBox, &QComboBox::currentTextChanged, [=](const QString &device)
     {
         if (device.isEmpty())
             return;
@@ -88,7 +88,7 @@ void SettingsDialog::connectUIElements()
         refreshUI();
     });
 
-    connect(ui->sampleRateComboBox, &QComboBox::currentTextChanged, [=](const QString& sampleRate)
+    connect(ui->sampleRateComboBox, &QComboBox::currentTextChanged, [=](const QString &sampleRate)
     {
         if (sampleRate.isEmpty())
             return;
@@ -104,7 +104,7 @@ void SettingsDialog::connectUIElements()
         refreshUI();
     });
 
-    connect(ui->bufferSizeComboBox, &QComboBox::currentTextChanged, [=](const QString& bufferSize)
+    connect(ui->bufferSizeComboBox, &QComboBox::currentTextChanged, [=](const QString &bufferSize)
     {
         if (bufferSize.isEmpty())
             return;
@@ -129,7 +129,7 @@ void SettingsDialog::refreshUI()
     mAudioDeviceSetup = mDeviceManager.getAudioDeviceSetup();
     mLastSetup = mAudioDeviceSetup;
 
-    for (auto comboBox : comboBoxes) {
+    for (auto comboBox: comboBoxes) {
         comboBox->blockSignals(true);
         comboBox->clear();
     }
@@ -142,33 +142,33 @@ void SettingsDialog::refreshUI()
     ui->audioDriverComboBox->setCurrentText(mDeviceManager.getCurrentAudioDeviceType().toStdString().c_str());
 
     // input devices
-    for (const auto& device : mDeviceManager.getCurrentDeviceTypeObject()->getDeviceNames(true)) {
+    for (const auto &device: mDeviceManager.getCurrentDeviceTypeObject()->getDeviceNames(true)) {
         ui->inputDeviceComboBox->addItem(device.toStdString().c_str());
     }
     ui->inputDeviceComboBox->setCurrentText(mDeviceManager.getAudioDeviceSetup().inputDeviceName.toStdString().c_str());
 
     // output devices
-    for (const auto& device : mDeviceManager.getCurrentDeviceTypeObject()->getDeviceNames(false)) {
+    for (const auto &device: mDeviceManager.getCurrentDeviceTypeObject()->getDeviceNames(false)) {
         ui->outputDeviceComboBox->addItem(device.toStdString().c_str());
     }
     ui->outputDeviceComboBox
         ->setCurrentText(mDeviceManager.getAudioDeviceSetup().outputDeviceName.toStdString().c_str());
 
     // sample rate
-    for (auto sampleRate : mDeviceManager.getCurrentAudioDevice()->getAvailableSampleRates()) {
+    for (auto sampleRate: mDeviceManager.getCurrentAudioDevice()->getAvailableSampleRates()) {
         ui->sampleRateComboBox->addItem(QString::number(sampleRate));
     }
     ui->sampleRateComboBox
         ->setCurrentText(QString::number(mDeviceManager.getCurrentAudioDevice()->getCurrentSampleRate()));
 
     // sample rate
-    for (auto bufferSize : mDeviceManager.getCurrentAudioDevice()->getAvailableBufferSizes()) {
+    for (auto bufferSize: mDeviceManager.getCurrentAudioDevice()->getAvailableBufferSizes()) {
         ui->bufferSizeComboBox->addItem(QString::number(bufferSize));
     }
     ui->bufferSizeComboBox
         ->setCurrentText(QString::number(mDeviceManager.getCurrentAudioDevice()->getCurrentBufferSizeSamples()));
 
-    for (auto comboBox : comboBoxes) {
+    for (auto comboBox: comboBoxes) {
         comboBox->blockSignals(false);
     }
 }

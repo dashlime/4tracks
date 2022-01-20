@@ -32,7 +32,7 @@ Timeline::Timeline(QWidget *parent)
     // connect signals
     connect(&mAddTrackButton, &QPushButton::pressed, [=]()
     {
-        mProject->addTrack(std::make_shared<Audio::Track>("Track", mProject->getTracks().size()));
+        mProject->addTrack(std::make_shared<Audio::Track>("Track", mProject->getTracks().size(), mProject));
     });
 
     mClipsGrid->divisionChanged = [=]()
@@ -74,33 +74,35 @@ void Timeline::initializeLayouts()
     mScrollLayout.addWidget(mClipsGrid.get());
 }
 
-void Timeline::setProject(const std::shared_ptr<Audio::Project>& project)
+void Timeline::setProject(const std::shared_ptr<Audio::Project> &project)
 {
     mProject = project;
 
     displayTracks();
+
+    mClipsGrid->setProject(mProject);
 }
 
 void Timeline::displayTracks()
 {
     Utils::clearLayout(&mTracksLayout);
 
-    for (auto track : mTracks)
-        track.clear();
+    for (const auto &track: mTracks)
+        track->deleteLater();
 
     mTracks.clear();
 
-    for (const auto& track : mProject->getTracks()) {
-        mTracks.push_back(new Graphics::Track(track));
-        mTracksLayout.addWidget(mTracks.back().get(), Qt::AlignTop);
+    for (int i = 0; i < mProject->getTracks().size(); i++) {
+        auto newTrack = QPointer<Track>(new Track(mProject->getTrackByIndex(i)));
+        mTracks.push_back(newTrack);
+        mTracksLayout.addWidget(newTrack, Qt::AlignTop);
     }
 
     mTracksLayout.addWidget(&mAddTrackButton, Qt::AlignTop);
-
     mTracksLayout.addWidget(&mTracksSpacer, Qt::AlignTop);
 
-    mClipsGrid->refreshBpm(mProject->getBpm());
-    mClipsGrid->setProject(mProject);
+    mClipsGrid->refreshTracks();
+    update();
 }
 
 void Timeline::refreshZoomLevel(double newZoomLevel)
@@ -141,16 +143,18 @@ void Timeline::paintEvent(QPaintEvent *)
 
 void Timeline::mousePressEvent(QMouseEvent *event)
 {
-    for (const auto &track : mTracks) {
-        if (track->geometry().contains(event->pos())) {
-            mCurrentSelection->setSelectionType(Selection::TracksSelected);
-            mCurrentSelection->addTrackToSelection(track);
-            return;
+    if (event->buttons().testFlag(Qt::LeftButton)) {
+        for (const auto &track: mTracks) {
+            if (track->geometry().contains(event->pos())) {
+                mCurrentSelection->setSelectionType(Selection::TracksSelected);
+                mCurrentSelection->addTrackToSelection(track);
+                return;
+            }
         }
-    }
 
-    // nothing was selected
-    mCurrentSelection->setSelectionType(Selection::NoSelection);
+        // nothing was selected
+        mCurrentSelection->setSelectionType(Selection::NoSelection);
+    }
 }
 
 }

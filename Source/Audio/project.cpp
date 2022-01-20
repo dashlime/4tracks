@@ -3,7 +3,7 @@
 namespace Audio
 {
 
-Project::Project(const QString& projectName)
+Project::Project(const QString &projectName)
     : mMixerAudioSource(DEFAULT_SAMPLE_RATE), mProjectName(projectName)
 {}
 
@@ -12,13 +12,13 @@ QString Project::getProjectName() const
     return mProjectName;
 }
 
-void Project::setProjectName(const QString& newProjectName)
+void Project::setProjectName(const QString &newProjectName)
 {
     mProjectName = newProjectName;
     projectNameChanged();
 }
 
-void Project::addTrack(const std::shared_ptr<Track>& newTrack)
+void Project::addTrack(const std::shared_ptr<Track> &newTrack)
 {
     mTracks.push_back(newTrack);
     mMixerAudioSource.addInputSource(newTrack.get(), false);
@@ -27,15 +27,73 @@ void Project::addTrack(const std::shared_ptr<Track>& newTrack)
         trackAdded();
 }
 
-std::vector<std::shared_ptr<Track>> Project::getTracks()
+std::vector<std::shared_ptr<Track>> Project::getTracks() const
 {
     return mTracks;
+}
+
+std::shared_ptr<Track> Project::getTrackByIndex(int trackIndex) const
+{
+    for (auto track: mTracks)
+        if (track->getIndex() == trackIndex)
+            return track;
+
+    return {};
+}
+
+bool Project::canRemoveTrack() const
+{
+    return mTracks.size() > 1;
+}
+
+void Project::removeTrack(std::shared_ptr<Track> &trackToRemove)
+{
+    if (!canRemoveTrack())
+        return;
+
+    auto it = mTracks.begin();
+    for (auto& track: mTracks) {
+        if (track == trackToRemove) {
+            mMixerAudioSource.removeInputSource(trackToRemove.get());
+            trackToRemove.reset();
+
+            mTracks.erase(it);
+
+            rearrangeTrackIndexes();
+
+            if (trackRemoved != nullptr)
+                trackRemoved();
+
+            return;
+        }
+        it++;
+    }
 }
 
 void Project::clearAllTracks()
 {
     mMixerAudioSource.removeAllInputs();
     mTracks.clear();
+}
+
+void Project::rearrangeTrackIndexes()
+{
+    int max = 0;
+    for (const auto &track: mTracks)
+        if (track->getIndex() > max)
+            max = track->getIndex();
+
+    int lastTrackIndex = -1;
+
+    while (lastTrackIndex < (signed) mTracks.size() - 1) {
+        int min = max;
+        for (const auto &track: mTracks)
+            if (track->getIndex() < min && (signed) track->getIndex() > lastTrackIndex)
+                min = track->getIndex();
+
+        getTrackByIndex(min)->setIndex(lastTrackIndex + 1);
+        lastTrackIndex++;
+    }
 }
 
 void Project::play()

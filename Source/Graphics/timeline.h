@@ -26,7 +26,7 @@ public:
 
     void initializeLayouts();
 
-    void setProject(const std::shared_ptr<Audio::Project>& project);
+    void setProject(const std::shared_ptr<Audio::Project> &project);
     void displayTracks();
 
     void refreshZoomLevel(double newZoomLevel);

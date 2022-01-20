@@ -17,5 +17,5 @@ public:
     void SetUp() override;
     void TearDown() override;
 
-    std::unique_ptr<Audio::Project> mProjectToTest;
+    std::shared_ptr<Audio::Project> mProjectToTest;
 };

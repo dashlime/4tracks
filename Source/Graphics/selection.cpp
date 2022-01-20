@@ -92,12 +92,12 @@ Selection::SelectionArea Selection::getSelectedArea() const
 
 void Selection::clearSelection()
 {
-    for (auto track : mTracksSelected)
+    for (auto track: mTracksSelected)
         track->setSelected(false);
 
     mTracksSelected.clear();
 
-    for (auto clip : mClipsSelected)
+    for (auto clip: mClipsSelected)
         clip->setSelected(false);
 
     mClipsSelected.clear();

@@ -31,3 +31,12 @@ TEST_F(TrackTests, AddClipWithDifferentType)
     EXPECT_EQ(mTrackToTest->getClips().size(), 1);
     EXPECT_NE(mTrackToTest->getClips().at(0).get(), midiClip.get());
 }
+
+TEST_F(TrackTests, RemoveClip)
+{
+    auto audioClip = std::make_shared<Audio::AudioClip>(mTrackToTest, "");
+    mTrackToTest->addClip(audioClip);
+
+    mTrackToTest->removeClip(audioClip);
+    EXPECT_EQ(mTrackToTest->getClips().size(), 0);
+}

@@ -3,9 +3,14 @@
 namespace Audio
 {
 
-Track::Track(const QString& name, int index)
-    : mName(name), mIndex(index)
+Track::Track(const QString &name, int index, const std::weak_ptr<Project> &parentProject)
+    : mName(name), mIndex(index), mParentProject(parentProject)
 {}
+
+std::weak_ptr<Project> Track::getParentProject() const
+{
+    return mParentProject;
+}
 
 QString Track::getName() const
 {
@@ -20,15 +25,18 @@ int Track::getType() const
     return mClips.at(0)->getType() == Clip::AUDIO_CLIP ? AUDIO_TRACK : MIDI_TRACK;
 }
 
-bool Track::addClip(const std::shared_ptr<Clip>& clip)
+bool Track::addClip(const std::shared_ptr<Clip> &clip)
 {
-    if (clip->getType() == Clip::AUDIO_CLIP && getType() == AUDIO_TRACK) {
+    int type = getType();
+    if (clip->getType() == Clip::AUDIO_CLIP && type == AUDIO_TRACK) {
         mClips.push_back(clip);
         resizeClipsWhenClipAdded((int) mClips.size() - 1);
-    } else if (clip->getType() == Clip::MIDI_CLIP && getType() == MIDI_TRACK) {
+    }
+    else if (clip->getType() == Clip::MIDI_CLIP && type == MIDI_TRACK) {
         mClips.push_back(clip);
         resizeClipsWhenClipAdded((int) mClips.size() - 1);
-    } else if (getType() == ANY_TRACK)
+    }
+    else if (type == ANY_TRACK)
         mClips.push_back(clip);
     else
         return false;
@@ -42,6 +50,23 @@ bool Track::addClip(const std::shared_ptr<Clip>& clip)
 std::vector<std::shared_ptr<Clip>> Track::getClips()
 {
     return mClips;
+}
+
+void Track::removeClip(std::shared_ptr<Clip> clipToRemove)
+{
+    auto it = mClips.begin();
+
+    for (auto &clip : mClips) {
+        if (clip.get() == clipToRemove.get()) {
+            clipToRemove.reset();
+
+            mClips.erase(it);
+
+            if (clipRemoved != nullptr)
+                clipRemoved();
+        }
+        it ++;
+    }
 }
 
 int Track::getIndex() const
@@ -84,7 +109,7 @@ void Track::setNextReadPosition(juce::int64 newPosition)
     mPositionInSamples = newPosition;
     mClipPlaying = nullptr;
 
-    for (const auto& clip : mClips) {
+    for (const auto &clip: mClips) {
         if (clip->getPositionInSamples() <= mPositionInSamples
             && clip->getPositionInSamples() + clip->getLengthInSamples() >= mPositionInSamples) {
             mClipPlaying = clip;
@@ -104,7 +129,7 @@ juce::int64 Track::getNextReadPosition() const
 juce::int64 Track::getTotalLength() const
 {
     juce::int64 max = 0;
-    for (const auto& clip : mClips) {
+    for (const auto &clip: mClips) {
         max = juce::jmax(clip->getPositionInSamples() + clip->getLengthInSamples(), max);
     }
 
@@ -123,7 +148,7 @@ void Track::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 {
     mPositionInSamples = 0;
     if (getType() == AUDIO_TRACK) {
-        for (const auto& clip : mClips) {
+        for (const auto &clip: mClips) {
             std::dynamic_pointer_cast<AudioClip>(clip)->prepareToPlay(samplesPerBlockExpected, sampleRate);
         }
     }

@@ -17,9 +17,9 @@ class ClipsGrid: public QWidget, public Selection::Callback
 {
 Q_OBJECT
 public:
-    explicit ClipsGrid(const std::shared_ptr<Selection>& currentSelection, QWidget *parent = nullptr);
+    explicit ClipsGrid(const std::shared_ptr<Selection> &currentSelection, QWidget *parent = nullptr);
 
-    void setProject(const std::shared_ptr<Audio::Project>& project);
+    void setProject(const std::shared_ptr<Audio::Project> &project);
 
     void refreshBpm(double bpm);
     void refreshTracks();

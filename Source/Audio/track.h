@@ -13,16 +13,22 @@
 namespace Audio
 {
 
+class Project;
+
 class Track: public juce::PositionableAudioSource
 {
 public:
-    Track(const QString& name, int index);
+    Track(const QString &name, int index, const std::weak_ptr<Project> &mParentProject);
+
+    [[nodiscard]] std::weak_ptr<Project> getParentProject() const;
 
     [[nodiscard]] QString getName() const;
     [[nodiscard]] int getType() const;
 
-    bool addClip(const std::shared_ptr<Clip>& clip);
+    bool addClip(const std::shared_ptr<Clip> &clip);
     std::vector<std::shared_ptr<Clip>> getClips();
+
+    void removeClip(std::shared_ptr<Clip> clipToRemove);
 
     [[nodiscard]] int getIndex() const;
     void setIndex(int newPosition);
@@ -52,6 +58,8 @@ public:
 
 private:
     void resizeClipsWhenClipAdded(int newClipIndex);
+
+    std::weak_ptr<Project> mParentProject;
 
     QString mName;
     std::vector<std::shared_ptr<Clip>> mClips;

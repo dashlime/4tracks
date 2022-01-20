@@ -13,9 +13,9 @@ class Track;
 class Clip
 {
 public:
-    explicit Clip(const std::weak_ptr<Track>& parentTrack);
+    explicit Clip(const std::weak_ptr<Track> &parentTrack);
 
-    void setName(const QString& name);
+    void setName(const QString &name);
     [[nodiscard]] QString getName() const;
 
     [[nodiscard]] QString getSourceFilePath() const;

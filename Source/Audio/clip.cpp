@@ -3,11 +3,11 @@
 namespace Audio
 {
 
-Clip::Clip(const std::weak_ptr<Track>& parentTrack)
+Clip::Clip(const std::weak_ptr<Track> &parentTrack)
     : mParentTrack(parentTrack)
 {}
 
-void Clip::setName(const QString& name)
+void Clip::setName(const QString &name)
 {
     mName = name;
 }

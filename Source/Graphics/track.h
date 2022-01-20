@@ -4,7 +4,7 @@
 #include <QtWidgets>
 
 #include "Audio/track.h"
-
+#include "Audio/project.h"
 
 namespace Graphics
 {
@@ -19,13 +19,16 @@ class Track: public QWidget
 Q_OBJECT
 
 public:
-    explicit Track(const std::shared_ptr<Audio::Track>& track, QWidget *parent = nullptr);
+    explicit Track(const std::shared_ptr<Audio::Track> &track, QWidget *parent = nullptr);
     ~Track() override;
 
     void setSelected(bool isSelected);
     [[nodiscard]] bool isSelected() const;
 
     void paintEvent(QPaintEvent *) override;
+
+protected:
+    void contextMenuEvent(QContextMenuEvent *event) override;
 
 private:
     Ui::Track *ui;

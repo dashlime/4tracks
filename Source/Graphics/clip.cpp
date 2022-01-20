@@ -49,7 +49,7 @@ bool Clip::isSelected() const
     return mSelected;
 }
 
-void Clip::setClip(const std::shared_ptr<Audio::Clip>& clip)
+void Clip::setClip(const std::shared_ptr<Audio::Clip> &clip)
 {
     mClip = clip;
 
@@ -90,6 +90,20 @@ void Clip::resizeEvent(QResizeEvent *)
 {
     ui->verticalLayout->setGeometry(QRect(0, 0, width(), height()));
     update();
+}
+void Clip::contextMenuEvent(QContextMenuEvent *event)
+{
+    QMenu menu(this);
+
+    auto *deleteAction = new QAction("Delete", this);
+    menu.addAction(deleteAction);
+
+    connect(deleteAction, &QAction::triggered, [this]()
+    {
+        mClip->getParentTrack().lock()->removeClip(mClip);
+    });
+
+    menu.exec(event->globalPos());
 }
 
 } // namespace Graphics

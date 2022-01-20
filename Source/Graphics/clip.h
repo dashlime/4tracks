@@ -5,6 +5,7 @@
 
 #include "Audio/audioclip.h"
 #include "Audio/clip.h"
+#include "Audio/track.h"
 #include "Graphics/elidedlabel.h"
 #include "Graphics/audiothumbnail.h"
 
@@ -27,13 +28,14 @@ public:
     void setSelected(bool isSelected);
     [[nodiscard]] bool isSelected() const;
 
-    void setClip(const std::shared_ptr<Audio::Clip>& clip);
+    void setClip(const std::shared_ptr<Audio::Clip> &clip);
     std::shared_ptr<Audio::Clip> getClip();
 
     [[nodiscard]] bool shouldMoveClip(QPoint mousePosition) const;
 
     void paintEvent(QPaintEvent *) override;
     void resizeEvent(QResizeEvent *) override;
+    void contextMenuEvent(QContextMenuEvent *event) override;
 
 private:
     Ui::Clip *ui;

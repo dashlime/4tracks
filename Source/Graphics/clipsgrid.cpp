@@ -3,7 +3,7 @@
 namespace Graphics
 {
 
-ClipsGrid::ClipsGrid(const std::shared_ptr<Selection>& currentSelection, QWidget *parent)
+ClipsGrid::ClipsGrid(const std::shared_ptr<Selection> &currentSelection, QWidget *parent)
     : QWidget(parent), mCurrentSelection(currentSelection)
 {
     mPositionBarWidget.setParent(this);
@@ -12,9 +12,11 @@ ClipsGrid::ClipsGrid(const std::shared_ptr<Selection>& currentSelection, QWidget
     mCurrentSelection->setSelectionCallback(this);
 }
 
-void ClipsGrid::setProject(const std::shared_ptr<Audio::Project>& project)
+void ClipsGrid::setProject(const std::shared_ptr<Audio::Project> &project)
 {
     mProject = project;
+
+    refreshBpm(mProject->getBpm());
     refreshTracks();
 
     connect(&mPositionBarTimer, &QTimer::timeout, this, &ClipsGrid::drawPositionBar);
@@ -34,7 +36,7 @@ void ClipsGrid::refreshTracks()
     if (mProject != nullptr) {
         Utils::clearLayout(layout());
 
-        for (const std::weak_ptr<Audio::Track> track : mProject->getTracks()) {
+        for (const std::weak_ptr<Audio::Track> track: mProject->getTracks()) {
             track.lock()->clipAdded = [=]()
             {
                 QPointer<Clip> clipUi = new Clip(this);
@@ -53,6 +55,11 @@ void ClipsGrid::refreshTracks()
 
                 mProject->updateSavedState(Audio::Project::UNSAVED);
             };
+
+            track.lock()->clipRemoved = [=]()
+            {
+
+            };
         }
 
         update();
@@ -63,7 +70,7 @@ void ClipsGrid::refreshClipsGeometry()
 {
     double samplesPerMinute = DEFAULT_SAMPLE_RATE * 60;
 
-    for (const auto& clipUi : mClips) {
+    for (const auto &clipUi: mClips) {
         auto clip = clipUi->getClip();
         double clipPosition = double(clip->getPositionInSamples() / samplesPerMinute) * mBpm * mPixelsPerBeat;
         double clipLength = double(clip->getLengthInSamples() / samplesPerMinute) * mBpm * mPixelsPerBeat;
@@ -170,7 +177,7 @@ void ClipsGrid::mousePressEvent(QMouseEvent *event)
     update();
 
     // selection system
-    for (const auto &clip : mClips) {
+    for (const auto &clip: mClips) {
         if (clip->geometry().contains(event->pos())) {
             mCurrentSelection->setSelectionType(Selection::ClipsSelected);
             mCurrentSelection->addClipToSelection(clip);
@@ -206,7 +213,7 @@ void ClipsGrid::mouseMoveEvent(QMouseEvent *event)
 
         // move clip if needed
         if (mMovingClip == nullptr) {
-            for (const auto& clip : mClips) {
+            for (const auto &clip: mClips) {
                 if ((clip->shouldMoveClip(clickPosition) && clip->geometry().contains(clickPosition))) {
                     mMovingClip = clip.get();
                 }
@@ -215,10 +222,12 @@ void ClipsGrid::mouseMoveEvent(QMouseEvent *event)
 
         if (mMovingClip != nullptr) {
             double clipPosition =
-                double(mMovingClip->getClip()->getPositionInSamples() / (double) samplesPerMinute) * mBpm * mPixelsPerBeat;
+                double(mMovingClip->getClip()->getPositionInSamples() / (double) samplesPerMinute) * mBpm
+                    * mPixelsPerBeat;
 
             double newPosition = clipPosition
-                + (double) roundPosition(int(event->position().x() - clickPosition.x()) * samplesPerPixel) / samplesPerMinute * mBpm
+                + (double) roundPosition(int(event->position().x() - clickPosition.x()) * samplesPerPixel)
+                    / samplesPerMinute * mBpm
                     * mPixelsPerBeat;
 
             mMovingClip->setGeometry((int) newPosition, mMovingClip->y(), mMovingClip->width(), mMovingClip->height());

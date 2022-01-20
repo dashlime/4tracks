@@ -25,14 +25,14 @@ void ProjectSaver::saveToDirectory(QDir dir)
     writer.writeAttribute("projectname", mProject->getProjectName());
     writer.writeAttribute("bpm", QString::number(mProject->getBpm()));
 
-    for (auto track : mProject->getTracks()) {
+    for (auto track: mProject->getTracks()) {
         writer.writeStartElement("track");
         writer.writeAttribute("index", QString::number(track->getIndex()));
         writer.writeAttribute("name", track->getName());
         writer.writeAttribute("type", QString::number(track->getType()));
 
         int fileId = 0;
-        for (auto clip : track->getClips()) {
+        for (auto clip: track->getClips()) {
             QString newFilePath;
             if (clip->getType() == Audio::Clip::AUDIO_CLIP) {
                 QFile clipFile(std::dynamic_pointer_cast<Audio::AudioClip>(clip)->getPath());
@@ -87,7 +87,8 @@ void ProjectSaver::openProject(QFile projectFile)
     while (!domTrack.isNull()) {
         int trackType = domTrack.attribute("type").toInt();
         std::shared_ptr<Audio::Track>
-            track = std::make_shared<Audio::Track>(domTrack.attribute("name"), domTrack.attribute("index").toInt());
+            track =
+            std::make_shared<Audio::Track>(domTrack.attribute("name"), domTrack.attribute("index").toInt(), mProject);
         mProject->addTrack(track);
 
         QDomElement domClip = domTrack.firstChild().toElement();

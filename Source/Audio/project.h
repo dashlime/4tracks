@@ -15,15 +15,22 @@ namespace Audio
 class Project: public juce::PositionableAudioSource
 {
 public:
-    explicit Project(const QString& projectName);
+    explicit Project(const QString &projectName);
 
     QString getProjectName() const;
-    void setProjectName(const QString& newProjectName);
+    void setProjectName(const QString &newProjectName);
 
-    void addTrack(const std::shared_ptr<Track>& newTrack);
-    std::vector<std::shared_ptr<Track>> getTracks();
+    void addTrack(const std::shared_ptr<Track> &newTrack);
+    std::vector<std::shared_ptr<Track>> getTracks() const;
+
+    std::shared_ptr<Track> getTrackByIndex(int trackIndex) const;
+
+    [[nodiscard]] bool canRemoveTrack() const;
+    void removeTrack(std::shared_ptr<Track> &trackToRemove);
 
     void clearAllTracks();
+
+    void rearrangeTrackIndexes();
 
     void play();
     void pause();
@@ -55,6 +62,7 @@ public:
     std::function<void()> savedStateChanged;
     std::function<void()> projectNameChanged;
     std::function<void()> trackAdded;
+    std::function<void()> trackRemoved;
     std::function<void()> bpmChanged;
 private:
     std::vector<std::shared_ptr<Track>> mTracks;

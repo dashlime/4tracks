@@ -12,7 +12,7 @@ class AudioThumbnail
 public:
     AudioThumbnail();
 
-    void loadThumbnail(const std::shared_ptr<Audio::AudioClip>& clip, int sourceSamplesPerThumbnailSample);
+    void loadThumbnail(const std::shared_ptr<Audio::AudioClip> &clip, int sourceSamplesPerThumbnailSample);
     void drawThumbnail(QPainter &p, QRect rect);
 
 private:

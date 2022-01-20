@@ -154,7 +154,7 @@ void MixerPositionableAudioSource::getNextAudioBlock(const juce::AudioSourceChan
 juce::int64 MixerPositionableAudioSource::getTotalLength() const
 {
     juce::int64 maxLength = 0;
-    for (juce::PositionableAudioSource *input : inputs) {
+    for (juce::PositionableAudioSource *input: inputs) {
         juce::int64 length = input->getTotalLength();
         if (length > maxLength) {
             maxLength = length;
@@ -167,7 +167,7 @@ juce::int64 MixerPositionableAudioSource::getTotalLength() const
 juce::int64 MixerPositionableAudioSource::getNextReadPosition() const
 {
     juce::int64 maxPosition = 0;
-    for (juce::PositionableAudioSource *input : inputs) {
+    for (juce::PositionableAudioSource *input: inputs) {
         juce::int64 pos = input->getNextReadPosition();
 
         if (pos > maxPosition) {
@@ -180,7 +180,7 @@ juce::int64 MixerPositionableAudioSource::getNextReadPosition() const
 
 void MixerPositionableAudioSource::setNextReadPosition(juce::int64 newPosition)
 {
-    for (juce::PositionableAudioSource *input : inputs) {
+    for (juce::PositionableAudioSource *input: inputs) {
         input->setNextReadPosition(newPosition);
     }
 }

@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-MainWindow::MainWindow(const QString& projectToLoad, QWidget *parent)
+MainWindow::MainWindow(const QString &projectToLoad, QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -57,9 +57,15 @@ MainWindow::MainWindow(const QString& projectToLoad, QWidget *parent)
         mProject->updateSavedState(Audio::Project::UNSAVED);
     };
 
+    mProject->trackRemoved = [=]()
+    {
+        mUiTimeline.displayTracks();
+        mProject->updateSavedState(Audio::Project::UNSAVED);
+    };
+
     mProject->bpmChanged = [=]()
     {
-        ui->bpmSpin->setValue((int)mProject->getBpm());
+        ui->bpmSpin->setValue((int) mProject->getBpm());
     };
 
     connectUIActions();
@@ -70,7 +76,7 @@ MainWindow::MainWindow(const QString& projectToLoad, QWidget *parent)
 
         // else add a default track to project
     else {
-        mProject->addTrack(std::make_shared<Audio::Track>("Track", 0));
+        mProject->addTrack(std::make_shared<Audio::Track>("Track", 0, mProject));
         mProject->updateSavedState(Audio::Project::SAVED);
     }
 
@@ -185,7 +191,7 @@ void MainWindow::importFile()
             return;
 
         // check if is there empty tracks to import file
-        for (const auto& track : mProject->getTracks()) {
+        for (const auto &track: mProject->getTracks()) {
             if (track->getType() == Audio::Track::ANY_TRACK) {
                 if (!track->addClip(std::make_shared<Audio::AudioClip>(track, fileDialog.selectedFiles().at(0)))) {
                     qDebug() << "Error when adding clip";
@@ -196,7 +202,7 @@ void MainWindow::importFile()
 
         // else import it to a new track
         std::shared_ptr<Audio::Track>
-            track = std::make_shared<Audio::Track>("Audio Track", mProject->getTracks().size());
+            track = std::make_shared<Audio::Track>("Audio Track", mProject->getTracks().size(), mProject);
         mProject->addTrack(track);
         if (!track->addClip(std::make_shared<Audio::AudioClip>(track, fileDialog.selectedFiles().at(0)))) {
             qDebug() << "Error when adding clip";

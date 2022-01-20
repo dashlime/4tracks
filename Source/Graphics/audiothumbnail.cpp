@@ -5,7 +5,7 @@ namespace Graphics
 
 AudioThumbnail::AudioThumbnail() = default;
 
-void AudioThumbnail::loadThumbnail(const std::shared_ptr<Audio::AudioClip>& clip, int sourceSamplesPerThumbnailSample)
+void AudioThumbnail::loadThumbnail(const std::shared_ptr<Audio::AudioClip> &clip, int sourceSamplesPerThumbnailSample)
 {
     int thumbnailSamples = clip->getAudioBuffer().getNumSamples() / sourceSamplesPerThumbnailSample;
 

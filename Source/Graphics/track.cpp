@@ -4,7 +4,7 @@
 namespace Graphics
 {
 
-Track::Track(const std::shared_ptr<Audio::Track>& track, QWidget *parent)
+Track::Track(const std::shared_ptr<Audio::Track> &track, QWidget *parent)
     :
     QWidget(parent),
     ui(new Ui::Track),
@@ -76,6 +76,25 @@ void Track::paintEvent(QPaintEvent *)
     opt.initFrom(this);
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+}
+
+void Track::contextMenuEvent(QContextMenuEvent *event)
+{
+    QMenu menu(this);
+
+    auto *deleteAction = new QAction("Delete", this);
+    menu.addAction(deleteAction);
+
+    if (mAudioTrack->getParentProject().lock()->canRemoveTrack()) {
+        connect(deleteAction, &QAction::triggered, [this]()
+        {
+            mAudioTrack->getParentProject().lock()->removeTrack(mAudioTrack);
+        });
+    } else {
+        deleteAction->setEnabled(false);
+    }
+
+    menu.exec(event->globalPos());
 }
 
 }
