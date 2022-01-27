@@ -2,15 +2,25 @@
 
 void TrackTests::SetUp()
 {
-    mTrackToTest = std::make_shared<Audio::Track>("Test track", 0, std::make_shared<Audio::Project>("Test project"));
+    mProjectToTest.reset(new Audio::Project("Test project"));
+    mTrackToTest = mProjectToTest->getTrackByIndex(mProjectToTest->createTrack("Test track"));
 }
+
 void TrackTests::TearDown()
-{
-}
+{}
+
 void ProjectTests::SetUp()
 {
-    mProjectToTest = std::make_shared<Audio::Project>("Test project");
+    mProjectToTest = QSharedPointer<Audio::Project>::create("Test project");
 }
+
 void ProjectTests::TearDown()
+{}
+
+void AudioFileLoaderTests::SetUp()
 {
+    mFileLoader.reset(new Audio::AudioFileLoader());
 }
+
+void AudioFileLoaderTests::TearDown()
+{}

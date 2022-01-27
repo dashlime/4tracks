@@ -12,9 +12,8 @@
 class Utils
 {
 public:
-    static long search_closest(const std::vector<double> &sorted_array, double x)
+    static long search_closest(const QVector<double> &sorted_array, double x)
     {
-
         auto iter_geq = std::lower_bound(
             sorted_array.begin(),
             sorted_array.end(),
