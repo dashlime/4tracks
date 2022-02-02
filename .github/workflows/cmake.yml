@@ -1,0 +1,30 @@
+name: CMake
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2.14.0
+      with:
+        dir: ${{github.workspace}}
+        version: 6.0.4
+    
+    - name: Starting setup.sh script
+      run: ${{github.workspace}}/setup.sh
+
+    - name: Configure CMake
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_PREFIX_PATH=${{github.workspace}}/Qt/6.0.4/gcc_64
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build
+
+    - name: Test
+      working-directory: ${{github.workspace}}/build
+      run: ./Tests/4tracks_test
+      
