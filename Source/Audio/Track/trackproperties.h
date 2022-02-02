@@ -38,6 +38,7 @@ signals:
     void volumeChanged();
     void panChanged();
     void savedStateChanged(ProjectProperties::SavedState savedState);
+    void lengthChanged();
 
 private:
     Project *mParentProject;

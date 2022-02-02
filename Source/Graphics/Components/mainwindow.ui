@@ -228,7 +228,7 @@
                     </widget>
                 </item>
                 <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_2">
+                    <layout class="QHBoxLayout" name="timelineNavigationLayout">
                         <property name="sizeConstraint">
                             <enum>QLayout::SetDefaultConstraint</enum>
                         </property>

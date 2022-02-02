@@ -23,7 +23,8 @@ Q_OBJECT
 public:
     Timeline(const QSharedPointer<Audio::Project> &project, QWidget *parent = nullptr);
 
-    QSharedPointer<TimelineProperties> getTimelineProperties() const;
+    [[nodiscard]] QSharedPointer<TimelineProperties> getTimelineProperties() const;
+    [[nodiscard]] QPointer<ClipsGrid> getClipsGrid() const;
 
     void setupComponents();
     void setupLayouts();
@@ -31,6 +32,10 @@ public:
     void setupCallbacks();
 
     void refreshTracksLayout();
+
+    void setNewScrollPosition(int scrollPosInPixels);
+
+    int getClipsGridWidth() const;
 
     void resizeEvent(QResizeEvent *) override;
     void paintEvent(QPaintEvent *) override;
@@ -48,10 +53,12 @@ private:
 
     QSharedPointer<Audio::Project> mProject;
     QPointer<ClipsGrid> mClipsGrid;
+    QWidget mClipsGridViewport;
 
     QWidget mDivisionsMarkerWidget;
     QWidget mDivisionsMarkerSpacer;
     QPointer<DivisionsMarker> mDivisionsMarker;
+    QWidget mDivisionsMarkerViewport;
 
     QWidget mTracksWidget;
     QWidget mTracksSpacer;

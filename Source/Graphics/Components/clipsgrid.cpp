@@ -21,6 +21,11 @@ void ClipsGrid::setupCallbacks()
         updateClipsGeometry();
     });
 
+    connect(mProject->getProjectProperties().get(), &Audio::ProjectProperties::totalLengthChanged, [=]()
+    {
+        updateMinimumSize();
+    });
+
     connect(mTimelineProperties.get(), &TimelineProperties::pixelsPerBeatAmountChanged, [=]()
     {
         updateClipsGeometry();
@@ -61,6 +66,10 @@ void ClipsGrid::setupTrackCallbacks(const QPointer<Audio::Track> &track)
     {
         mClips.at(clipIndex)->deleteLater();
         mClips.remove(clipIndex);
+
+        mTimelineProperties->getCurrentSelection()->clearSelection();
+
+        updateClipsGeometry();
     });
 }
 
@@ -89,6 +98,8 @@ void ClipsGrid::updateClipsGeometry()
 
     mPositionBarWidget.raise();
     mSelectionOverlay.raise();
+
+    updateMinimumSize();
 }
 
 void ClipsGrid::updateSelectionOverlay()
@@ -111,6 +122,14 @@ void ClipsGrid::updateSelectionOverlay()
 
     mSelectionOverlay.areaChanged(QRect(x, y, w, h));
     mSelectionOverlay.raise();
+}
+
+void ClipsGrid::updateMinimumSize()
+{
+    setMinimumSize(samplesToPixels((int) mProject->getTotalLength()),
+                   150 * ((int) mProject->getTracks().size() + 1));
+
+    emit sizeChanged();
 }
 
 double ClipsGrid::getDivision() const
@@ -182,29 +201,28 @@ void ClipsGrid::resizeEvent(QResizeEvent *)
     mPositionBarWidget.raise();
     mSelectionOverlay.raise();
 
-    setMinimumSize(samplesToPixels((int) mProject->getTotalLength()),
-                   150 * ((int) mProject->getTracks().size() + 1));
-
     update();
 }
 
 void ClipsGrid::mousePressEvent(QMouseEvent *event)
 {
-    clickPosition = event->pos();
+    if (event->buttons().testFlag(Qt::LeftButton)) {
+        clickPosition = event->pos();
 
-    mProject->setNextReadPosition(roundPosition(pixelsToSamples(event->pos().x())));
+        mProject->setNextReadPosition(roundPosition(pixelsToSamples(event->pos().x())));
 
-    // selection system
-    for (const auto &clip: mClips) {
-        if (clip->geometry().contains(event->pos())) {
-            mTimelineProperties->getCurrentSelection()->setSelectionType(Selection::ClipsSelected);
-            mTimelineProperties->getCurrentSelection()->addClipToSelection(clip);
-            return;
+        // selection system
+        for (const auto &clip: mClips) {
+            if (clip->geometry().contains(event->pos())) {
+                mTimelineProperties->getCurrentSelection()->setSelectionType(Selection::ClipsSelected);
+                mTimelineProperties->getCurrentSelection()->addClipToSelection(clip);
+                return;
+            }
         }
-    }
 
-    // if nothing have been selected
-    mTimelineProperties->getCurrentSelection()->setSelectionType(Selection::NoSelection);
+        // if nothing have been selected
+        mTimelineProperties->getCurrentSelection()->setSelectionType(Selection::NoSelection);
+    }
 }
 
 void ClipsGrid::mouseReleaseEvent(QMouseEvent *)

@@ -24,6 +24,11 @@ void Project::addTrack(const QSharedPointer<Track> &newTrack)
                 mProjectProperties->updateSavedState(newState);
             });
 
+    connect(newTrack->getTrackProperties().get(), &TrackProperties::lengthChanged, [=]()
+    {
+        mProjectProperties->updateTotalLength();
+    });
+
     emit trackAdded(newTrack->getTrackProperties()->getIndex());
 }
 

@@ -28,10 +28,13 @@ public:
     void updateSavedState(SavedState newSavedState);
     [[nodiscard]] SavedState getSavedState() const;
 
+    void updateTotalLength();
+
 signals:
     void projectNameChanged();
     void bpmChanged();
     void savedStateChanged();
+    void totalLengthChanged();
 
 private:
     QString mProjectName;

@@ -47,4 +47,9 @@ ProjectProperties::SavedState ProjectProperties::getSavedState() const
     return mSavedState;
 }
 
+void ProjectProperties::updateTotalLength()
+{
+    emit totalLengthChanged();
+}
+
 }

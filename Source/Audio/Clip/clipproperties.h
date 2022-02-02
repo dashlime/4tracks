@@ -41,6 +41,7 @@ signals:
     void lengthChanged();
     void clipMoved();
     void savedStateChanged(ProjectProperties::SavedState savedState);
+    void trackLengthChanged();
 
 private:
     Track *mParentTrack;

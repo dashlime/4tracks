@@ -22,6 +22,11 @@ QSharedPointer<TimelineProperties> Timeline::getTimelineProperties() const
     return mTimelineProperties;
 }
 
+QPointer<ClipsGrid> Timeline::getClipsGrid() const
+{
+    return mClipsGrid;
+}
+
 void Timeline::setupComponents()
 {
     mDivisionsMarker = new DivisionsMarker(mClipsGrid->getDivision(), mTimelineProperties->getPixelsPerBeatAmount());
@@ -44,6 +49,19 @@ void Timeline::setupComponents()
     mVerticalScrollView.setWidgetResizable(true);
     mVerticalScrollView.setFocusPolicy(Qt::FocusPolicy::NoFocus);
     mVerticalScrollView.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    mVerticalScrollView.horizontalScrollBar()->hide();
+    mVerticalScrollView.horizontalScrollBar()->setEnabled(false);
+    mVerticalScrollView.setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    mClipsGridViewport.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    mClipsGrid->setParent(&mClipsGridViewport);
+    mClipsGrid->show();
+
+    mDivisionsMarkerViewport.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+    mDivisionsMarker->setParent(&mDivisionsMarkerViewport);
+    mDivisionsMarker->show();
 }
 
 void Timeline::setupLayouts()
@@ -73,10 +91,10 @@ void Timeline::setupLayouts()
     layout()->addWidget(&mVerticalScrollView);
 
     mDivisionsMarkerLayout.addWidget(&mDivisionsMarkerSpacer);
-    mDivisionsMarkerLayout.addWidget(mDivisionsMarker.get());
+    mDivisionsMarkerLayout.addWidget(&mDivisionsMarkerViewport);
 
     mScrollLayout.addWidget(&mTracksWidget);
-    mScrollLayout.addWidget(mClipsGrid.get());
+    mScrollLayout.addWidget(&mClipsGridViewport);
 }
 
 void Timeline::setupCallbacks()
@@ -109,6 +127,20 @@ void Timeline::refreshTracksLayout()
 
     mTracksLayout.addWidget(&mAddTrackButton, Qt::AlignTop);
     mTracksLayout.addWidget(&mTracksSpacer, Qt::AlignTop);
+}
+
+void Timeline::setNewScrollPosition(int scrollPosInPixels)
+{
+    int newX = -scrollPosInPixels;
+    int newWidth = mClipsGridViewport.width() + scrollPosInPixels;
+
+    mClipsGrid->setGeometry(newX, 0, newWidth, mClipsGrid->height());
+    mDivisionsMarker->setGeometry(newX, 0, newWidth, mDivisionsMarker->height());
+}
+
+int Timeline::getClipsGridWidth() const
+{
+    return mVerticalScrollView.width() - 151;
 }
 
 void Timeline::resizeEvent(QResizeEvent *)

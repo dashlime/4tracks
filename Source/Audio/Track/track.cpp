@@ -39,6 +39,10 @@ bool Track::addClip(const QSharedPointer<Clip> &clip)
         return false;
 
     emit clipAdded(newClipIndex);
+    connect(clip->getClipProperties().get(), &ClipProperties::trackLengthChanged, [=]()
+    {
+        emit mProperties->lengthChanged();
+    });
 
     return true;
 }

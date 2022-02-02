@@ -6,11 +6,14 @@ namespace Graphics
 
 MainWindow::MainWindow(const QString &projectToLoad, QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow), mProject(QSharedPointer<Audio::Project>::create("Untitled Project")),
-      mUiTimeline(mProject)
+      mUiTimeline(mProject), mTimelineScrollWidget(&mUiTimeline, mProject)
 {
     ui->setupUi(this);
 
     setupStylesheet();
+
+    ui->timelineNavigationLayout->insertWidget(1, &mTimelineScrollWidget);
+    ui->timelineNavigationLayout->setStretch(1, 1);
 
     // set new project settings
     mProject->getProjectProperties()->setBpm(120, false);

@@ -28,6 +28,7 @@ public:
 
     void updateClipsGeometry();
     void updateSelectionOverlay();
+    void updateMinimumSize();
 
     [[nodiscard]] double getDivision() const;
 
@@ -44,6 +45,9 @@ public:
 
 public slots:
     void drawPositionBar();
+
+signals:
+    void sizeChanged();
 
 private:
     Clip *mMovingClip = nullptr;
