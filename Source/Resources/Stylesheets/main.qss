@@ -1,0 +1,166 @@
+QMainWindow
+{
+    background-color: white;
+}
+
+QPushButton
+{
+    background-color: #D4D4D8;
+    color: black;
+    border: none;
+    padding: 5px;
+    font-weight: 500;
+}
+
+QPushButton:hover:!pressed:!checked
+{
+    background-color: #E4E4E7;
+}
+
+QPushButton:pressed
+{
+    background-color: #A1A1AA;
+}
+QPushButton:checked
+{
+    background-color: #A1A1AA;
+}
+
+QSpinBox
+{
+    background-color: #D4D4D8;
+    border: none;
+    height: 25px;
+    color: black;
+    padding-right: 15px;
+}
+
+QLabel
+{
+    color: black;
+}
+
+QScrollArea
+{
+    background: transparent;
+    border: none;
+}
+
+QScrollArea > QWidget > QWidget
+{
+    background: transparent;
+}
+
+Graphics--Timeline
+{
+    background-color: #F4F4F5;
+    border: 3px solid #A1A1AA;
+    border-radius: 3px;
+}
+
+Graphics--Timeline:focus
+{
+    border: 3px solid #71717A;
+}
+
+QScrollBar:vertical
+{
+    background:rgba(0,0,0,0);
+    width:14px;
+    margin: 3px;
+}
+
+QScrollBar:horizontal
+{
+    background:rgba(0,0,0,0);
+    height:14px;
+    margin: 3px;
+}
+
+QScrollBar::handle
+{
+    background: #A1A1AA;
+    border-radius: 4px;
+}
+
+QScrollBar::add-line, QScrollBar::sub-line
+{
+    background: none;
+}
+
+QScrollBar::left-arrow, QScrollBar::right-arrow, QScrollBar::down-arrow, QScrollBar::up-arrow, QScrollBar::add-page
+{
+    background: none;
+}
+
+Graphics--TimelineScrollWidget:horizontal
+{
+    background-color: #F4F4F5;
+    height: 25px;
+    margin: 3px;
+    padding: 2px;
+}
+
+Graphics--TimelineScrollWidget::handle
+{
+    height: 20px;
+    background-color: white;
+    border: 1px solid #A1A1AA;
+    border-radius: none;
+}
+
+QDialog
+{
+    background-color: white;
+}
+
+QTabWidget::pane
+{
+    background-color: #F4F4F5;
+    border: none;
+    padding: 5px;
+}
+
+QTabBar::tab
+{
+    background-color: #D4D4D8;
+    margin-top: 2px;
+    border: none;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    padding: 5px;
+    font-weight: 500;
+}
+
+QTabBar::tab:selected
+{
+    background-color: #F4F4F5;
+}
+
+QGroupBox
+{
+    border: none;
+    padding-top: 20px;
+    font-weight: 500;
+}
+
+QComboBox
+{
+    border: none;
+    background-color: #D4D4D8;
+    padding-right: 10px;
+    padding-left: 5px;
+    height: 25px;
+    font-weight: 500;
+}
+
+QComboBox::drop-down
+{
+    border: none;
+}
+
+QComboBox::down-arrow
+{
+    image: url(:/icons/combobox_down_arrow.png);
+    border: none;
+}
