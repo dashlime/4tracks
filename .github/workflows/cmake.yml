@@ -8,18 +8,26 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    
+    - name: Cache Qt
+      id: cache-qt
+      uses: actions/cache@v1  # not v2!
+      with:
+        path: $Qt6_DIR
+        key: ${{runner.os}}-QtCache
 
     - name: Install Qt
       uses: jurplel/install-qt-action@v2.14.0
       with:
         dir: ${{github.workspace}}
+        cached: ${{steps.cache-qt.outputs.cache-hit}}
         version: 6.0.4
     
     - name: Starting setup.sh script
       run: ${{github.workspace}}/setup.sh
 
     - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_PREFIX_PATH=${{github.workspace}}/Qt/6.0.4/gcc_64
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_PREFIX_PATH=$Qt6_DIR
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build
