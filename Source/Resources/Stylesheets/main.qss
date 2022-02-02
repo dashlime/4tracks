@@ -93,6 +93,22 @@ QScrollBar::left-arrow, QScrollBar::right-arrow, QScrollBar::down-arrow, QScroll
     background: none;
 }
 
+Graphics--TimelineScrollWidget:horizontal
+{
+    background-color: #F4F4F5;
+    height: 25px;
+    margin: 3px;
+    padding: 2px;
+}
+
+Graphics--TimelineScrollWidget::handle
+{
+    height: 20px;
+    background-color: white;
+    border: 1px solid #A1A1AA;
+    border-radius: none;
+}
+
 QDialog
 {
     background-color: white;

@@ -13,6 +13,8 @@ These instructions will get you a copy of the project up and running on your loc
 
 For building this project, you need Qt6 library, that you can find [here](http://qt.io/). You can download Qt Creator too, it will help building project
 
+Also, you will need CMake >= 3.16
+
 ### Building
 
 To build this project, first clone it :
@@ -21,17 +23,32 @@ To build this project, first clone it :
 git clone https://github.com/devanonyme-fr/4tracks
 ```
 
-Then, open it in qt creator by selecting 4tracks/CMakeLists.txt, and select Qt6 kit to build it
-You can also build it with cmake, but it isn't recommended.
+Then, run setup.sh script, it will automatically download JUCE and googletest libraries and setup JUCE/CMakeLists.txt file
+
+```
+cd 4tracks
+./setup.sh
+```
+
+#### Qt Creator
+
+If you want to use Qt Creator, open it in by selecting 4tracks/CMakeLists.txt, and select Qt6 kit in the Projects panel.
+
+#### CLion
+
+For CLion users, you need to open root CMakeLists.txt, then set the `-DCMAKE_PREFIX_PATH=YOUR/QT6/PATH` compiler flag in File->Settings->Build, Execution, Deployment->CMake->CMake options
 
 ## Running the tests
 
 In qt creator, just go to Test Results panel and start tests by clicking green arrow
 
+For others IDEs, build and run 4tracks_test target
+
 ## Built With
 
-* [Qt](http://qt.io/) - The GUI framework
+* [Qt](https://qt.io/) - The GUI framework
 * [JUCE](https://juce.com/) - Audio library
+* [Google Test](https://github.com/google/googletest) - Google testing framework
 
 ## Contributing
 

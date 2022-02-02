@@ -1,15 +1,16 @@
-#include "Graphics/mainwindow.h"
+#include "Graphics/Components/mainwindow.h"
 
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
-    w.anotherInstanceRequired = [=](QString projectFileToLoad) {
-        MainWindow *newWindow = new MainWindow(projectFileToLoad);
+    Graphics::MainWindow w;
+    QObject::connect(&w, &Graphics::MainWindow::anotherInstanceRequired, [=](const QString &projectFileToLoad)
+    {
+        auto *newWindow = new Graphics::MainWindow(projectFileToLoad);
         newWindow->show();
-    };
+    });
     w.show();
-    return a.exec();
+    return QApplication::exec();
 }
