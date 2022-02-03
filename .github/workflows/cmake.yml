@@ -22,6 +22,9 @@ jobs:
         dir: ${{github.workspace}}
         cached: ${{steps.cache-qt.outputs.cache-hit}}
         version: 6.0.4
+
+    - name: Installing dependancies packages
+      run: apt-get install -y libcurl4-gnutls-dev
     
     - name: Starting setup.sh script
       run: ${{github.workspace}}/setup.sh
