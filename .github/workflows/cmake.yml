@@ -24,10 +24,11 @@ jobs:
         version: 6.0.4
 
     - name: Installing dependancies packages
-      run: apt-get install -y libcurl4-gnutls-dev
+      run: sudo apt-get install -y libcurl4-gnutls-dev
     
     - name: Starting setup.sh script
-      run: ${{github.workspace}}/setup.sh
+      working-directory: ${{github.workspace}}
+      run: ./setup.sh
 
     - name: Configure CMake
       run: cmake -B ${{github.workspace}}/build -DCMAKE_PREFIX_PATH=$Qt6_DIR
