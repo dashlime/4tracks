@@ -1,4 +1,4 @@
-[![Tests](https://github.com/devanonyme-fr/4tracks/actions/workflows/cmake.yml/badge.svg?branch=master)](https://github.com/devanonyme-fr/4tracks/actions/workflows/cmake.yml)
+[![Tests](https://github.com/devanonyme-fr/4tracks/actions/workflows/cmake.yml/badge.svg)](https://github.com/devanonyme-fr/4tracks/actions/workflows/cmake.yml)
 
 # 4tracks
 4tracks is a DAW written in C++. It's completly free and opensource. It's under GPLv3 license and it uses Qt6 and JUCE libraries. It is inspiring from Ableton software
