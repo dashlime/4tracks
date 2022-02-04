@@ -1,4 +1,4 @@
-name: CMake
+name: Unit tests
 
 on: [push]
 
@@ -8,7 +8,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    
+
     - name: Cache Qt
       id: cache-qt
       uses: actions/cache@v1  # not v2!
