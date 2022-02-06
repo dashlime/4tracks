@@ -42,6 +42,11 @@ void ClipsGrid::setupCallbacks()
         update();
     });
 
+    connect(mProject.get(), &Audio::Project::trackRemoved, [=](int trackIndex)
+    {
+        updateClipsGeometry();
+    });
+
     connect(&mPositionBarTimer, &QTimer::timeout, this, &ClipsGrid::drawPositionBar);
     mPositionBarTimer.start(100);
 }

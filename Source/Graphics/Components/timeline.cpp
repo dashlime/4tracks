@@ -73,6 +73,9 @@ void Timeline::setupLayouts()
     mTracksLayout.setSpacing(1);
     mTracksLayout.setContentsMargins(0, 0, 0, 0);
 
+    mTracksLayout.addWidget(&mAddTrackButton, Qt::AlignTop);
+    mTracksLayout.addWidget(&mTracksSpacer, Qt::AlignTop);
+
     mTracksWidget.setLayout(&mTracksLayout);
     mTracksWidget.setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 
@@ -101,32 +104,22 @@ void Timeline::setupCallbacks()
 {
     connect(mProject.get(), &Audio::Project::trackAdded, [=](int index)
     {
-        mTracks.insert(index, new Track(mProject->getTrackByIndex(index)));
-        refreshTracksLayout();
+        auto *track = new Track(mProject->getTrackByIndex(index));
+        mTracks.insert(index, track);
+        mTracksLayout.insertWidget(index, track);
     });
 
     connect(mProject.get(), &Audio::Project::trackRemoved, [=](int index)
     {
+        mTracksLayout.removeWidget(mTracks.at(index));
+        mTracks.at(index)->deleteLater();
         mTracks.remove(index);
-        refreshTracksLayout();
     });
 
     connect(mTimelineProperties.get(), &TimelineProperties::zoomLevelChanged, [=]()
     {
         mDivisionsMarker->refresh(mClipsGrid->getDivision(), mTimelineProperties->getPixelsPerBeatAmount());
     });
-}
-
-void Timeline::refreshTracksLayout()
-{
-    Utils::clearLayout(&mTracksLayout);
-
-    for (const auto &track: mTracks) {
-        mTracksLayout.addWidget(track, Qt::AlignTop);
-    }
-
-    mTracksLayout.addWidget(&mAddTrackButton, Qt::AlignTop);
-    mTracksLayout.addWidget(&mTracksSpacer, Qt::AlignTop);
 }
 
 void Timeline::setNewScrollPosition(int scrollPosInPixels)
