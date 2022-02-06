@@ -31,8 +31,6 @@ public:
 
     void setupCallbacks();
 
-    void refreshTracksLayout();
-
     void setNewScrollPosition(int scrollPosInPixels);
 
     int getClipsGridWidth() const;

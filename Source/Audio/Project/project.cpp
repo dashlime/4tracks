@@ -63,9 +63,6 @@ bool Project::canRemoveTrack() const
 
 void Project::removeTrack(QSharedPointer<Track> trackToRemove)
 {
-    if (!canRemoveTrack())
-        return;
-
     auto it = mTracks.begin();
     for (auto &track: mTracks) {
         if (track == trackToRemove) {
@@ -89,7 +86,9 @@ void Project::removeTrack(QSharedPointer<Track> trackToRemove)
 void Project::clearAllTracks()
 {
     mMixerAudioSource.removeAllInputs();
-    mTracks.clear();
+    for (const auto& track : mTracks) {
+        removeTrack(track);
+    }
 }
 
 void Project::rearrangeTrackIndexes()

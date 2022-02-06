@@ -28,11 +28,8 @@ TEST_F(ProjectTests, CanRemoveTrack)
 TEST_F(ProjectTests, RemoveTrack)
 {
     int trackToRemove = mProjectToTest->createTrack("Test track");
-
-    mProjectToTest->removeTrack(mProjectToTest->getTrackByIndex(trackToRemove));
-    ASSERT_EQ(mProjectToTest->getTracks().size(), 1);
-
     mProjectToTest->createTrack("Test track");
+
     mProjectToTest->removeTrack(mProjectToTest->getTrackByIndex(trackToRemove));
 
     EXPECT_EQ(mProjectToTest->getTracks().size(), 1);
