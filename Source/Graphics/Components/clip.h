@@ -8,6 +8,7 @@
 #include "Audio/Track/track.h"
 #include "Graphics/Widgets/elidedlabel.h"
 #include "audiothumbnail.h"
+#include "Audio/Project/project.h"
 
 namespace Graphics
 {

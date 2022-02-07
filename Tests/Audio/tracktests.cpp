@@ -6,11 +6,11 @@ TEST_F(TrackTests, GetTypeWithDifferentClips)
 {
     EXPECT_EQ(mTrackToTest->getType(), Audio::Track::ANY_TRACK);
 
-    mTrackToTest->addClip(QSharedPointer<Audio::AudioClip>::create("", mTrackToTest.get()));
+    mProjectToTest->createAudioClip(mTrackToTest, "");
     EXPECT_EQ(mTrackToTest->getType(), Audio::Track::AUDIO_TRACK);
 
     SetUp();
-    mTrackToTest->addClip(QSharedPointer<Audio::MidiClip>::create(mTrackToTest.get()));
+    mProjectToTest->createMIDIClip(mTrackToTest);
     EXPECT_EQ(mTrackToTest->getType(), Audio::Track::MIDI_TRACK);
 }
 
@@ -23,20 +23,17 @@ TEST_F(TrackTests, AddClip)
 
 TEST_F(TrackTests, AddClipWithDifferentType)
 {
-    auto audioClip = QSharedPointer<Audio::AudioClip>::create("", mTrackToTest.get());
-    mTrackToTest->addClip(audioClip);
+    mProjectToTest->createAudioClip(mTrackToTest, "");
+    int result = mProjectToTest->createMIDIClip(mTrackToTest);
 
-    auto midiClip = QSharedPointer<Audio::MidiClip>::create(mTrackToTest.get());
-    EXPECT_FALSE(mTrackToTest->addClip(midiClip));
+    EXPECT_EQ(result, -1);
     EXPECT_EQ(mTrackToTest->getClips().size(), 1);
-    EXPECT_NE(mTrackToTest->getClips().at(0).get(), midiClip.get());
 }
 
 TEST_F(TrackTests, RemoveClip)
 {
-    auto audioClip = QSharedPointer<Audio::AudioClip>::create("", mTrackToTest.get());
-    mTrackToTest->addClip(audioClip);
+    int clipID = mProjectToTest->createAudioClip(mTrackToTest, "");
 
-    mTrackToTest->removeClip(audioClip);
+    mTrackToTest->removeClip(mProjectToTest->getClips().at(clipID));
     EXPECT_EQ(mTrackToTest->getClips().size(), 0);
 }

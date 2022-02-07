@@ -63,3 +63,19 @@ TEST_F(ProjectTests, CreateTrack)
     EXPECT_EQ(firstIndex, 0);
     EXPECT_EQ(secondIndex, 1);
 }
+
+TEST_F(ProjectTests, CreateAudioClip)
+{
+    mProjectToTest->createTrack("Test track");
+    mProjectToTest->createAudioClip(mProjectToTest->getTrackByIndex(0), "");
+
+    EXPECT_EQ(mProjectToTest->getTrackByIndex(0)->getClips().size(), 1);
+}
+
+TEST_F(ProjectTests, CreateMIDIClip)
+{
+    mProjectToTest->createTrack("Test track");
+    mProjectToTest->createMIDIClip(mProjectToTest->getTrackByIndex(0));
+
+    EXPECT_EQ(mProjectToTest->getTrackByIndex(0)->getClips().size(), 1);
+}

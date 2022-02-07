@@ -23,7 +23,6 @@ public:
                        QWidget *parent = nullptr);
 
     void setupCallbacks();
-    void setupTrackCallbacks(const QPointer<Audio::Track> &track);
     void setupClipCallbacks(const QPointer<Audio::Clip> &clip);
 
     void updateClipsGeometry();

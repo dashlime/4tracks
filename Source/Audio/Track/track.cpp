@@ -22,23 +22,22 @@ int Track::getType() const
 
 bool Track::addClip(const QSharedPointer<Clip> &clip)
 {
-    int newClipIndex = (int) mClips.size();
+    int clipID = (int) mClips.size();
     int type = getType();
 
     if (clip->getType() == Clip::AUDIO_CLIP && type == AUDIO_TRACK) {
         mClips.push_back(clip);
-        resizeClipsWhenClipAdded(newClipIndex);
+        resizeClipsWhenClipAdded(clipID);
     }
     else if (clip->getType() == Clip::MIDI_CLIP && type == MIDI_TRACK) {
         mClips.push_back(clip);
-        resizeClipsWhenClipAdded(newClipIndex);
+        resizeClipsWhenClipAdded(clipID);
     }
     else if (type == ANY_TRACK)
         mClips.push_back(clip);
     else
         return false;
 
-    emit clipAdded(newClipIndex);
     connect(clip->getClipProperties().get(), &ClipProperties::trackLengthChanged, [=]()
     {
         emit mProperties->lengthChanged();
@@ -52,18 +51,14 @@ QVector<QSharedPointer<Clip>> Track::getClips()
     return mClips;
 }
 
-void Track::removeClip(QSharedPointer<Clip> clipToRemove)
+void Track::removeClip(const QSharedPointer<Clip>& clipToRemove)
 {
     auto it = mClips.begin();
 
     for (auto &clip: mClips) {
-        if (clip.get() == clipToRemove.get()) {
-            clipToRemove.reset();
-
+        if (clip == clipToRemove) {
             mClips.erase(it);
             mClipPlaying = nullptr;
-
-            emit clipRemoved((int) std::distance(mClips.begin(), it));
         }
         it++;
     }

@@ -100,7 +100,7 @@ void Clip::contextMenuEvent(QContextMenuEvent *event)
 
     connect(deleteAction, &QAction::triggered, [this]()
     {
-        mClip->getClipProperties()->getParentTrack()->removeClip(mClip);
+        mClip->getClipProperties()->getParentTrack()->getTrackProperties()->getParentProject()->removeClip(mClip);
     });
 
     menu.exec(event->globalPos());
