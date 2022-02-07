@@ -122,6 +122,7 @@ void MainWindow::setupUICallbacks()
     {
         auto *dialog = new SettingsDialog();
         dialog->setStyleSheet(styleSheet());
+        dialog->setAttribute(Qt::WA_DeleteOnClose, true);
         dialog->show();
         connect(dialog, &SettingsDialog::settingsApplied, [=]()
         {
