@@ -30,7 +30,7 @@ public:
     bool addClip(const QSharedPointer<Clip> &clip);
     QVector<QSharedPointer<Clip>> getClips();
 
-    void removeClip(QSharedPointer<Clip> clipToRemove);
+    void removeClip(const QSharedPointer<Clip>& clipToRemove);
 
     void setNextReadPosition(juce::int64 newPosition) override;
     [[nodiscard]] juce::int64 getNextReadPosition() const override;
@@ -46,10 +46,6 @@ public:
     {
         ANY_TRACK, AUDIO_TRACK, MIDI_TRACK
     };
-
-signals:
-    void clipAdded(int index);
-    void clipRemoved(int index);
 
 private:
     void resizeClipsWhenClipAdded(int newClipIndex);

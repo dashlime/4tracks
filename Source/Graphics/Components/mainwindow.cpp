@@ -190,8 +190,7 @@ void MainWindow::importFile()
         // check if is there empty tracks to import file
         for (const auto &track: mProject->getTracks()) {
             if (track->getType() == Audio::Track::ANY_TRACK) {
-                if (!track->addClip(QSharedPointer<Audio::AudioClip>::create(fileDialog.selectedFiles().at(0),
-                                                                             track.get()))) {
+                if (mProject->createAudioClip(track, fileDialog.selectedFiles().at(0)) == -1) {
                     qDebug() << "Error when adding clip";
                 }
                 return;
@@ -201,7 +200,7 @@ void MainWindow::importFile()
         // else import it to a new track
         int trackID = mProject->createTrack("Audio Track");
         auto track = mProject->getTrackByIndex(trackID);
-        if (!track->addClip(QSharedPointer<Audio::AudioClip>::create(fileDialog.selectedFiles().at(0), track.get()))) {
+        if (mProject->createAudioClip(track, fileDialog.selectedFiles().at(0)) == -1) {
             qDebug() << "Error when adding clip";
         }
     }

@@ -37,6 +37,22 @@ QVector<QSharedPointer<Track>> Project::getTracks() const
     return mTracks;
 }
 
+bool Project::addClip(const QSharedPointer<Clip> &newClip)
+{
+    bool result = newClip->getClipProperties()->getParentTrack()->addClip(newClip);
+    if (result) {
+        mClips.append(newClip);
+        emit clipAdded((int) mClips.size() - 1);
+    }
+
+    return result;
+}
+
+QVector<QSharedPointer<Clip>> Project::getClips() const
+{
+    return mClips;
+}
+
 int Project::createTrack(const QString &trackName)
 {
     rearrangeTrackIndexes();
@@ -45,6 +61,32 @@ int Project::createTrack(const QString &trackName)
 
     addTrack(QSharedPointer<Audio::Track>::create(trackName, newTrackIndex, QPointer<Audio::Project>(this)));
     return newTrackIndex;
+}
+
+int Project::createAudioClip(const QSharedPointer<Track>& parentTrack, const QString &filePath)
+{
+    if (parentTrack == nullptr)
+        return -1;
+
+    bool result = addClip(QSharedPointer<Audio::AudioClip>::create(filePath, parentTrack.get()));
+
+    if (!result)
+        return -1;
+
+    return (int) mClips.size() - 1;
+}
+
+int Project::createMIDIClip(const QSharedPointer<Track>& parentTrack)
+{
+    if (parentTrack == nullptr)
+        return -1;
+
+    bool result = addClip(QSharedPointer<Audio::MidiClip>::create(parentTrack.get()));
+
+    if (!result)
+        return -1;
+
+    return (int) mClips.size() - 1;
 }
 
 QSharedPointer<Track> Project::getTrackByIndex(int trackIndex) const
@@ -66,11 +108,14 @@ void Project::removeTrack(QSharedPointer<Track> trackToRemove)
     auto it = mTracks.begin();
     for (auto &track: mTracks) {
         if (track == trackToRemove) {
+            for (auto &clip: trackToRemove->getClips()) {
+                removeClip(clip);
+            }
+
             int trackIndex = trackToRemove->getTrackProperties()->getIndex();
 
             mMixerAudioSource.removeInputSource(trackToRemove.get());
             trackToRemove.reset();
-
             mTracks.erase(it);
 
             rearrangeTrackIndexes();
@@ -80,6 +125,25 @@ void Project::removeTrack(QSharedPointer<Track> trackToRemove)
             return;
         }
         it++;
+    }
+}
+
+void Project::removeClip(QSharedPointer<Clip> clipToRemove)
+{
+    auto it = mClips.begin();
+    for (auto &clip: mClips) {
+        if (clip == clipToRemove) {
+            int clipID = (int) std::distance(mClips.begin(), it);
+
+            clipToRemove->getClipProperties()->getParentTrack()->removeClip(clipToRemove);
+            clipToRemove.reset();
+
+            mClips.erase(it);
+
+            emit clipRemoved(clipID);
+            return;
+        }
+        it ++;
     }
 }
 

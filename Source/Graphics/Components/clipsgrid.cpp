@@ -38,7 +38,6 @@ void ClipsGrid::setupCallbacks()
 
     connect(mProject.get(), &Audio::Project::trackAdded, [=](int trackIndex)
     {
-        setupTrackCallbacks(mProject->getTrackByIndex(trackIndex).get());
         update();
     });
 
@@ -47,35 +46,32 @@ void ClipsGrid::setupCallbacks()
         updateClipsGeometry();
     });
 
-    connect(&mPositionBarTimer, &QTimer::timeout, this, &ClipsGrid::drawPositionBar);
-    mPositionBarTimer.start(100);
-}
-
-void ClipsGrid::setupTrackCallbacks(const QPointer<Audio::Track> &track)
-{
-    connect(track.get(), &Audio::Track::clipAdded, [=](int clipIndex)
+    connect(mProject.get(), &Audio::Project::clipAdded, [=](int clipID)
     {
         QPointer<Clip> clipUi = new Clip(this);
         clipUi->show();
 
-        auto newClip = track->getClips().at(clipIndex);
+        auto newClip = mProject->getClips().at(clipID);
         clipUi->setClip(newClip);
         setupClipCallbacks(newClip.get());
 
-        mClips.insert(clipIndex, clipUi);
+        mClips.insert(clipID, clipUi);
 
         updateClipsGeometry();
     });
 
-    connect(track.get(), &Audio::Track::clipRemoved, [=](int clipIndex)
+    connect(mProject.get(), &Audio::Project::clipRemoved, [=](int clipID)
     {
-        mClips.at(clipIndex)->deleteLater();
-        mClips.remove(clipIndex);
+        mClips.at(clipID)->deleteLater();
+        mClips.remove(clipID);
 
         mTimelineProperties->getCurrentSelection()->clearSelection();
 
         updateClipsGeometry();
     });
+
+    connect(&mPositionBarTimer, &QTimer::timeout, this, &ClipsGrid::drawPositionBar);
+    mPositionBarTimer.start(100);
 }
 
 void ClipsGrid::setupClipCallbacks(const QPointer<Audio::Clip> &clip)

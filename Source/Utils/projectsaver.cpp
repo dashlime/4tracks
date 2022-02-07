@@ -94,8 +94,8 @@ void ProjectSaver::openProject(QFile projectFile)
         QDomElement domClip = domTrack.firstChild().toElement();
         while (!domClip.isNull()) {
             if (trackType == Audio::Track::AUDIO_TRACK) {
-                auto clip = QSharedPointer<Audio::AudioClip>::create(domClip.attribute("path"), track.get());
-                track->addClip(clip);
+                int id = mProject->createAudioClip(track, domClip.attribute("path"));
+                auto clip = mProject->getClips().at(id);
 
                 clip->getClipProperties()->setName(domClip.attribute("name"));
                 clip->getClipProperties()->setPositionInSamples(domClip.attribute("position").toInt());
