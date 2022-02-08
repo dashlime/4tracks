@@ -30,7 +30,7 @@ public:
     bool addClip(const QSharedPointer<Clip> &clip);
     QVector<QSharedPointer<Clip>> getClips();
 
-    void removeClip(const QSharedPointer<Clip>& clipToRemove);
+    void removeClip(const QSharedPointer<Clip> &clipToRemove);
 
     void setNextReadPosition(juce::int64 newPosition) override;
     [[nodiscard]] juce::int64 getNextReadPosition() const override;

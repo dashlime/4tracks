@@ -51,7 +51,7 @@ QVector<QSharedPointer<Clip>> Track::getClips()
     return mClips;
 }
 
-void Track::removeClip(const QSharedPointer<Clip>& clipToRemove)
+void Track::removeClip(const QSharedPointer<Clip> &clipToRemove)
 {
     auto it = mClips.begin();
 

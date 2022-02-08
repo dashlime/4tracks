@@ -8,7 +8,7 @@
 namespace Graphics
 {
 
-class TimelineScrollWidget : public QScrollBar
+class TimelineScrollWidget: public QScrollBar
 {
 Q_OBJECT
 public:

@@ -3,7 +3,8 @@
 namespace Graphics
 {
 
-TimelineScrollWidget::TimelineScrollWidget(const QPointer<Timeline> &timeline, const QSharedPointer<Audio::Project> &project)
+TimelineScrollWidget::TimelineScrollWidget(const QPointer<Timeline> &timeline,
+                                           const QSharedPointer<Audio::Project> &project)
     : QScrollBar(Qt::Horizontal), mTimeline(timeline), mProject(project)
 {
     setMinimum(0);

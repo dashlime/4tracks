@@ -29,8 +29,8 @@ public:
     QVector<QSharedPointer<Clip>> getClips() const;
 
     int createTrack(const QString &trackName);
-    int createAudioClip(const QSharedPointer<Track>& parentTrack, const QString &filePath);
-    int createMIDIClip(const QSharedPointer<Track>& parentTrack);
+    int createAudioClip(const QSharedPointer<Track> &parentTrack, const QString &filePath);
+    int createMIDIClip(const QSharedPointer<Track> &parentTrack);
 
     QSharedPointer<Track> getTrackByIndex(int trackIndex) const;
 

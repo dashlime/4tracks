@@ -63,7 +63,7 @@ int Project::createTrack(const QString &trackName)
     return newTrackIndex;
 }
 
-int Project::createAudioClip(const QSharedPointer<Track>& parentTrack, const QString &filePath)
+int Project::createAudioClip(const QSharedPointer<Track> &parentTrack, const QString &filePath)
 {
     if (parentTrack == nullptr)
         return -1;
@@ -76,7 +76,7 @@ int Project::createAudioClip(const QSharedPointer<Track>& parentTrack, const QSt
     return (int) mClips.size() - 1;
 }
 
-int Project::createMIDIClip(const QSharedPointer<Track>& parentTrack)
+int Project::createMIDIClip(const QSharedPointer<Track> &parentTrack)
 {
     if (parentTrack == nullptr)
         return -1;
@@ -143,14 +143,14 @@ void Project::removeClip(QSharedPointer<Clip> clipToRemove)
             emit clipRemoved(clipID);
             return;
         }
-        it ++;
+        it++;
     }
 }
 
 void Project::clearAllTracks()
 {
     mMixerAudioSource.removeAllInputs();
-    for (const auto& track : mTracks) {
+    for (const auto &track: mTracks) {
         removeTrack(track);
     }
 }
