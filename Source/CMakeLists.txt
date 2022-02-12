@@ -4,7 +4,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-add_executable(4tracks ${SOURCES})
+set(CMAKE_CXX_FLAGS "-fprofile-arcs -ftest-coverage")
 
 set(LIBS
         Qt6::Core
@@ -15,12 +15,14 @@ set(LIBS
         asound
         curl
         dl
+	gcov
         )
 
-target_link_libraries(4tracks PUBLIC ${LIBS})
-
 # create static lib for unit tests
-
 list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp")
 add_library(4tracks_lib STATIC ${SOURCES})
 target_link_libraries(4tracks_lib PUBLIC ${LIBS})
+
+add_executable(4tracks main.cpp)
+target_link_libraries(4tracks PUBLIC ${LIBS} 4tracks_lib)
+target_link_options(4tracks PUBLIC --coverage)

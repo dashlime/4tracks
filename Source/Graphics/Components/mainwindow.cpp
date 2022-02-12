@@ -181,7 +181,16 @@ void MainWindow::reloadDeviceManager()
 void MainWindow::importFile()
 {
     QFileDialog fileDialog;
-    fileDialog.setNameFilter("All audio files (*.wav)");
+
+    QString nameFilter = "All audio files (";
+    for (const QString &name: SUPPORTED_AUDIO_FILENAMES) {
+        nameFilter +="*." + name + " ";
+    }
+    // remove last space
+    nameFilter.chop(1);
+    nameFilter += ")";
+
+    fileDialog.setNameFilter(nameFilter);
     fileDialog.setFileMode(QFileDialog::ExistingFile);
     fileDialog.setAcceptMode(QFileDialog::AcceptOpen);
     if (fileDialog.exec()) {

@@ -13,8 +13,9 @@ static const QVector<double> DEFAULT_DIVISIONS = {1 / 16.f, 1 / 8.f, 1 / 4.f, 1 
 
 #define MP3 "mp3"
 #define WAV "wav"
+#define AIFF "aiff"
 
-const static QStringList SUPPORTED_AUDIO_FILENAMES = {MP3, WAV};
+const static QStringList SUPPORTED_AUDIO_FILENAMES = {MP3, WAV, AIFF};
 
 #define DEFAULT_TRACK_HEIGHT 120
 

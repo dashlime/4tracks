@@ -24,7 +24,7 @@ jobs:
         version: 6.0.4
 
     - name: Installing dependancies packages
-      run: sudo apt-get install -y libcurl4-gnutls-dev libasound2-dev
+      run: sudo apt-get install -y lcov libcurl4-gnutls-dev libasound2-dev
     
     - name: Starting setup.sh script
       working-directory: ${{github.workspace}}
@@ -36,7 +36,14 @@ jobs:
     - name: Build
       run: cmake --build ${{github.workspace}}/build
 
-    - name: Test
+    - name: Run tests
       working-directory: ${{github.workspace}}/build
-      run: ./Tests/4tracks_test
+      run: ./Tests/4tracks_tests
+
+    - name: Generate code coverage report
+      working-directory: ${{github.workspace}}/build
+      run: lcov --no-external --directory Source/CMakeFiles/4tracks_lib.dir/ --base-directory ../Source --capture --output coverage-summary.info
       
+    - uses: codecov/codecov-action@v2
+      with:
+        files: ${{github.workspace}}/build/coverage-summary.info

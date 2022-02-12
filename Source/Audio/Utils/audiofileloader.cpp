@@ -15,6 +15,9 @@ void AudioFileLoader::initialiseAudioFormats()
 
     if (SUPPORTED_AUDIO_FILENAMES.contains(MP3))
         mFormatManager.registerFormat(new juce::MP3AudioFormat(), false);
+
+    if (SUPPORTED_AUDIO_FILENAMES.contains(AIFF))
+        mFormatManager.registerFormat(new juce::AiffAudioFormat(), false);
 }
 
 QSharedPointer<juce::AudioSampleBuffer> AudioFileLoader::loadFile(const QFile &fileToLoad)
