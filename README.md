@@ -1,4 +1,5 @@
 [![Unit tests](https://github.com/devanonyme-fr/4tracks/actions/workflows/tests.yml/badge.svg)](https://github.com/devanonyme-fr/4tracks/actions/workflows/tests.yml)
+[![Code coverage](https://codecov.io/gh/devanonyme-fr/4tracks/branch/master/graph/badge.svg?token=FQKEGJSOX5)](https://codecov.io/gh/devanonyme-fr/4tracks)
 
 # 4tracks
 4tracks is a DAW written in C++. It's completly free and opensource. It's under GPLv3 license and it uses Qt6 and JUCE libraries. It is inspiring from Ableton software
