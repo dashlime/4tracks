@@ -37,3 +37,15 @@ TEST_F(TrackTests, RemoveClip)
     mTrackToTest->removeClip(mProjectToTest->getClips().at(clipID));
     EXPECT_EQ(mTrackToTest->getClips().size(), 0);
 }
+
+TEST_F(TrackTests, GetTotalLength)
+{
+    EXPECT_EQ(mTrackToTest->getTotalLength(), 0);
+
+    int clipID = mProjectToTest->createMIDIClip(mTrackToTest);
+    auto clip = mProjectToTest->getClips().at(clipID);
+    clip->getClipProperties()->setLengthInSamples(1000);
+    clip->getClipProperties()->setPositionInSamples(2000);
+
+    EXPECT_EQ(mTrackToTest->getTotalLength(), 1000 + 2000);
+}

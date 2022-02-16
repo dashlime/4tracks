@@ -30,3 +30,13 @@ public:
 
     QScopedPointer<Audio::AudioFileLoader> mFileLoader;
 };
+class AudioClipTests: public ::testing::Test
+{
+public:
+    void SetUp() override;
+    void TearDown() override;
+
+    QSharedPointer<Audio::AudioClip> mAudioClip;
+    QSharedPointer<Audio::Track> mParentTrack;
+    QSharedPointer<Audio::Project> mParentProject;
+};
