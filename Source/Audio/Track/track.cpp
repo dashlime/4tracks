@@ -64,6 +64,19 @@ void Track::removeClip(const QSharedPointer<Clip> &clipToRemove)
     }
 }
 
+void Track::applyGainToBuffer(juce::AudioSampleBuffer *buffer)
+{
+    buffer->applyGain(mProperties->getVolume());
+}
+
+void Track::applyPanToBuffer(juce::AudioSampleBuffer *buffer)
+{
+    if (mProperties->getPan() != 0) {
+        buffer->applyGain(0, 0, buffer->getNumSamples(), 1 - mProperties->getPan());
+        buffer->applyGain(1, 0, buffer->getNumSamples(), 1 + mProperties->getPan());
+    }
+}
+
 void Track::resizeClipsWhenClipAdded(int newClipIndex)
 {
 
@@ -135,13 +148,8 @@ void Track::getNextAudioBlock(const juce::AudioSourceChannelInfo &bufferToFill)
             qSharedPointerDynamicCast<AudioClip>(mClipPlaying)->getNextAudioBlock(bufferToFill);
         }
 
-        bufferToFill.buffer->applyGain(mProperties->getVolume());
-
-        // pan
-        if (mProperties->getPan() != 0) {
-            bufferToFill.buffer->applyGain(0, 0, bufferToFill.buffer->getNumSamples(), 1 - mProperties->getPan());
-            bufferToFill.buffer->applyGain(1, 0, bufferToFill.buffer->getNumSamples(), 1 + mProperties->getPan());
-        }
+        applyPanToBuffer(bufferToFill.buffer);
+        applyGainToBuffer(bufferToFill.buffer);
     }
 
     setNextReadPosition(getNextReadPosition() + bufferToFill.numSamples);
