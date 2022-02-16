@@ -2,6 +2,7 @@
 
 #include "Audio/Project/project.h"
 #include "Audio/Utils/audiofileloader.h"
+#include "Utils/projectsaver.h"
 
 class TrackTests: public ::testing::Test
 {
@@ -30,6 +31,7 @@ public:
 
     QScopedPointer<Audio::AudioFileLoader> mFileLoader;
 };
+
 class AudioClipTests: public ::testing::Test
 {
 public:
@@ -39,4 +41,14 @@ public:
     QSharedPointer<Audio::AudioClip> mAudioClip;
     QSharedPointer<Audio::Track> mParentTrack;
     QSharedPointer<Audio::Project> mParentProject;
+};
+
+class AudioProjectSaverTests: public ::testing::Test
+{
+public:
+    void SetUp() override;
+    void TearDown() override;
+
+    QSharedPointer<Audio::Project> mProject;
+    QScopedPointer<ProjectSaver> mProjectSaver;
 };

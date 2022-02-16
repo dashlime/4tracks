@@ -36,3 +36,16 @@ void AudioClipTests::SetUp()
 
 void AudioClipTests::TearDown()
 {}
+
+void AudioProjectSaverTests::SetUp()
+{
+    mProject = QSharedPointer<Audio::Project>::create("Test project");
+    mProjectSaver.reset(new ProjectSaver(mProject));
+}
+
+void AudioProjectSaverTests::TearDown()
+{
+    QDir projectDir(QDir::current().absolutePath() + "/project");
+    if (projectDir.exists())
+        projectDir.removeRecursively();
+}
