@@ -103,6 +103,11 @@ bool Project::canRemoveTrack() const
     return mTracks.size() > 1;
 }
 
+bool Project::canRemoveTracks(int tracksNumber) const
+{
+    return mTracks.size() > tracksNumber;
+}
+
 void Project::removeTrack(QSharedPointer<Track> trackToRemove)
 {
     auto it = mTracks.begin();

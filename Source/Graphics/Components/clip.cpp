@@ -6,7 +6,7 @@ namespace Graphics
 
 Clip::Clip(QWidget *parent)
     :
-    QWidget(parent),
+    SelectableObject(parent),
     ui(new Ui::Clip),
     mLabel("New clip")
 {
@@ -23,30 +23,12 @@ Clip::Clip(QWidget *parent)
     mLabel.setFixedHeight(20);
     mLabel.setCursor(QCursor(Qt::CursorShape::OpenHandCursor));
 
-    setSelected(false);
+    setSelectedState(false);
 }
 
 Clip::~Clip()
 {
     delete ui;
-}
-
-void Clip::setSelected(bool isSelected)
-{
-    mSelected = isSelected;
-
-    if (isSelected)
-        mLabel.setStyleSheet("background-color: rgba(34, 197, 94, 50%); padding: 2px; color: white;");
-
-    else
-        mLabel.setStyleSheet("background-color: rgba(34, 197, 94, 100%); padding: 2px; color: white;");
-
-    update();
-}
-
-bool Clip::isSelected() const
-{
-    return mSelected;
 }
 
 void Clip::setClip(const QSharedPointer<Audio::Clip> &clip)
@@ -91,19 +73,21 @@ void Clip::resizeEvent(QResizeEvent *)
     ui->verticalLayout->setGeometry(QRect(0, 0, width(), height()));
     update();
 }
-void Clip::contextMenuEvent(QContextMenuEvent *event)
+
+void Clip::setSelectedState(bool isSelected)
 {
-    QMenu menu(this);
+    if (isSelected)
+        mLabel.setStyleSheet("background-color: rgba(34, 197, 94, 50%); padding: 2px; color: white;");
 
-    auto *deleteAction = new QAction("Delete", this);
-    menu.addAction(deleteAction);
+    else
+        mLabel.setStyleSheet("background-color: rgba(34, 197, 94, 100%); padding: 2px; color: white;");
 
-    connect(deleteAction, &QAction::triggered, [this]()
-    {
-        mClip->getClipProperties()->getParentTrack()->getTrackProperties()->getParentProject()->removeClip(mClip);
-    });
+    update();
+}
 
-    menu.exec(event->globalPos());
+Selection::SelectableObject::Type Clip::getType() const
+{
+    return Selection::SelectableObject::Clip;
 }
 
 } // namespace Graphics

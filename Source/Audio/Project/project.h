@@ -35,6 +35,7 @@ public:
     QSharedPointer<Track> getTrackByIndex(int trackIndex) const;
 
     [[nodiscard]] bool canRemoveTrack() const;
+    [[nodiscard]] bool canRemoveTracks(int tracksNumber) const;
     void removeTrack(QSharedPointer<Track> trackToRemove);
 
     void removeClip(QSharedPointer<Clip> clipToRemove);

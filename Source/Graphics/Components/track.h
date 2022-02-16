@@ -6,6 +6,7 @@
 #include "Audio/Track/track.h"
 #include "Audio/Track/trackproperties.h"
 #include "Audio/Project/project.h"
+#include "Graphics/Managers/selection.h"
 
 namespace Graphics
 {
@@ -15,7 +16,7 @@ namespace Ui
 class Track;
 }
 
-class Track: public QWidget
+class Track: public Selection::SelectableObject
 {
 Q_OBJECT
 
@@ -26,18 +27,16 @@ public:
     void setupComponents();
     void setupCallbacks();
 
-    void setSelected(bool isSelected);
-    [[nodiscard]] bool isSelected() const;
+    void deleteTrack();
 
     void paintEvent(QPaintEvent *) override;
 
-protected:
-    void contextMenuEvent(QContextMenuEvent *event) override;
+    void setSelectedState(bool isSelected) override;
+    [[nodiscard]] Selection::SelectableObject::Type getType() const override;
 
 private:
     Ui::Track *ui;
     QSharedPointer<Audio::Track> mAudioTrack;
-    bool mSelected = false;
 };
 }
 

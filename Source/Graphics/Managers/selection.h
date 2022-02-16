@@ -1,8 +1,8 @@
 #ifndef GRAPHICS_SELECTION_H
 #define GRAPHICS_SELECTION_H
 
-#include "Graphics/Components/track.h"
-#include "Graphics/Components/clip.h"
+#include <QFlags>
+
 #include "Graphics/Overlays/selectionoverlay.h"
 
 namespace Graphics
@@ -15,12 +15,37 @@ public:
     {
         NoSelection, TracksSelected, ClipsSelected, AreaSelected
     };
+    enum Modifier
+    {
+        CtrlModifier = 0x1, ShiftModifier = 0x2, RightButtonModifier = 0x4
+    };
+    Q_DECLARE_FLAGS(Modifiers, Modifier)
+
+    static Modifiers generateSelectionModifiers(QMouseEvent *event);
+
     class Callback
     {
     public:
         Callback() = default;
 
         virtual void selectionChanged() = 0;
+    };
+
+    class SelectableObject: public QWidget
+    {
+    public:
+        explicit SelectableObject(QWidget *parent = nullptr) : QWidget(parent)
+        {};
+        virtual ~SelectableObject()
+        {};
+
+        virtual void setSelectedState(bool isSelected) = 0;
+
+        enum Type
+        {
+            Track, Clip
+        };
+        [[nodiscard]] virtual Type getType() const = 0;
     };
 
     Selection();
@@ -30,11 +55,10 @@ public:
     void setSelectionType(SelectionType type);
     [[nodiscard]] SelectionType getSelectionType() const;
 
-    void addTrackToSelection(QPointer<Track> newTrack);
-    [[nodiscard]] QVector<QPointer<Track>> getSelectedTracks() const;
+    void objectSelected(SelectableObject* object, QMouseEvent *event);
+    void objectSelected(SelectableObject* object, QFlags<Modifier> modifiers);
 
-    void addClipToSelection(QPointer<Clip> newClip);
-    [[nodiscard]] QVector<QPointer<Clip>> getSelectedClips() const;
+    [[nodiscard]] QVector<QPointer<SelectableObject>> getSelectedObjects() const;
 
     struct SelectionArea
     {
@@ -49,15 +73,17 @@ public:
 
     [[nodiscard]] SelectionArea getSelectedArea() const;
 
-    void clearSelection();
 
 private:
-    SelectionType mSelectionType;
-    QVector<QPointer<Track>> mTracksSelected;
-    QVector<QPointer<Clip>> mClipsSelected;
-    SelectionArea mSelectedArea;
+    void clearSelection();
+
+    SelectionType mSelectionType = NoSelection;
+    QVector<QPointer<SelectableObject>> mSelectedObjects;
+    SelectionArea mSelectedArea = SelectionArea();
     Callback *mCallback = nullptr;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(Selection::Modifiers)
 
 } // namespace Graphics
 
