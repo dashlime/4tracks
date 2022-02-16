@@ -9,6 +9,7 @@
 #include "Graphics/Widgets/elidedlabel.h"
 #include "audiothumbnail.h"
 #include "Audio/Project/project.h"
+#include "Graphics/Managers/selection.h"
 
 namespace Graphics
 {
@@ -18,16 +19,13 @@ namespace Ui
 class Clip;
 }
 
-class Clip: public QWidget
+class Clip: public Selection::SelectableObject
 {
 Q_OBJECT
 
 public:
     explicit Clip(QWidget *parent = nullptr);
     ~Clip() override;
-
-    void setSelected(bool isSelected);
-    [[nodiscard]] bool isSelected() const;
 
     void setClip(const QSharedPointer<Audio::Clip> &clip);
     QSharedPointer<Audio::Clip> getClip();
@@ -36,14 +34,14 @@ public:
 
     void paintEvent(QPaintEvent *) override;
     void resizeEvent(QResizeEvent *) override;
-    void contextMenuEvent(QContextMenuEvent *event) override;
+
+    void setSelectedState(bool isSelected) override;
+    [[nodiscard]] Selection::SelectableObject::Type getType() const override;
 
 private:
     Ui::Clip *ui;
     ElidedLabel mLabel;
     QSharedPointer<Audio::Clip> mClip;
-
-    bool mSelected = false;
 
     AudioThumbnail mAudioThumbnail;
 };

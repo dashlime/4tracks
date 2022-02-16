@@ -6,13 +6,13 @@ namespace Graphics
 
 Track::Track(QSharedPointer<Audio::Track> track, QWidget *parent)
     :
-    QWidget(parent),
+    SelectableObject(parent),
     ui(new Ui::Track),
     mAudioTrack(track)
 {
     ui->setupUi(this);
 
-    setSelected(false);
+    setSelectedState(false);
     setFixedHeight(DEFAULT_TRACK_HEIGHT);
     setFixedWidth(150);
 
@@ -64,10 +64,21 @@ void Track::setupCallbacks()
     });
 }
 
-void Track::setSelected(bool isSelected)
+void Track::deleteTrack()
 {
-    mSelected = isSelected;
+    mAudioTrack->getTrackProperties()->getParentProject()->removeTrack(mAudioTrack);
+}
 
+void Track::paintEvent(QPaintEvent *)
+{
+    QStyleOption opt;
+    opt.initFrom(this);
+    QPainter p(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+}
+
+void Track::setSelectedState(bool isSelected)
+{
     if (isSelected)
         setStyleSheet(
             "Graphics--Track { background-color: #E4E4E7; } QLabel { padding-left: 2px; color: white; background-color: rgba(34, 197, 94, 50%); }");
@@ -79,37 +90,9 @@ void Track::setSelected(bool isSelected)
     repaint();
 }
 
-bool Track::isSelected() const
+Selection::SelectableObject::Type Track::getType() const
 {
-    return mSelected;
-}
-
-void Track::paintEvent(QPaintEvent *)
-{
-    QStyleOption opt;
-    opt.initFrom(this);
-    QPainter p(this);
-    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
-}
-
-void Track::contextMenuEvent(QContextMenuEvent *event)
-{
-    QMenu menu(this);
-
-    auto *deleteAction = new QAction("Delete", this);
-    menu.addAction(deleteAction);
-
-    if (mAudioTrack->getTrackProperties()->getParentProject()->canRemoveTrack()) {
-        connect(deleteAction, &QAction::triggered, [this]()
-        {
-            mAudioTrack->getTrackProperties()->getParentProject()->removeTrack(mAudioTrack);
-        });
-    }
-    else {
-        deleteAction->setEnabled(false);
-    }
-
-    menu.exec(event->globalPos());
+    return Selection::SelectableObject::Track;
 }
 
 }

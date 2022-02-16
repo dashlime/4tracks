@@ -65,7 +65,7 @@ void ClipsGrid::setupCallbacks()
         mClips.at(clipID)->deleteLater();
         mClips.remove(clipID);
 
-        mTimelineProperties->getCurrentSelection()->clearSelection();
+        mTimelineProperties->getCurrentSelection()->setSelectionType(Selection::NoSelection);
 
         updateClipsGeometry();
     });
@@ -207,22 +207,40 @@ void ClipsGrid::resizeEvent(QResizeEvent *)
 
 void ClipsGrid::mousePressEvent(QMouseEvent *event)
 {
-    if (event->buttons().testFlag(Qt::LeftButton)) {
-        clickPosition = event->pos();
+    clickPosition = event->pos();
 
+    if (event->buttons().testFlag(Qt::LeftButton))
         mProject->setNextReadPosition(roundPosition(pixelsToSamples(event->pos().x())));
 
-        // selection system
-        for (const auto &clip: mClips) {
-            if (clip->geometry().contains(event->pos())) {
-                mTimelineProperties->getCurrentSelection()->setSelectionType(Selection::ClipsSelected);
-                mTimelineProperties->getCurrentSelection()->addClipToSelection(clip);
-                return;
-            }
+    // selection system
+    bool clipClicked = false;
+    for (const auto &clip: mClips) {
+        if (clip->geometry().contains(event->pos())) {
+            mTimelineProperties->getCurrentSelection()->objectSelected(clip, event);
+            clipClicked = true;
         }
+    }
 
-        // if nothing have been selected
+    // if nothing have been selected
+    if (!clipClicked) {
         mTimelineProperties->getCurrentSelection()->setSelectionType(Selection::NoSelection);
+        return;
+    }
+
+    if (event->buttons().testFlag(Qt::RightButton)) {
+        QMenu menu(this);
+
+        auto *deleteAction = new QAction("Delete", this);
+        menu.addAction(deleteAction);
+
+        connect(deleteAction, &QAction::triggered, [this]()
+        {
+            for (const auto &clip : mTimelineProperties->getCurrentSelection()->getSelectedObjects()) {
+                mProject->removeClip(((Clip *) clip.get())->getClip());
+            }
+        });
+
+        menu.exec(event->globalPosition().toPoint());
     }
 }
 

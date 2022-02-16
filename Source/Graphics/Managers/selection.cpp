@@ -3,6 +3,21 @@
 namespace Graphics
 {
 
+Selection::Modifiers Selection::generateSelectionModifiers(QMouseEvent *event)
+{
+    auto flags = Modifiers();
+    if (event->modifiers().testFlag(Qt::ControlModifier))
+        flags = flags | Modifier::CtrlModifier;
+
+    if (event->modifiers().testFlag(Qt::ShiftModifier))
+        flags = flags | Modifier::ShiftModifier;
+
+    if (event->buttons().testFlag(Qt::RightButton))
+        flags = flags | Modifier::RightButtonModifier;
+    
+    return flags;
+}
+
 Selection::Selection()
 {}
 
@@ -13,9 +28,8 @@ void Selection::setSelectionCallback(Callback *callback)
 
 void Selection::setSelectionType(SelectionType type)
 {
-    mSelectionType = type;
-
     clearSelection();
+    mSelectionType = type;
 
     if (mCallback != nullptr)
         mCallback->selectionChanged();
@@ -26,38 +40,49 @@ Selection::SelectionType Selection::getSelectionType() const
     return mSelectionType;
 }
 
-void Selection::addTrackToSelection(QPointer<Track> newTrack)
+void Selection::objectSelected(SelectableObject* object, QMouseEvent *event)
 {
-    if (mSelectionType != TracksSelected)
-        return;
+    objectSelected(object, generateSelectionModifiers(event));
+}
 
-    mTracksSelected.push_back(newTrack);
-    newTrack->setSelected(true);
+void Selection::objectSelected(SelectableObject* object, QFlags<Modifier> modifiers)
+{
+    if (object->getType() == SelectableObject::Track && mSelectionType != TracksSelected)
+        setSelectionType(TracksSelected);
+    if (object->getType() == SelectableObject::Clip && mSelectionType != ClipsSelected)
+        setSelectionType(ClipsSelected);
+
+    QPointer<SelectableObject> ptr(object);
+
+    if (modifiers.testFlag(RightButtonModifier)) {
+        if (!mSelectedObjects.contains(ptr)) {
+            setSelectionType(TracksSelected);
+            mSelectedObjects.push_back(ptr);
+            ptr->setSelectedState(true);
+        }
+    } else {
+        if (modifiers.testFlag(CtrlModifier)) {
+            if (mSelectedObjects.contains(ptr)) {
+                mSelectedObjects.remove(mSelectedObjects.indexOf(ptr));
+                ptr->setSelectedState(false);
+            } else {
+                mSelectedObjects.push_back(ptr);
+                ptr->setSelectedState(true);
+            }
+        } else {
+            setSelectionType(TracksSelected);
+            mSelectedObjects.push_back(ptr);
+            ptr->setSelectedState(true);
+        }
+    }
 
     if (mCallback != nullptr)
         mCallback->selectionChanged();
 }
 
-QVector<QPointer<Track>> Selection::getSelectedTracks() const
+QVector<QPointer<Selection::SelectableObject>> Selection::getSelectedObjects() const
 {
-    return mTracksSelected;
-}
-
-void Selection::addClipToSelection(QPointer<Clip> newClip)
-{
-    if (mSelectionType != ClipsSelected)
-        return;
-
-    mClipsSelected.push_back(newClip);
-    newClip->setSelected(true);
-
-    if (mCallback != nullptr)
-        mCallback->selectionChanged();
-}
-
-QVector<QPointer<Clip>> Selection::getSelectedClips() const
-{
-    return mClipsSelected;
+    return mSelectedObjects;
 }
 
 void Selection::setSelectedArea(int startTrackIndex, int startSample, int nbTracks, int nbSamples)
@@ -92,17 +117,14 @@ Selection::SelectionArea Selection::getSelectedArea() const
 
 void Selection::clearSelection()
 {
-    for (const auto &track: mTracksSelected)
-        track->setSelected(false);
+    for (const auto& obj: mSelectedObjects) {
+        obj->setSelectedState(false);
+    }
 
-    mTracksSelected.clear();
-
-    for (const auto &clip: mClipsSelected)
-        clip->setSelected(false);
-
-    mClipsSelected.clear();
+    mSelectedObjects.clear();
 
     mSelectedArea = SelectionArea();
+    mSelectionType = NoSelection;
 }
 
 } // namespace Graphics

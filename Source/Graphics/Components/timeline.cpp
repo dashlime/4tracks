@@ -114,6 +114,7 @@ void Timeline::setupCallbacks()
         mTracksLayout.removeWidget(mTracks.at(index));
         mTracks.at(index)->deleteLater();
         mTracks.remove(index);
+        mTimelineProperties->getCurrentSelection()->setSelectionType(Selection::NoSelection);
     });
 
     connect(mTimelineProperties.get(), &TimelineProperties::zoomLevelChanged, [=]()
@@ -155,17 +156,37 @@ void Timeline::paintEvent(QPaintEvent *)
 
 void Timeline::mousePressEvent(QMouseEvent *event)
 {
-    if (event->buttons().testFlag(Qt::LeftButton)) {
-        for (const auto &track: mTracks) {
-            if (track->geometry().contains(event->pos())) {
-                mTimelineProperties->getCurrentSelection()->setSelectionType(Selection::TracksSelected);
-                mTimelineProperties->getCurrentSelection()->addTrackToSelection(track);
-                return;
-            }
+    bool trackClicked = false;
+    for (const auto &track: mTracks) {
+        if (track->geometry().contains(event->pos())) {
+            mTimelineProperties->getCurrentSelection()->objectSelected(track, event);
+            trackClicked = true;
+        }
+    }
+
+    if (!trackClicked) {
+        mTimelineProperties->getCurrentSelection()->setSelectionType(Selection::NoSelection);
+        return;
+    }
+
+    if (event->buttons().testFlag(Qt::RightButton)) {
+        QMenu menu(this);
+
+        auto *deleteAction = new QAction("Delete", this);
+        menu.addAction(deleteAction);
+
+        if (mProject->canRemoveTracks((int) mTimelineProperties->getCurrentSelection()->getSelectedObjects().size())) {
+            connect(deleteAction, &QAction::triggered, [this]()
+            {
+                for (const auto &track : mTimelineProperties->getCurrentSelection()->getSelectedObjects()) {
+                    ((Track *) track.get())->deleteTrack();
+                }
+            });
+        } else {
+            deleteAction->setEnabled(false);
         }
 
-        // nothing was selected
-        mTimelineProperties->getCurrentSelection()->setSelectionType(Selection::NoSelection);
+        menu.exec(event->globalPosition().toPoint());
     }
 }
 
