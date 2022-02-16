@@ -4,14 +4,18 @@ ProjectSaver::ProjectSaver(QSharedPointer<Audio::Project> project)
     : mProject(project)
 {}
 
-void ProjectSaver::saveToDirectory(QDir dir)
+void ProjectSaver::initProjectStructure(const QDir &projectDir)
 {
-    QDir::root().mkpath(dir.absolutePath() + "/Resources");
+    QDir::root().mkpath(projectDir.absolutePath() + "/Resources");
 
-    mProject->getProjectProperties()->setProjectName(dir.dirName());
+    mProject->getProjectProperties()->setProjectName(projectDir.dirName());
+}
 
+void ProjectSaver::saveToDirectory(const QDir &dir)
+{
     QDir resourcesDir(dir.absolutePath() + "/Resources");
     QFile projectFile(dir.absoluteFilePath(dir.dirName() + ".4tpro"));
+    initProjectStructure(dir);
 
     QString result;
     QXmlStreamWriter writer(&result);
@@ -23,14 +27,14 @@ void ProjectSaver::saveToDirectory(QDir dir)
     writer.writeAttribute("projectname", mProject->getProjectProperties()->getProjectName());
     writer.writeAttribute("bpm", QString::number(mProject->getProjectProperties()->getBpm()));
 
-    for (auto track: mProject->getTracks()) {
+    for (const auto &track: mProject->getTracks()) {
         writer.writeStartElement("track");
         writer.writeAttribute("index", QString::number(track->getTrackProperties()->getIndex()));
         writer.writeAttribute("name", track->getTrackProperties()->getName());
         writer.writeAttribute("type", QString::number(track->getType()));
 
         int fileId = 0;
-        for (auto clip: track->getClips()) {
+        for (const auto &clip: track->getClips()) {
             QString newFilePath;
             if (clip->getType() == Audio::Clip::AUDIO_CLIP) {
                 QFile clipFile
@@ -40,7 +44,8 @@ void ProjectSaver::saveToDirectory(QDir dir)
                 QFile targetFile(newFilePath);
                 targetFile.remove();
 
-                QFile::copy(clipFile.fileName(), targetFile.fileName());
+                if (clipFile.exists())
+                    QFile::copy(clipFile.fileName(), targetFile.fileName());
             }
             fileId++;
 
@@ -55,13 +60,12 @@ void ProjectSaver::saveToDirectory(QDir dir)
         writer.writeEndElement();
     }
 
-    writer.writeEndElement();
-
-    writer.writeEndDocument();
-
     projectFile.open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream stream(&projectFile);
 
+    writer.writeEndElement();
+
+    writer.writeEndDocument();
     stream << result;
 
     projectFile.close();
@@ -93,8 +97,13 @@ void ProjectSaver::openProject(QFile projectFile)
 
         QDomElement domClip = domTrack.firstChild().toElement();
         while (!domClip.isNull()) {
-            if (trackType == Audio::Track::AUDIO_TRACK) {
-                int id = mProject->createAudioClip(track, domClip.attribute("path"));
+            int id = -1;
+            if (trackType == Audio::Track::AUDIO_TRACK)
+                id = mProject->createAudioClip(track, domClip.attribute("path"));
+            else if (trackType == Audio::Track::MIDI_TRACK)
+                id = mProject->createMIDIClip(track);
+
+            if (id != -1) {
                 auto clip = mProject->getClips().at(id);
 
                 clip->getClipProperties()->setName(domClip.attribute("name"));

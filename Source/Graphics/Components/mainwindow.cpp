@@ -184,7 +184,7 @@ void MainWindow::importFile()
 
     QString nameFilter = "All audio files (";
     for (const QString &name: SUPPORTED_AUDIO_FILENAMES) {
-        nameFilter +="*." + name + " ";
+        nameFilter += "*." + name + " ";
     }
     // remove last space
     nameFilter.chop(1);

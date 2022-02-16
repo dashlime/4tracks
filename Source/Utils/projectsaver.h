@@ -11,7 +11,9 @@ class ProjectSaver
 public:
     ProjectSaver(QSharedPointer<Audio::Project>);
 
-    void saveToDirectory(QDir dir);
+    void initProjectStructure(const QDir &projectDir);
+
+    void saveToDirectory(const QDir &dir);
     void openProject(QFile projectFile);
 
 private:

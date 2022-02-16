@@ -16,6 +16,34 @@ TEST_F(ProjectTests, PlayAndGetNextReadPosition)
     delete buffer;
 }
 
+TEST_F(ProjectTests, Pause)
+{
+    mProjectToTest->createTrack("Test track");
+
+    mProjectToTest->setNextReadPosition(2000);
+    mProjectToTest->play();
+    EXPECT_EQ(mProjectToTest->getNextReadPosition(), 2000);
+    EXPECT_TRUE(mProjectToTest->isPlaying());
+
+    mProjectToTest->pause();
+    EXPECT_EQ(mProjectToTest->getNextReadPosition(), 2000);
+    EXPECT_FALSE(mProjectToTest->isPlaying());
+}
+
+TEST_F(ProjectTests, Stop)
+{
+    mProjectToTest->createTrack("Test track");
+
+    mProjectToTest->setNextReadPosition(2000);
+    mProjectToTest->play();
+    EXPECT_EQ(mProjectToTest->getNextReadPosition(), 2000);
+    EXPECT_TRUE(mProjectToTest->isPlaying());
+
+    mProjectToTest->stop();
+    EXPECT_EQ(mProjectToTest->getNextReadPosition(), 0);
+    EXPECT_FALSE(mProjectToTest->isPlaying());
+}
+
 TEST_F(ProjectTests, CanRemoveTrack)
 {
     mProjectToTest->createTrack("Test track");
@@ -23,6 +51,16 @@ TEST_F(ProjectTests, CanRemoveTrack)
 
     mProjectToTest->createTrack("Test track");
     EXPECT_TRUE(mProjectToTest->canRemoveTrack());
+}
+
+TEST_F(ProjectTests, CanRemoveTracks)
+{
+    mProjectToTest->createTrack("Test track");
+    mProjectToTest->createTrack("Test track");
+    EXPECT_FALSE(mProjectToTest->canRemoveTracks(2));
+
+    mProjectToTest->createTrack("Test track");
+    EXPECT_TRUE(mProjectToTest->canRemoveTracks(2));
 }
 
 TEST_F(ProjectTests, RemoveTrack)
@@ -33,6 +71,22 @@ TEST_F(ProjectTests, RemoveTrack)
     mProjectToTest->removeTrack(mProjectToTest->getTrackByIndex(trackToRemove));
 
     EXPECT_EQ(mProjectToTest->getTracks().size(), 1);
+}
+
+TEST_F(ProjectTests, ClearAllTracks)
+{
+    mProjectToTest->createTrack("Test track");
+    mProjectToTest->createTrack("Test track");
+    mProjectToTest->createMIDIClip(mProjectToTest->getTrackByIndex(0));
+    mProjectToTest->createAudioClip(mProjectToTest->getTrackByIndex(1), "");
+
+    EXPECT_EQ(mProjectToTest->getTracks().size(), 2);
+    EXPECT_EQ(mProjectToTest->getClips().size(), 2);
+
+    mProjectToTest->clearAllTracks();
+
+    EXPECT_EQ(mProjectToTest->getTracks().size(), 0);
+    EXPECT_EQ(mProjectToTest->getClips().size(), 0);
 }
 
 TEST_F(ProjectTests, RearrangeTrackIndexes)

@@ -14,7 +14,7 @@ Selection::Modifiers Selection::generateSelectionModifiers(QMouseEvent *event)
 
     if (event->buttons().testFlag(Qt::RightButton))
         flags = flags | Modifier::RightButtonModifier;
-    
+
     return flags;
 }
 
@@ -40,12 +40,12 @@ Selection::SelectionType Selection::getSelectionType() const
     return mSelectionType;
 }
 
-void Selection::objectSelected(SelectableObject* object, QMouseEvent *event)
+void Selection::objectSelected(SelectableObject *object, QMouseEvent *event)
 {
     objectSelected(object, generateSelectionModifiers(event));
 }
 
-void Selection::objectSelected(SelectableObject* object, QFlags<Modifier> modifiers)
+void Selection::objectSelected(SelectableObject *object, QFlags<Modifier> modifiers)
 {
     if (object->getType() == SelectableObject::Track && mSelectionType != TracksSelected)
         setSelectionType(TracksSelected);
@@ -60,16 +60,19 @@ void Selection::objectSelected(SelectableObject* object, QFlags<Modifier> modifi
             mSelectedObjects.push_back(ptr);
             ptr->setSelectedState(true);
         }
-    } else {
+    }
+    else {
         if (modifiers.testFlag(CtrlModifier)) {
             if (mSelectedObjects.contains(ptr)) {
                 mSelectedObjects.remove(mSelectedObjects.indexOf(ptr));
                 ptr->setSelectedState(false);
-            } else {
+            }
+            else {
                 mSelectedObjects.push_back(ptr);
                 ptr->setSelectedState(true);
             }
-        } else {
+        }
+        else {
             setSelectionType(TracksSelected);
             mSelectedObjects.push_back(ptr);
             ptr->setSelectedState(true);
@@ -117,7 +120,7 @@ Selection::SelectionArea Selection::getSelectedArea() const
 
 void Selection::clearSelection()
 {
-    for (const auto& obj: mSelectedObjects) {
+    for (const auto &obj: mSelectedObjects) {
         obj->setSelectedState(false);
     }
 

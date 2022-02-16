@@ -34,7 +34,8 @@ public:
     class SelectableObject: public QWidget
     {
     public:
-        explicit SelectableObject(QWidget *parent = nullptr) : QWidget(parent)
+        explicit SelectableObject(QWidget *parent = nullptr)
+            : QWidget(parent)
         {};
         virtual ~SelectableObject()
         {};
@@ -55,8 +56,8 @@ public:
     void setSelectionType(SelectionType type);
     [[nodiscard]] SelectionType getSelectionType() const;
 
-    void objectSelected(SelectableObject* object, QMouseEvent *event);
-    void objectSelected(SelectableObject* object, QFlags<Modifier> modifiers);
+    void objectSelected(SelectableObject *object, QMouseEvent *event);
+    void objectSelected(SelectableObject *object, QFlags<Modifier> modifiers);
 
     [[nodiscard]] QVector<QPointer<SelectableObject>> getSelectedObjects() const;
 

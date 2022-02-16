@@ -178,11 +178,12 @@ void Timeline::mousePressEvent(QMouseEvent *event)
         if (mProject->canRemoveTracks((int) mTimelineProperties->getCurrentSelection()->getSelectedObjects().size())) {
             connect(deleteAction, &QAction::triggered, [this]()
             {
-                for (const auto &track : mTimelineProperties->getCurrentSelection()->getSelectedObjects()) {
+                for (const auto &track: mTimelineProperties->getCurrentSelection()->getSelectedObjects()) {
                     ((Track *) track.get())->deleteTrack();
                 }
             });
-        } else {
+        }
+        else {
             deleteAction->setEnabled(false);
         }
 

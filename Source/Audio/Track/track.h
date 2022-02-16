@@ -32,6 +32,9 @@ public:
 
     void removeClip(const QSharedPointer<Clip> &clipToRemove);
 
+    void applyGainToBuffer(juce::AudioSampleBuffer *buffer);
+    void applyPanToBuffer(juce::AudioSampleBuffer *buffer);
+
     void setNextReadPosition(juce::int64 newPosition) override;
     [[nodiscard]] juce::int64 getNextReadPosition() const override;
     [[nodiscard]] juce::int64 getTotalLength() const override;

@@ -235,7 +235,7 @@ void ClipsGrid::mousePressEvent(QMouseEvent *event)
 
         connect(deleteAction, &QAction::triggered, [this]()
         {
-            for (const auto &clip : mTimelineProperties->getCurrentSelection()->getSelectedObjects()) {
+            for (const auto &clip: mTimelineProperties->getCurrentSelection()->getSelectedObjects()) {
                 mProject->removeClip(((Clip *) clip.get())->getClip());
             }
         });
