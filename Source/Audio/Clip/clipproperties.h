@@ -34,6 +34,15 @@ public:
     void setPositionInSamples(juce::int64 positionInSamples);
     [[nodiscard]] juce::int64 getPositionInSamples() const;
 
+    // all samples before this offset will not been played
+    void setStartOffset(juce::int64 offsetInSamples);
+    [[nodiscard]] juce::int64 getStartOffset() const;
+
+    // all samples after this offset will not been played
+    // the offset is counted from the 1st sample of the clip, not from start offset
+    void setEndOffset(juce::int64 offsetInSamples);
+    [[nodiscard]] juce::int64 getEndOffset() const;
+
 signals:
     void parentTrackChanged();
     void nameChanged();
@@ -42,6 +51,8 @@ signals:
     void clipMoved();
     void savedStateChanged(ProjectProperties::SavedState savedState);
     void trackLengthChanged();
+    void startOffsetChanged();
+    void endOffsetChanged();
 
 private:
     Track *mParentTrack;
@@ -51,6 +62,8 @@ private:
 
     juce::int64 mPositionInSamples = 0;
     juce::int64 mLengthInSamples = 0;
+    juce::int64 mStartOffset = 0;
+    juce::int64 mEndOffset = 0;
 };
 
 }

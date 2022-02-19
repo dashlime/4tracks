@@ -29,6 +29,11 @@ void Project::addTrack(const QSharedPointer<Track> &newTrack)
         mProjectProperties->updateTotalLength();
     });
 
+    connect(newTrack.get(), &Track::clipRemoved, [=](const QSharedPointer<Clip> &clipRemoved)
+    {
+        removeClip(clipRemoved);
+    });
+
     emit trackAdded(newTrack->getTrackProperties()->getIndex());
 }
 
@@ -126,6 +131,7 @@ void Project::removeTrack(QSharedPointer<Track> trackToRemove)
             rearrangeTrackIndexes();
 
             emit trackRemoved(trackIndex);
+            mProjectProperties->updateSavedState(ProjectProperties::UNSAVED);
 
             return;
         }

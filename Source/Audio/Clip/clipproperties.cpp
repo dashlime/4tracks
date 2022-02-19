@@ -72,4 +72,30 @@ juce::int64 ClipProperties::getPositionInSamples() const
     return mPositionInSamples;
 }
 
+void ClipProperties::setStartOffset(juce::int64 offsetInSamples)
+{
+    mStartOffset = offsetInSamples;
+
+    emit startOffsetChanged();
+    emit savedStateChanged(ProjectProperties::UNSAVED);
+}
+
+juce::int64 ClipProperties::getStartOffset() const
+{
+    return mStartOffset;
+}
+
+void ClipProperties::setEndOffset(juce::int64 offsetInSamples)
+{
+    mEndOffset = offsetInSamples;
+
+    emit endOffsetChanged();
+    emit savedStateChanged(ProjectProperties::UNSAVED);
+}
+
+juce::int64 ClipProperties::getEndOffset() const
+{
+    return mEndOffset;
+}
+
 }

@@ -64,6 +64,32 @@ void Track::removeClip(const QSharedPointer<Clip> &clipToRemove)
     }
 }
 
+void Track::removeArea(int startSample, int nbSamples)
+{
+    for (auto &clip: mClips) {
+        juce::int64 clipPosition = clip->getClipProperties()->getPositionInSamples();
+        juce::int64 clipStartOffset = clip->getClipProperties()->getStartOffset();
+        juce::int64 clipEndOffset = clip->getClipProperties()->getEndOffset();
+
+        if (startSample <= clipPosition + clipStartOffset
+            && startSample + nbSamples >= clipPosition + clipEndOffset) {
+            removeClip(clip);
+            emit(clipRemoved(clip));
+        } else {
+            // set end offset
+            if (startSample > clipPosition + clipStartOffset
+                && startSample < clipPosition + clipEndOffset) {
+                clip->getClipProperties()->setEndOffset(startSample - clipPosition);
+            }
+            // set start offset
+            else if (startSample + nbSamples > clipPosition + clipStartOffset
+                && startSample + nbSamples < clipPosition + clipEndOffset) {
+                clip->getClipProperties()->setStartOffset(startSample + nbSamples - clipPosition);
+            }
+        }
+    }
+}
+
 void Track::applyGainToBuffer(juce::AudioSampleBuffer *buffer)
 {
     buffer->applyGain(mProperties->getVolume());

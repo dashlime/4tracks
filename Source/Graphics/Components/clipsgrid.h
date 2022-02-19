@@ -33,8 +33,8 @@ public:
 
     [[nodiscard]] int roundPosition(int positionInSamples) const;
 
-    [[nodiscard]] int samplesToPixels(int samples) const;
-    [[nodiscard]] int pixelsToSamples(int pixels) const;
+    [[nodiscard]] int samplesToPixels(juce::int64 samples) const;
+    [[nodiscard]] juce::int64 pixelsToSamples(int pixels) const;
 
     void paintEvent(QPaintEvent *) override;
     void resizeEvent(QResizeEvent *event) override;

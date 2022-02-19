@@ -11,6 +11,7 @@ AudioClip::AudioClip(const QString &filePath, Track *parentTrack)
 
     if (mAudioBuffer) {
         mClipProperties->setLengthInSamples(mAudioBuffer->getNumSamples());
+        mClipProperties->setEndOffset(mAudioBuffer->getNumSamples());
 
         mAudioSource.reset(new juce::MemoryAudioSource(*mAudioBuffer, false));
     }
@@ -41,7 +42,9 @@ void AudioClip::releaseResources()
 void AudioClip::getNextAudioBlock(const juce::AudioSourceChannelInfo &bufferToFill)
 {
     if (mAudioSource)
-        mAudioSource->getNextAudioBlock(bufferToFill);
+        if (mNextReadPosition > mClipProperties->getPositionInSamples() + mClipProperties->getStartOffset()
+            && mNextReadPosition < mClipProperties->getPositionInSamples() + mClipProperties->getEndOffset())
+            mAudioSource->getNextAudioBlock(bufferToFill);
 
     mNextReadPosition += bufferToFill.numSamples;
 }

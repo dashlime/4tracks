@@ -38,6 +38,37 @@ TEST_F(TrackTests, RemoveClip)
     EXPECT_EQ(mTrackToTest->getClips().size(), 0);
 }
 
+TEST_F(TrackTests, RemoveArea)
+{
+    int firstClipID = mProjectToTest->createMIDIClip(mTrackToTest);
+    int secondClipID = mProjectToTest->createMIDIClip(mTrackToTest);
+    auto firstClip = mProjectToTest->getClips().at(firstClipID);
+    auto secondClip = mProjectToTest->getClips().at(secondClipID);
+
+    firstClip->getClipProperties()->setLengthInSamples(1000);
+    firstClip->getClipProperties()->setEndOffset(1000);
+    secondClip->getClipProperties()->setPositionInSamples(1000);
+    secondClip->getClipProperties()->setLengthInSamples(1000);
+    secondClip->getClipProperties()->setEndOffset(1000);
+
+    mTrackToTest->removeArea(500, 1000);
+
+    EXPECT_EQ(firstClip->getClipProperties()->getEndOffset(), 500);
+    EXPECT_EQ(secondClip->getClipProperties()->getStartOffset(), 500);
+
+    SetUp();
+    int clipID = mProjectToTest->createMIDIClip(mTrackToTest);
+    auto clip = mProjectToTest->getClips().at(clipID);
+
+    clip->getClipProperties()->setLengthInSamples(1000);
+    clip->getClipProperties()->setEndOffset(1000);
+
+    mTrackToTest->removeArea(0, 1000);
+
+    EXPECT_EQ(mProjectToTest->getClips().size(), 0);
+    EXPECT_EQ(mTrackToTest->getClips().size(), 0);
+}
+
 TEST_F(TrackTests, IsLooping)
 {
     EXPECT_FALSE(mTrackToTest->isLooping());
