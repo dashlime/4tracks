@@ -3,17 +3,27 @@
 namespace Graphics
 {
 
-AudioThumbnail::AudioThumbnail() = default;
-
-void AudioThumbnail::loadThumbnail(const QSharedPointer<Audio::AudioClip> &clip, int sourceSamplesPerThumbnailSample)
+AudioThumbnail::AudioThumbnail(const QSharedPointer<Audio::AudioClip> &clip) : mClip(clip)
 {
-    int thumbnailSamples = clip->getAudioBuffer()->getNumSamples() / sourceSamplesPerThumbnailSample;
+    setupCallbacks();
+}
 
-    for (int i = 0; i < thumbnailSamples; i++) {
+void AudioThumbnail::loadThumbnail(int sourceSamplesPerThumbnailSample)
+{
+    mThumbnailValues.clear();
+    mSourceSamplesPerThumbnailSample = sourceSamplesPerThumbnailSample;
+
+    juce::int64 startOffset = mClip->getClipProperties()->getStartOffset();
+    juce::int64 endOffset = mClip->getClipProperties()->getEndOffset();
+    juce::int64 thumbnailSamples = (endOffset - startOffset) / sourceSamplesPerThumbnailSample;
+
+    juce::int64 thumbnailOffset = startOffset / sourceSamplesPerThumbnailSample;
+
+    for (juce::int64 i = thumbnailOffset; i < thumbnailSamples + thumbnailOffset; i++) {
         float min = 0;
         float max = 0;
         for (int j = 0; j < sourceSamplesPerThumbnailSample; j++) {
-            float value = clip->getAudioBuffer()->getSample(0, i * sourceSamplesPerThumbnailSample + j);
+            float value = mClip->getAudioBuffer()->getSample(0, i * (juce::int64) sourceSamplesPerThumbnailSample + j);
             min = value < min ? value : min;
             max = value > max ? value : max;
         }
@@ -34,6 +44,20 @@ void AudioThumbnail::drawThumbnail(QPainter &p, QRect rect)
         float max = mThumbnailValues.at(i * thumbnailValuesPerPixel).getMaxValue();
         p.drawLine(i, int(min * ratio + verticalCenter), i, int(max * ratio + verticalCenter));
     }
+}
+
+void AudioThumbnail::setupCallbacks()
+{
+    connect(mClip->getClipProperties().get(), &Audio::ClipProperties::startOffsetChanged, [=]()
+    {
+        loadThumbnail(mSourceSamplesPerThumbnailSample);
+        emit repaintRequested();
+    });
+    connect(mClip->getClipProperties().get(), &Audio::ClipProperties::endOffsetChanged, [=]()
+    {
+        loadThumbnail(mSourceSamplesPerThumbnailSample);
+        emit repaintRequested();
+    });
 }
 
 } // namespace Graphics

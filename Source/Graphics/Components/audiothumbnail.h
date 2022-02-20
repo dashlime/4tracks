@@ -7,18 +7,27 @@
 namespace Graphics
 {
 
-class AudioThumbnail
+class AudioThumbnail: public QObject
 {
-public:
-    AudioThumbnail();
+    Q_OBJECT
 
-    void loadThumbnail(const QSharedPointer<Audio::AudioClip> &clip, int sourceSamplesPerThumbnailSample);
+public:
+    explicit AudioThumbnail(const QSharedPointer<Audio::AudioClip> &clip);
+
+    void loadThumbnail(int sourceSamplesPerThumbnailSample);
     void drawThumbnail(QPainter &p, QRect rect);
+
+    void setupCallbacks();
+
+signals:
+    void repaintRequested();
 
 private:
     class MinMaxValues;
 
+    int mSourceSamplesPerThumbnailSample = 0;
     std::vector<MinMaxValues> mThumbnailValues;
+    QSharedPointer<Audio::AudioClip> mClip;
 };
 
 class AudioThumbnail::MinMaxValues

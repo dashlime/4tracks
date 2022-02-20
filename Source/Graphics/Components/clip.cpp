@@ -37,8 +37,14 @@ void Clip::setClip(const QSharedPointer<Audio::Clip> &clip)
 
     mLabel.setText(clip->getClipProperties()->getName());
 
-    if (mClip->getType() == Audio::Clip::AUDIO_CLIP)
-        mAudioThumbnail.loadThumbnail(qSharedPointerDynamicCast<Audio::AudioClip>(clip), 512);
+    if (mClip->getType() == Audio::Clip::AUDIO_CLIP) {
+        mAudioThumbnail.reset(new AudioThumbnail(qSharedPointerDynamicCast<Audio::AudioClip>(clip)));
+        mAudioThumbnail->loadThumbnail(512);
+        connect(mAudioThumbnail.get(), &AudioThumbnail::repaintRequested, [=]()
+        {
+            update();
+        });
+    }
 
     update();
 }
@@ -64,8 +70,8 @@ void Clip::paintEvent(QPaintEvent *)
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
     p.setPen(QColorConstants::Black);
-    if (mClip->getType() == Audio::Clip::AUDIO_CLIP)
-        mAudioThumbnail.drawThumbnail(p, QRect(0, 20, width(), height() - 20));
+    if (mAudioThumbnail)
+        mAudioThumbnail->drawThumbnail(p, QRect(0, 20, width(), height() - 20));
 }
 
 void Clip::resizeEvent(QResizeEvent *)

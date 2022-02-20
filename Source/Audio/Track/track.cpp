@@ -66,6 +66,11 @@ void Track::removeClip(const QSharedPointer<Clip> &clipToRemove)
 
 void Track::removeArea(int startSample, int nbSamples)
 {
+    if (nbSamples < 0) {
+        startSample = startSample + nbSamples;
+        nbSamples = -nbSamples;
+    }
+
     for (auto &clip: mClips) {
         juce::int64 clipPosition = clip->getClipProperties()->getPositionInSamples();
         juce::int64 clipStartOffset = clip->getClipProperties()->getStartOffset();

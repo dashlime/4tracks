@@ -35,6 +35,8 @@ void Project::addTrack(const QSharedPointer<Track> &newTrack)
     });
 
     emit trackAdded(newTrack->getTrackProperties()->getIndex());
+
+    mProjectProperties->updateSavedState(ProjectProperties::UNSAVED);
 }
 
 QVector<QSharedPointer<Track>> Project::getTracks() const
@@ -48,6 +50,8 @@ bool Project::addClip(const QSharedPointer<Clip> &newClip)
     if (result) {
         mClips.append(newClip);
         emit clipAdded((int) mClips.size() - 1);
+
+        mProjectProperties->updateSavedState(ProjectProperties::UNSAVED);
     }
 
     return result;
@@ -152,6 +156,7 @@ void Project::removeClip(QSharedPointer<Clip> clipToRemove)
             mClips.erase(it);
 
             emit clipRemoved(clipID);
+            mProjectProperties->updateSavedState(ProjectProperties::UNSAVED);
             return;
         }
         it++;

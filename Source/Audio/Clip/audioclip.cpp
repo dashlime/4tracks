@@ -41,10 +41,13 @@ void AudioClip::releaseResources()
 
 void AudioClip::getNextAudioBlock(const juce::AudioSourceChannelInfo &bufferToFill)
 {
+    bufferToFill.clearActiveBufferRegion();
+
     if (mAudioSource)
         if (mNextReadPosition > mClipProperties->getPositionInSamples() + mClipProperties->getStartOffset()
             && mNextReadPosition < mClipProperties->getPositionInSamples() + mClipProperties->getEndOffset())
             mAudioSource->getNextAudioBlock(bufferToFill);
+
 
     mNextReadPosition += bufferToFill.numSamples;
 }

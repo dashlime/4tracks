@@ -31,7 +31,7 @@ public:
 
     [[nodiscard]] double getDivision() const;
 
-    [[nodiscard]] int roundPosition(int positionInSamples) const;
+    [[nodiscard]] juce::int64 roundPosition(juce::int64 positionInSamples) const;
 
     [[nodiscard]] int samplesToPixels(juce::int64 samples) const;
     [[nodiscard]] juce::int64 pixelsToSamples(int pixels) const;

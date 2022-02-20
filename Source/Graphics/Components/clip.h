@@ -43,7 +43,7 @@ private:
     ElidedLabel mLabel;
     QSharedPointer<Audio::Clip> mClip;
 
-    AudioThumbnail mAudioThumbnail;
+    QScopedPointer<AudioThumbnail> mAudioThumbnail;
 };
 
 } // namespace Graphics
