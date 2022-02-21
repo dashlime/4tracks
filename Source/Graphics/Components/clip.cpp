@@ -4,11 +4,12 @@
 namespace Graphics
 {
 
-Clip::Clip(QWidget *parent)
+Clip::Clip(const QSharedPointer<ThumbnailManager>& thumbnailManager, QWidget *parent)
     :
     SelectableObject(parent),
     ui(new Ui::Clip),
-    mLabel("New clip")
+    mLabel("New clip"),
+    mThumbnailManager(thumbnailManager)
 {
     ui->setupUi(this);
 
@@ -37,15 +38,17 @@ void Clip::setClip(const QSharedPointer<Audio::Clip> &clip)
 
     mLabel.setText(clip->getClipProperties()->getName());
 
-    if (mClip->getType() == Audio::Clip::AUDIO_CLIP) {
-        mAudioThumbnail.reset(new AudioThumbnail(qSharedPointerDynamicCast<Audio::AudioClip>(clip)));
-        mAudioThumbnail->loadThumbnail(512);
-        connect(mAudioThumbnail.get(), &AudioThumbnail::repaintRequested, [=]()
-        {
-            update();
-        });
-    }
+    if (mClip->getType() == Audio::Clip::AUDIO_CLIP)
+        mThumbnailManager->registerAudioResource(qSharedPointerCast<Audio::AudioClip>(clip)->getAudioResource());
 
+    connect(clip->getClipProperties().get(), &Audio::ClipProperties::startOffsetChanged, [=]()
+    {
+        update();
+    });
+    connect(clip->getClipProperties().get(), &Audio::ClipProperties::endOffsetChanged, [=]()
+    {
+        update();
+    });
     update();
 }
 
@@ -70,8 +73,9 @@ void Clip::paintEvent(QPaintEvent *)
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
     p.setPen(QColorConstants::Black);
-    if (mAudioThumbnail)
-        mAudioThumbnail->drawThumbnail(p, QRect(0, 20, width(), height() - 20));
+
+    if (mClip->getType() == Audio::Clip::AUDIO_CLIP)
+        mThumbnailManager->drawThumbnailForClip(qSharedPointerCast<Audio::AudioClip>(mClip), p, QRect(0, 20, width(), height() - 20));
 }
 
 void Clip::resizeEvent(QResizeEvent *)

@@ -11,6 +11,8 @@ ClipsGrid::ClipsGrid(const QSharedPointer<Audio::Project> &project,
     mPositionBarWidget.setParent(this);
     mSelectionOverlay.setParent(this);
 
+    mThumbnailManager = QSharedPointer<ThumbnailManager>::create();
+
     setupCallbacks();
 }
 
@@ -48,7 +50,7 @@ void ClipsGrid::setupCallbacks()
 
     connect(mProject.get(), &Audio::Project::clipAdded, [=](int clipID)
     {
-        QPointer<Clip> clipUi = new Clip(this);
+        QPointer<Clip> clipUi = new Clip(mThumbnailManager, this);
         clipUi->show();
 
         auto newClip = mProject->getClips().at(clipID);
@@ -251,17 +253,10 @@ void ClipsGrid::mousePressEvent(QMouseEvent *event)
 
                 int startTrackID = area.startTrackIndex;
                 int nbTracks = area.nbTracks;
-                int startSample = area.startSample;
-                int nbSamples = area.nbSamples;
+                juce::int64 startSample = area.startSample;
+                juce::int64 nbSamples = area.nbSamples;
 
-                if (nbTracks < 0) {
-                    startTrackID = startTrackID + nbTracks;
-                    nbTracks = -nbTracks + 1;
-                }
-
-                for (int i = startTrackID; i < startTrackID + nbTracks; i++) {
-                    mProject->getTrackByIndex(i)->removeArea(startSample, nbSamples);
-                }
+                mProject->removeArea(startTrackID, nbTracks, startSample, nbSamples);
             });
 
             menu.exec(event->globalPosition().toPoint());
@@ -286,7 +281,7 @@ void ClipsGrid::mousePressEvent(QMouseEvent *event)
 void ClipsGrid::mouseReleaseEvent(QMouseEvent *)
 {
     if (mMovingClip) {
-        mMovingClip->getClip()->getClipProperties()->setPositionInSamples(pixelsToSamples(mMovingClip->x()));
+        mMovingClip->getClip()->getClipProperties()->setPositionInSamples(pixelsToSamples(mMovingClip->x()) - mMovingClip->getClip()->getClipProperties()->getStartOffset());
         mMovingClip = nullptr;
     }
 }

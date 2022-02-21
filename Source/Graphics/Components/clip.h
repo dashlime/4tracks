@@ -10,6 +10,7 @@
 #include "audiothumbnail.h"
 #include "Audio/Project/project.h"
 #include "Graphics/Managers/selection.h"
+#include "Graphics/Managers/thumbnailmanager.h"
 
 namespace Graphics
 {
@@ -24,7 +25,7 @@ class Clip: public Selection::SelectableObject
 Q_OBJECT
 
 public:
-    explicit Clip(QWidget *parent = nullptr);
+    explicit Clip(const QSharedPointer<ThumbnailManager>& thumbnailManager, QWidget *parent = nullptr);
     ~Clip() override;
 
     void setClip(const QSharedPointer<Audio::Clip> &clip);
@@ -42,8 +43,7 @@ private:
     Ui::Clip *ui;
     ElidedLabel mLabel;
     QSharedPointer<Audio::Clip> mClip;
-
-    QScopedPointer<AudioThumbnail> mAudioThumbnail;
+    QSharedPointer<ThumbnailManager> mThumbnailManager;
 };
 
 } // namespace Graphics

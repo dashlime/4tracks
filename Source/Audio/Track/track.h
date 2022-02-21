@@ -32,8 +32,6 @@ public:
 
     void removeClip(const QSharedPointer<Clip> &clipToRemove);
 
-    void removeArea(int startSample, int nbSamples);
-
     void applyGainToBuffer(juce::AudioSampleBuffer *buffer);
     void applyPanToBuffer(juce::AudioSampleBuffer *buffer);
 
@@ -51,9 +49,6 @@ public:
     {
         ANY_TRACK, AUDIO_TRACK, MIDI_TRACK
     };
-
-signals:
-    void clipRemoved(const QSharedPointer<Clip> &clipRemoved);
 
 private:
     void resizeClipsWhenClipAdded(int newClipIndex);

@@ -89,6 +89,61 @@ TEST_F(ProjectTests, ClearAllTracks)
     EXPECT_EQ(mProjectToTest->getClips().size(), 0);
 }
 
+TEST_F(ProjectTests, RemoveArea)
+{
+    int track = mProjectToTest->createTrack("Test track");
+
+    int firstClipID = mProjectToTest->createMIDIClip(mProjectToTest->getTrackByIndex(track));
+    int secondClipID = mProjectToTest->createMIDIClip(mProjectToTest->getTrackByIndex(track));
+    auto firstClip = mProjectToTest->getClips().at(firstClipID);
+    auto secondClip = mProjectToTest->getClips().at(secondClipID);
+
+    firstClip->getClipProperties()->setLengthInSamples(1000);
+    firstClip->getClipProperties()->setEndOffset(1000);
+    secondClip->getClipProperties()->setPositionInSamples(1000);
+    secondClip->getClipProperties()->setLengthInSamples(1000);
+    secondClip->getClipProperties()->setEndOffset(1000);
+
+    mProjectToTest->removeArea(0, 1, 500, 1000);
+
+    EXPECT_EQ(firstClip->getClipProperties()->getEndOffset(), 500);
+    EXPECT_EQ(secondClip->getClipProperties()->getStartOffset(), 500);
+
+    /*SetUp();
+    track = mProjectToTest->createTrack("Test track");
+
+    int clipID = mProjectToTest->createMIDIClip(mProjectToTest->getTrackByIndex(track));
+    auto clip = mProjectToTest->getClips().at(clipID);
+
+    clip->getClipProperties()->setLengthInSamples(1000);
+    clip->getClipProperties()->setEndOffset(1000);
+
+    mProjectToTest->removeArea(0, 1, 0, 1000);
+
+    EXPECT_EQ(mProjectToTest->getClips().size(), 0);
+    EXPECT_EQ(mProjectToTest->getTrackByIndex(track)->getClips().size(), 0);
+
+    SetUp();
+    track = mProjectToTest->createTrack("Test track");
+
+    clipID = mProjectToTest->createMIDIClip(mProjectToTest->getTrackByIndex(track));
+    clip = mProjectToTest->getClips().at(clipID);
+
+    clip->getClipProperties()->setLengthInSamples(1000);
+    clip->getClipProperties()->setEndOffset(1000);
+
+    mProjectToTest->removeArea(0, 1, 500, 100);
+
+    EXPECT_EQ(mProjectToTest->getClips().size(), 2);
+    EXPECT_EQ(clip, mProjectToTest->getClips().at(0));
+
+    EXPECT_EQ(clip->getClipProperties()->getStartOffset(), 0);
+    EXPECT_EQ(clip->getClipProperties()->getEndOffset(), 500);
+
+    EXPECT_EQ(mProjectToTest->getClips().at(1)->getClipProperties()->getStartOffset(), 600);
+    EXPECT_EQ(mProjectToTest->getClips().at(1)->getClipProperties()->getEndOffset(), 1000);*/
+}
+
 TEST_F(ProjectTests, RearrangeTrackIndexes)
 {
     mProjectToTest->addTrack(QSharedPointer<Audio::Track>::create("Test track", 1, mProjectToTest.get()));

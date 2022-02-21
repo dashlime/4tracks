@@ -4,17 +4,27 @@ namespace Audio
 {
 
 AudioClip::AudioClip(const QString &filePath, Track *parentTrack)
-    : Clip(filePath, filePath, parentTrack)
+    : Clip(filePath, parentTrack)
 {
     AudioFileLoader loader;
-    mAudioBuffer = loader.loadFile(QFile(filePath));
+    auto buffer = loader.loadFile(QFile(filePath));
 
-    if (mAudioBuffer) {
-        mClipProperties->setLengthInSamples(mAudioBuffer->getNumSamples());
-        mClipProperties->setEndOffset(mAudioBuffer->getNumSamples());
+    mAudioResource = QSharedPointer<AudioResource>::create(buffer, filePath);
 
-        mAudioSource.reset(new juce::MemoryAudioSource(*mAudioBuffer, false));
+    if (buffer) {
+        mClipProperties->setLengthInSamples(buffer->getNumSamples());
+        mClipProperties->setEndOffset(buffer->getNumSamples());
+
+        mAudioSource.reset(new juce::MemoryAudioSource(*buffer, false));
     }
+}
+
+AudioClip::AudioClip(const QSharedPointer<AudioResource> &resource, Track *parentTrack) : Clip(resource->getSourceFilePath(), parentTrack), mAudioResource(resource)
+{
+    mClipProperties->setLengthInSamples(resource->getAudioData()->getNumSamples());
+    mClipProperties->setEndOffset(resource->getAudioData()->getNumSamples());
+
+    mAudioSource.reset(new juce::MemoryAudioSource(*resource->getAudioData(), false));
 }
 
 Clip::Type AudioClip::getType() const
@@ -22,9 +32,9 @@ Clip::Type AudioClip::getType() const
     return Clip::AUDIO_CLIP;
 }
 
-QSharedPointer<juce::AudioBuffer<float>> AudioClip::getAudioBuffer()
+QSharedPointer<AudioResource> AudioClip::getAudioResource() const
 {
-    return mAudioBuffer;
+    return mAudioResource;
 }
 
 void AudioClip::prepareToPlay(int samplesPerBlockExpected, double sampleRate)

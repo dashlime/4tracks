@@ -4,7 +4,7 @@ namespace Audio
 {
 
 MidiClip::MidiClip(Track *parentTrack)
-    : Clip("Midi Clip", "", parentTrack)
+    : Clip("Midi Clip", parentTrack)
 {}
 
 Clip::Type MidiClip::getType() const

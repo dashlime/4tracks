@@ -3,8 +3,8 @@
 namespace Audio
 {
 
-ClipProperties::ClipProperties(Track *parentTrack, const QString &name, const QString &sourceFilePath)
-    : mParentTrack(parentTrack), mName(name), mSourceFilePath(sourceFilePath)
+ClipProperties::ClipProperties(Track *parentTrack, const QString &name)
+    : mParentTrack(parentTrack), mName(name)
 {}
 
 void ClipProperties::setParentTrack(Track *parentTrack)
@@ -31,19 +31,6 @@ void ClipProperties::setName(const QString &name)
 const QString &ClipProperties::getName() const
 {
     return mName;
-}
-
-void ClipProperties::setSourceFilePath(const QString &sourceFilePath)
-{
-    mSourceFilePath = sourceFilePath;
-
-    emit sourceFileChanged();
-    emit savedStateChanged(ProjectProperties::UNSAVED);
-}
-
-QString ClipProperties::getSourceFilePath() const
-{
-    return mSourceFilePath;
 }
 
 void ClipProperties::setLengthInSamples(juce::int64 lengthInSamples)

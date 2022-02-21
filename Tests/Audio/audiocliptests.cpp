@@ -8,7 +8,7 @@ TEST_F(AudioClipTests, GetType)
 TEST_F(AudioClipTests, GetAudioBuffer)
 {
     // get audio buffer without loaded data
-    EXPECT_TRUE(mAudioClip->getAudioBuffer().isNull());
+    EXPECT_TRUE(mAudioClip->getAudioResource()->getAudioData().isNull());
 }
 
 TEST_F(AudioClipTests, UpdateNextReadPosition)

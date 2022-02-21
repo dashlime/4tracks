@@ -38,7 +38,7 @@ void ProjectSaver::saveToDirectory(const QDir &dir)
             QString newFilePath;
             if (clip->getType() == Audio::Clip::AUDIO_CLIP) {
                 QFile clipFile
-                    (qSharedPointerDynamicCast<Audio::AudioClip>(clip)->getClipProperties()->getSourceFilePath());
+                    (qSharedPointerDynamicCast<Audio::AudioClip>(clip)->getAudioResource()->getSourceFilePath());
                 newFilePath = resourcesDir
                     .absoluteFilePath(QString::number(fileId) + " - " + QFileInfo(clipFile.fileName()).fileName());
                 QFile targetFile(newFilePath);

@@ -10,6 +10,7 @@
 #include "Graphics/Overlays/selectionoverlay.h"
 #include "Graphics/Managers/selection.h"
 #include "Graphics/Managers/timelineproperties.h"
+#include "Graphics/Managers/thumbnailmanager.h"
 
 namespace Graphics
 {
@@ -52,6 +53,7 @@ private:
     Clip *mMovingClip = nullptr;
     QPoint clickPosition;
 
+    QSharedPointer<ThumbnailManager> mThumbnailManager;
     QSharedPointer<TimelineProperties> mTimelineProperties;
     QSharedPointer<Audio::Project> mProject;
 
