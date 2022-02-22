@@ -109,7 +109,7 @@ TEST_F(ProjectTests, RemoveArea)
     EXPECT_EQ(firstClip->getClipProperties()->getEndOffset(), 500);
     EXPECT_EQ(secondClip->getClipProperties()->getStartOffset(), 500);
 
-    /*SetUp();
+    SetUp();
     track = mProjectToTest->createTrack("Test track");
 
     int clipID = mProjectToTest->createMIDIClip(mProjectToTest->getTrackByIndex(track));
@@ -141,7 +141,7 @@ TEST_F(ProjectTests, RemoveArea)
     EXPECT_EQ(clip->getClipProperties()->getEndOffset(), 500);
 
     EXPECT_EQ(mProjectToTest->getClips().at(1)->getClipProperties()->getStartOffset(), 600);
-    EXPECT_EQ(mProjectToTest->getClips().at(1)->getClipProperties()->getEndOffset(), 1000);*/
+    EXPECT_EQ(mProjectToTest->getClips().at(1)->getClipProperties()->getEndOffset(), 1000);
 }
 
 TEST_F(ProjectTests, RearrangeTrackIndexes)

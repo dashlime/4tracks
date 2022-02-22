@@ -198,8 +198,14 @@ void Project::removeArea(int startTrack, int nbTracks, juce::int64 startSample, 
             }
             else if (startSample > clipPosition + clipStartOffset
                 && startSample + nbSamples < clipPosition + clipEndOffset) {
-                clip->getClipProperties()->setEndOffset(startSample - clipPosition);
+                juce::int64 baseEndOffset = clip->getClipProperties()->getEndOffset();
 
+                clip->getClipProperties()->setEndOffset(startSample - clipPosition);
+                int newClipID = duplicateClip(clip);
+
+                mClips.at(newClipID)->getClipProperties()->setStartOffset(startSample + nbSamples - clipPosition);
+                mClips.at(newClipID)->getClipProperties()->setEndOffset(baseEndOffset);
+                mClips.at(newClipID)->getClipProperties()->setPositionInSamples(clip->getClipProperties()->getPositionInSamples());
             }
             else {
                 // set end offset
@@ -217,9 +223,28 @@ void Project::removeArea(int startTrack, int nbTracks, juce::int64 startSample, 
     }
 }
 
-void Project::duplicateClip(const QSharedPointer<Clip> &clipToDuplicate)
+int Project::duplicateClip(const QSharedPointer<Clip> &clipToDuplicate)
 {
+    juce::int64 oldClipPosition = clipToDuplicate->getClipProperties()->getPositionInSamples();
+    juce::int64 oldClipStartOffset = clipToDuplicate->getClipProperties()->getStartOffset();
+    juce::int64 oldClipEndOffset = clipToDuplicate->getClipProperties()->getEndOffset();
 
+    QSharedPointer<Clip> newClip;
+
+    if (clipToDuplicate->getType() == Clip::AUDIO_CLIP) {
+        newClip = QSharedPointer<AudioClip>::create(qSharedPointerCast<AudioClip>(clipToDuplicate)->getAudioResource(), clipToDuplicate->getClipProperties()->getParentTrack());
+    } else if (clipToDuplicate->getType() == Clip::MIDI_CLIP) {
+        newClip = QSharedPointer<MidiClip>::create(clipToDuplicate->getClipProperties()->getParentTrack());
+    }
+
+    newClip->getClipProperties()->setStartOffset(oldClipStartOffset);
+    newClip->getClipProperties()->setEndOffset(oldClipEndOffset);
+    newClip->getClipProperties()->setPositionInSamples(oldClipPosition + oldClipEndOffset - oldClipStartOffset);
+
+    if (!addClip(newClip))
+        return -1;
+
+    return (int) mClips.size() - 1;
 }
 
 void Project::clearAllTracks()

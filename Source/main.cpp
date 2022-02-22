@@ -9,6 +9,7 @@ int main(int argc, char *argv[])
     QObject::connect(&w, &Graphics::MainWindow::anotherInstanceRequired, [=](const QString &projectFileToLoad)
     {
         auto *newWindow = new Graphics::MainWindow(projectFileToLoad);
+        newWindow->setAttribute(Qt::WA_DeleteOnClose, true);
         newWindow->show();
     });
     w.show();

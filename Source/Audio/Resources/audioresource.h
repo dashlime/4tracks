@@ -14,6 +14,8 @@ public:
     AudioResource(const QSharedPointer<juce::AudioSampleBuffer>& data, const QString& sourceFilePath);
 
     [[nodiscard]] QSharedPointer<juce::AudioSampleBuffer> getAudioData() const;
+
+    void setSourceFilePath(const QString &sourceFilePath);
     [[nodiscard]] QString getSourceFilePath() const;
 
 private:

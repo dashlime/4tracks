@@ -11,6 +11,11 @@ QSharedPointer<juce::AudioSampleBuffer> AudioResource::getAudioData() const
     return mAudioData;
 }
 
+void AudioResource::setSourceFilePath(const QString &sourceFilePath)
+{
+    mSourceFilePath = sourceFilePath;
+}
+
 QString AudioResource::getSourceFilePath() const
 {
     return mSourceFilePath;
