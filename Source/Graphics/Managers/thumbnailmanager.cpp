@@ -15,7 +15,8 @@ bool ThumbnailManager::resourceAlreadyLoaded(const QSharedPointer<Audio::AudioRe
     return false;
 }
 
-QSharedPointer<AudioThumbnail> ThumbnailManager::getThumbnailForResource(const QSharedPointer<Audio::AudioResource>& resource) const
+QSharedPointer<AudioThumbnail>
+ThumbnailManager::getThumbnailForResource(const QSharedPointer<Audio::AudioResource> &resource) const
 {
     for (const auto &thumbnail: mAudioThumbnails)
         if (thumbnail->getAudioResource() == resource)
@@ -39,7 +40,9 @@ QVector<QSharedPointer<AudioThumbnail>> ThumbnailManager::getAudioThumbnails() c
     return mAudioThumbnails;
 }
 
-void ThumbnailManager::drawThumbnailForClip(const QSharedPointer<Audio::AudioClip> &clip, QPainter &painter, QRect rect) const
+void ThumbnailManager::drawThumbnailForClip(const QSharedPointer<Audio::AudioClip> &clip,
+                                            QPainter &painter,
+                                            QRect rect) const
 {
     auto thumbnail = getThumbnailForResource(clip->getAudioResource());
     auto values = thumbnail->getThumbnailValues();

@@ -4,7 +4,7 @@
 namespace Graphics
 {
 
-Clip::Clip(const QSharedPointer<ThumbnailManager>& thumbnailManager, QWidget *parent)
+Clip::Clip(const QSharedPointer<ThumbnailManager> &thumbnailManager, QWidget *parent)
     :
     SelectableObject(parent),
     ui(new Ui::Clip),
@@ -75,7 +75,9 @@ void Clip::paintEvent(QPaintEvent *)
     p.setPen(QColorConstants::Black);
 
     if (mClip->getType() == Audio::Clip::AUDIO_CLIP)
-        mThumbnailManager->drawThumbnailForClip(qSharedPointerCast<Audio::AudioClip>(mClip), p, QRect(0, 20, width(), height() - 20));
+        mThumbnailManager->drawThumbnailForClip(qSharedPointerCast<Audio::AudioClip>(mClip),
+                                                p,
+                                                QRect(0, 20, width(), height() - 20));
 }
 
 void Clip::resizeEvent(QResizeEvent *)

@@ -50,7 +50,8 @@ void ProjectSaver::saveToDirectory(const QDir &dir)
                 else {
                     resources.append(audioClip->getAudioResource());
 
-                    newFilePath = resourcesDir.absoluteFilePath(QString::number(fileId) + " - " + QFileInfo(clipFile.fileName()).fileName());
+                    newFilePath = resourcesDir
+                        .absoluteFilePath(QString::number(fileId) + " - " + QFileInfo(clipFile.fileName()).fileName());
                     QFile targetFile(newFilePath);
                     targetFile.remove();
 

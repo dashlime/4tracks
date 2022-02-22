@@ -88,7 +88,8 @@ void Track::setNextReadPosition(juce::int64 newPosition)
     mClipPlaying = nullptr;
 
     for (const auto &clip: mClips) {
-        if (clip->getClipProperties()->getPositionInSamples() + clip->getClipProperties()->getStartOffset() <= mPositionInSamples
+        if (clip->getClipProperties()->getPositionInSamples() + clip->getClipProperties()->getStartOffset()
+            <= mPositionInSamples
             && clip->getClipProperties()->getPositionInSamples() + clip->getClipProperties()->getEndOffset()
                 >= mPositionInSamples) {
             mClipPlaying = clip;

@@ -25,7 +25,7 @@ class Clip: public Selection::SelectableObject
 Q_OBJECT
 
 public:
-    explicit Clip(const QSharedPointer<ThumbnailManager>& thumbnailManager, QWidget *parent = nullptr);
+    explicit Clip(const QSharedPointer<ThumbnailManager> &thumbnailManager, QWidget *parent = nullptr);
     ~Clip() override;
 
     void setClip(const QSharedPointer<Audio::Clip> &clip);

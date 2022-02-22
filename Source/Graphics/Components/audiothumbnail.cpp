@@ -3,7 +3,8 @@
 namespace Graphics
 {
 
-AudioThumbnail::AudioThumbnail(const QSharedPointer<Audio::AudioResource> &resource) : mAudioResource(resource)
+AudioThumbnail::AudioThumbnail(const QSharedPointer<Audio::AudioResource> &resource)
+    : mAudioResource(resource)
 {}
 
 void AudioThumbnail::loadThumbnail(int sourceSamplesPerThumbnailSample)
@@ -15,7 +16,8 @@ void AudioThumbnail::loadThumbnail(int sourceSamplesPerThumbnailSample)
         float min = 0;
         float max = 0;
         for (int j = 0; j < sourceSamplesPerThumbnailSample; j++) {
-            float value = mAudioResource->getAudioData()->getSample(0, i * (juce::int64) sourceSamplesPerThumbnailSample + j);
+            float value =
+                mAudioResource->getAudioData()->getSample(0, i * (juce::int64) sourceSamplesPerThumbnailSample + j);
             min = value < min ? value : min;
             max = value > max ? value : max;
         }

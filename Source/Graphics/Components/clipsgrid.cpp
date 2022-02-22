@@ -124,7 +124,8 @@ void ClipsGrid::updateSelectionOverlay()
     if (area.nbTracks > 0) {
         y = area.startTrackIndex * (DEFAULT_TRACK_HEIGHT + 1);
         h = area.nbTracks * (DEFAULT_TRACK_HEIGHT + 1);
-    } else {
+    }
+    else {
         y = (area.startTrackIndex + 1) * (DEFAULT_TRACK_HEIGHT + 1);
         h = (area.nbTracks - 1) * (DEFAULT_TRACK_HEIGHT + 1);
     }
@@ -260,7 +261,8 @@ void ClipsGrid::mousePressEvent(QMouseEvent *event)
             });
 
             menu.exec(event->globalPosition().toPoint());
-        } else if (clipClicked) {
+        }
+        else if (clipClicked) {
             QMenu menu(this);
 
             auto *deleteAction = new QAction("Delete", this);
@@ -281,7 +283,8 @@ void ClipsGrid::mousePressEvent(QMouseEvent *event)
 void ClipsGrid::mouseReleaseEvent(QMouseEvent *)
 {
     if (mMovingClip) {
-        mMovingClip->getClip()->getClipProperties()->setPositionInSamples(pixelsToSamples(mMovingClip->x()) - mMovingClip->getClip()->getClipProperties()->getStartOffset());
+        mMovingClip->getClip()->getClipProperties()->setPositionInSamples(
+            pixelsToSamples(mMovingClip->x()) - mMovingClip->getClip()->getClipProperties()->getStartOffset());
         mMovingClip = nullptr;
     }
 }
@@ -302,10 +305,12 @@ void ClipsGrid::mouseMoveEvent(QMouseEvent *event)
         }
 
         if (mMovingClip != nullptr) {
-            juce::int64 clipPosition = mMovingClip->getClip()->getClipProperties()->getPositionInSamples() + mMovingClip->getClip()->getClipProperties()->getStartOffset();
+            juce::int64 clipPosition = mMovingClip->getClip()->getClipProperties()->getPositionInSamples()
+                + mMovingClip->getClip()->getClipProperties()->getStartOffset();
 
             juce::int64 newPositionInSamples =
-                roundPosition(clipPosition + (juce::int64) pixelsToSamples((int) event->position().x() - clickPosition.x()));
+                roundPosition(
+                    clipPosition + (juce::int64) pixelsToSamples((int) event->position().x() - clickPosition.x()));
 
             mMovingClip->setGeometry(samplesToPixels(newPositionInSamples),
                                      mMovingClip->y(),

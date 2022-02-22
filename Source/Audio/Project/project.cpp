@@ -59,7 +59,7 @@ QVector<QSharedPointer<Clip>> Project::getClips() const
 
 QSharedPointer<AudioResource> Project::getAlreadyLoadedResource(const QString &sourcePath) const
 {
-    for (const auto& clip: mClips)
+    for (const auto &clip: mClips)
         if (clip->getType() == Clip::AUDIO_CLIP)
             if (qSharedPointerCast<AudioClip>(clip)->getAudioResource()->getSourceFilePath() == sourcePath)
                 return qSharedPointerCast<AudioClip>(clip)->getAudioResource();
@@ -205,7 +205,8 @@ void Project::removeArea(int startTrack, int nbTracks, juce::int64 startSample, 
 
                 mClips.at(newClipID)->getClipProperties()->setStartOffset(startSample + nbSamples - clipPosition);
                 mClips.at(newClipID)->getClipProperties()->setEndOffset(baseEndOffset);
-                mClips.at(newClipID)->getClipProperties()->setPositionInSamples(clip->getClipProperties()->getPositionInSamples());
+                mClips.at(newClipID)->getClipProperties()
+                    ->setPositionInSamples(clip->getClipProperties()->getPositionInSamples());
             }
             else {
                 // set end offset
@@ -232,8 +233,10 @@ int Project::duplicateClip(const QSharedPointer<Clip> &clipToDuplicate)
     QSharedPointer<Clip> newClip;
 
     if (clipToDuplicate->getType() == Clip::AUDIO_CLIP) {
-        newClip = QSharedPointer<AudioClip>::create(qSharedPointerCast<AudioClip>(clipToDuplicate)->getAudioResource(), clipToDuplicate->getClipProperties()->getParentTrack());
-    } else if (clipToDuplicate->getType() == Clip::MIDI_CLIP) {
+        newClip = QSharedPointer<AudioClip>::create(qSharedPointerCast<AudioClip>(clipToDuplicate)->getAudioResource(),
+                                                    clipToDuplicate->getClipProperties()->getParentTrack());
+    }
+    else if (clipToDuplicate->getType() == Clip::MIDI_CLIP) {
         newClip = QSharedPointer<MidiClip>::create(clipToDuplicate->getClipProperties()->getParentTrack());
     }
 

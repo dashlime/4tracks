@@ -3,7 +3,8 @@
 namespace Audio
 {
 
-AudioResource::AudioResource(const QSharedPointer<juce::AudioSampleBuffer>& data, const QString& sourceFilePath) : mAudioData(data), mSourceFilePath(sourceFilePath)
+AudioResource::AudioResource(const QSharedPointer<juce::AudioSampleBuffer> &data, const QString &sourceFilePath)
+    : mAudioData(data), mSourceFilePath(sourceFilePath)
 {}
 
 QSharedPointer<juce::AudioSampleBuffer> AudioResource::getAudioData() const

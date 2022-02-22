@@ -11,7 +11,7 @@ namespace Audio
 class AudioResource
 {
 public:
-    AudioResource(const QSharedPointer<juce::AudioSampleBuffer>& data, const QString& sourceFilePath);
+    AudioResource(const QSharedPointer<juce::AudioSampleBuffer> &data, const QString &sourceFilePath);
 
     [[nodiscard]] QSharedPointer<juce::AudioSampleBuffer> getAudioData() const;
 

@@ -43,7 +43,7 @@ public:
     void removeClip(QSharedPointer<Clip> clipToRemove);
 
     void removeArea(int startTrack, int nbTracks, juce::int64 startSample, juce::int64 nbSamples);
-    int duplicateClip(const QSharedPointer<Clip>& clipToDuplicate);
+    int duplicateClip(const QSharedPointer<Clip> &clipToDuplicate);
 
     void clearAllTracks();
 

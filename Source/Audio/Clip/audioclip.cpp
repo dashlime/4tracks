@@ -19,7 +19,8 @@ AudioClip::AudioClip(const QString &filePath, Track *parentTrack)
     }
 }
 
-AudioClip::AudioClip(const QSharedPointer<AudioResource> &resource, Track *parentTrack) : Clip(resource->getSourceFilePath(), parentTrack), mAudioResource(resource)
+AudioClip::AudioClip(const QSharedPointer<AudioResource> &resource, Track *parentTrack)
+    : Clip(resource->getSourceFilePath(), parentTrack), mAudioResource(resource)
 {
     mClipProperties->setLengthInSamples(resource->getAudioData()->getNumSamples());
     mClipProperties->setEndOffset(resource->getAudioData()->getNumSamples());

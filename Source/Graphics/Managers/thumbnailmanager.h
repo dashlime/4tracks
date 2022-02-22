@@ -14,12 +14,13 @@ class ThumbnailManager
 public:
     ThumbnailManager();
 
-    bool resourceAlreadyLoaded(const QSharedPointer<Audio::AudioResource>& resource);
+    bool resourceAlreadyLoaded(const QSharedPointer<Audio::AudioResource> &resource);
 
-    [[nodiscard]] QSharedPointer<AudioThumbnail> getThumbnailForResource(const QSharedPointer<Audio::AudioResource>& resource) const;
+    [[nodiscard]] QSharedPointer<AudioThumbnail>
+    getThumbnailForResource(const QSharedPointer<Audio::AudioResource> &resource) const;
 
-    void registerAudioResource(const QSharedPointer<Audio::AudioResource>& resource);
-    void drawThumbnailForClip(const QSharedPointer<Audio::AudioClip>& clip, QPainter &painter, QRect rect) const;
+    void registerAudioResource(const QSharedPointer<Audio::AudioResource> &resource);
+    void drawThumbnailForClip(const QSharedPointer<Audio::AudioClip> &clip, QPainter &painter, QRect rect) const;
 
     [[nodiscard]] QVector<QSharedPointer<AudioThumbnail>> getAudioThumbnails() const;
 

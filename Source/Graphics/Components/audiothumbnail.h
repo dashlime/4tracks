@@ -10,7 +10,7 @@ namespace Graphics
 
 class AudioThumbnail: public QObject
 {
-    Q_OBJECT
+Q_OBJECT
 
 public:
     class MinMaxValues;
