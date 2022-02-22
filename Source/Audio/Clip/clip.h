@@ -18,7 +18,7 @@ class Clip: public QObject
 Q_OBJECT
 
 public:
-    explicit Clip(const QString &name, const QString &sourceFilePath, Track *parentTrack);
+    explicit Clip(const QString &name, Track *parentTrack);
 
     [[nodiscard]] QSharedPointer<ClipProperties> getClipProperties() const;
 

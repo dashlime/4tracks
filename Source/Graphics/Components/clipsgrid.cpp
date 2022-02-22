@@ -11,6 +11,8 @@ ClipsGrid::ClipsGrid(const QSharedPointer<Audio::Project> &project,
     mPositionBarWidget.setParent(this);
     mSelectionOverlay.setParent(this);
 
+    mThumbnailManager = QSharedPointer<ThumbnailManager>::create();
+
     setupCallbacks();
 }
 
@@ -48,7 +50,7 @@ void ClipsGrid::setupCallbacks()
 
     connect(mProject.get(), &Audio::Project::clipAdded, [=](int clipID)
     {
-        QPointer<Clip> clipUi = new Clip(this);
+        QPointer<Clip> clipUi = new Clip(mThumbnailManager, this);
         clipUi->show();
 
         auto newClip = mProject->getClips().at(clipID);
@@ -62,10 +64,10 @@ void ClipsGrid::setupCallbacks()
 
     connect(mProject.get(), &Audio::Project::clipRemoved, [=](int clipID)
     {
+        mTimelineProperties->getCurrentSelection()->setSelectionType(Selection::NoSelection);
+
         mClips.at(clipID)->deleteLater();
         mClips.remove(clipID);
-
-        mTimelineProperties->getCurrentSelection()->setSelectionType(Selection::NoSelection);
 
         updateClipsGeometry();
     });
@@ -80,6 +82,14 @@ void ClipsGrid::setupClipCallbacks(const QPointer<Audio::Clip> &clip)
     {
         updateClipsGeometry();
     });
+    connect(clip->getClipProperties().get(), &Audio::ClipProperties::startOffsetChanged, [=]()
+    {
+        updateClipsGeometry();
+    });
+    connect(clip->getClipProperties().get(), &Audio::ClipProperties::endOffsetChanged, [=]()
+    {
+        updateClipsGeometry();
+    });
 }
 
 void ClipsGrid::updateClipsGeometry()
@@ -87,8 +97,8 @@ void ClipsGrid::updateClipsGeometry()
     for (const auto &clipUi: mClips) {
         auto clipProperties = clipUi->getClip()->getClipProperties();
 
-        int clipPosition = samplesToPixels((int) clipProperties->getPositionInSamples());
-        int clipLength = samplesToPixels((int) clipProperties->getLengthInSamples());
+        int clipPosition = samplesToPixels(clipProperties->getPositionInSamples() + clipProperties->getStartOffset());
+        int clipLength = samplesToPixels(clipProperties->getEndOffset() - clipProperties->getStartOffset());
 
         clipUi->setGeometry(clipPosition,
                             clipProperties->getParentTrack()->getTrackProperties()->getIndex()
@@ -111,11 +121,10 @@ void ClipsGrid::updateSelectionOverlay()
     int w = samplesToPixels(area.nbSamples);
     int y, h;
 
-    if (area.nbTracks >= 0) {
+    if (area.nbTracks > 0) {
         y = area.startTrackIndex * (DEFAULT_TRACK_HEIGHT + 1);
-        h = (area.nbTracks + 1) * (DEFAULT_TRACK_HEIGHT + 1);
+        h = area.nbTracks * (DEFAULT_TRACK_HEIGHT + 1);
     }
-
     else {
         y = (area.startTrackIndex + 1) * (DEFAULT_TRACK_HEIGHT + 1);
         h = (area.nbTracks - 1) * (DEFAULT_TRACK_HEIGHT + 1);
@@ -141,7 +150,7 @@ double ClipsGrid::getDivision() const
     return division;
 }
 
-int ClipsGrid::roundPosition(int positionInSamples) const
+juce::int64 ClipsGrid::roundPosition(juce::int64 positionInSamples) const
 {
     int samplesPerMinute = DEFAULT_SAMPLE_RATE * 60;
 
@@ -151,7 +160,7 @@ int ClipsGrid::roundPosition(int positionInSamples) const
     return result;
 }
 
-int ClipsGrid::samplesToPixels(int samples) const
+int ClipsGrid::samplesToPixels(juce::int64 samples) const
 {
     int samplesPerMinute = DEFAULT_SAMPLE_RATE * 60;
     int pixelsPerMinute =
@@ -160,7 +169,7 @@ int ClipsGrid::samplesToPixels(int samples) const
     return int((double) samples / (double) samplesPerMinute * (double) pixelsPerMinute);
 }
 
-int ClipsGrid::pixelsToSamples(int pixels) const
+juce::int64 ClipsGrid::pixelsToSamples(int pixels) const
 {
     int samplesPerMinute = DEFAULT_SAMPLE_RATE * 60;
     int samplesPerPixel = int((double) samplesPerMinute / mProject->getProjectProperties()->getBpm()
@@ -213,41 +222,69 @@ void ClipsGrid::mousePressEvent(QMouseEvent *event)
         mProject->setNextReadPosition(roundPosition(pixelsToSamples(event->pos().x())));
 
     // selection system
+    bool rightClick = event->buttons().testFlag(Qt::RightButton);
     bool clipClicked = false;
-    for (const auto &clip: mClips) {
-        if (clip->geometry().contains(event->pos())) {
-            mTimelineProperties->getCurrentSelection()->objectSelected(clip, event);
-            clipClicked = true;
+
+    bool selectionAreaClicked = mSelectionOverlay.geometry().contains(event->pos());
+    if (mTimelineProperties->getCurrentSelection()->getSelectionType() != Selection::AreaSelected)
+        selectionAreaClicked = false;
+
+    if (!selectionAreaClicked) {
+        for (const auto &clip: mClips) {
+            if (clip->geometry().contains(event->pos())) {
+                mTimelineProperties->getCurrentSelection()->objectSelected(clip, event);
+                clipClicked = true;
+            }
         }
     }
-
-    // if nothing have been selected
-    if (!clipClicked) {
+    // if nothing have been selected and selection area wasn't right-clicked
+    if (!clipClicked && !(selectionAreaClicked && rightClick))
         mTimelineProperties->getCurrentSelection()->setSelectionType(Selection::NoSelection);
-        return;
-    }
 
-    if (event->buttons().testFlag(Qt::RightButton)) {
-        QMenu menu(this);
+    if (rightClick) {
+        if (selectionAreaClicked) {
+            QMenu menu(this);
 
-        auto *deleteAction = new QAction("Delete", this);
-        menu.addAction(deleteAction);
+            auto *deleteAction = new QAction("Delete", this);
+            menu.addAction(deleteAction);
 
-        connect(deleteAction, &QAction::triggered, [this]()
-        {
-            for (const auto &clip: mTimelineProperties->getCurrentSelection()->getSelectedObjects()) {
-                mProject->removeClip(((Clip *) clip.get())->getClip());
-            }
-        });
+            connect(deleteAction, &QAction::triggered, [this]()
+            {
+                auto area = mTimelineProperties->getCurrentSelection()->getSelectedArea();
 
-        menu.exec(event->globalPosition().toPoint());
+                int startTrackID = area.startTrackIndex;
+                int nbTracks = area.nbTracks;
+                juce::int64 startSample = area.startSample;
+                juce::int64 nbSamples = area.nbSamples;
+
+                mProject->removeArea(startTrackID, nbTracks, startSample, nbSamples);
+            });
+
+            menu.exec(event->globalPosition().toPoint());
+        }
+        else if (clipClicked) {
+            QMenu menu(this);
+
+            auto *deleteAction = new QAction("Delete", this);
+            menu.addAction(deleteAction);
+
+            connect(deleteAction, &QAction::triggered, [this]()
+            {
+                for (const auto &clip: mTimelineProperties->getCurrentSelection()->getSelectedObjects()) {
+                    mProject->removeClip(((Clip *) clip.get())->getClip());
+                }
+            });
+
+            menu.exec(event->globalPosition().toPoint());
+        }
     }
 }
 
 void ClipsGrid::mouseReleaseEvent(QMouseEvent *)
 {
     if (mMovingClip) {
-        mMovingClip->getClip()->getClipProperties()->setPositionInSamples(pixelsToSamples(mMovingClip->x()));
+        mMovingClip->getClip()->getClipProperties()->setPositionInSamples(
+            pixelsToSamples(mMovingClip->x()) - mMovingClip->getClip()->getClipProperties()->getStartOffset());
         mMovingClip = nullptr;
     }
 }
@@ -268,10 +305,12 @@ void ClipsGrid::mouseMoveEvent(QMouseEvent *event)
         }
 
         if (mMovingClip != nullptr) {
-            int clipPosition = (int) mMovingClip->getClip()->getClipProperties()->getPositionInSamples();
+            juce::int64 clipPosition = mMovingClip->getClip()->getClipProperties()->getPositionInSamples()
+                + mMovingClip->getClip()->getClipProperties()->getStartOffset();
 
-            int newPositionInSamples =
-                roundPosition(clipPosition + pixelsToSamples((int) event->position().x() - clickPosition.x()));
+            juce::int64 newPositionInSamples =
+                roundPosition(
+                    clipPosition + (juce::int64) pixelsToSamples((int) event->position().x() - clickPosition.x()));
 
             mMovingClip->setGeometry(samplesToPixels(newPositionInSamples),
                                      mMovingClip->y(),
@@ -281,15 +320,23 @@ void ClipsGrid::mouseMoveEvent(QMouseEvent *event)
         }
 
         // else set selection area
+        int trackIndex = event->pos().y() / (DEFAULT_TRACK_HEIGHT + 1);
+        juce::int64 samples = roundPosition(pixelsToSamples(event->pos().x()));
+
         Selection::SelectionArea area = mTimelineProperties->getCurrentSelection()->getSelectedArea();
         if (mTimelineProperties->getCurrentSelection()->getSelectionType() != Selection::AreaSelected) {
             mTimelineProperties->getCurrentSelection()->setSelectionType(Selection::AreaSelected);
-            area.startTrackIndex = event->pos().y() / (DEFAULT_TRACK_HEIGHT + 1);
-            area.startSample = roundPosition(pixelsToSamples(event->pos().x()));
+            area.startTrackIndex = trackIndex;
+            area.startSample = samples;
         }
 
-        area.nbTracks = event->pos().y() / (DEFAULT_TRACK_HEIGHT + 1) - area.startTrackIndex;
-        area.nbSamples = roundPosition(pixelsToSamples(event->pos().x())) - area.startSample;
+        if (trackIndex >= area.startTrackIndex)
+            area.nbTracks = trackIndex - area.startTrackIndex + 1;
+        else
+            area.nbTracks = trackIndex - area.startTrackIndex;
+
+        area.nbSamples = samples - area.startSample;
+
         mTimelineProperties->getCurrentSelection()->setSelectedArea(area);
     }
 }

@@ -3,8 +3,8 @@
 namespace Audio
 {
 
-Clip::Clip(const QString &name, const QString &sourceFilePath, Track *parentTrack)
-    : mClipProperties(QSharedPointer<ClipProperties>::create(parentTrack, name, sourceFilePath))
+Clip::Clip(const QString &name, Track *parentTrack)
+    : mClipProperties(QSharedPointer<ClipProperties>::create(parentTrack, name))
 {}
 
 void Clip::setReadPosition(juce::int64 newPosition)

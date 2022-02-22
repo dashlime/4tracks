@@ -10,6 +10,7 @@
 #include "Graphics/Overlays/selectionoverlay.h"
 #include "Graphics/Managers/selection.h"
 #include "Graphics/Managers/timelineproperties.h"
+#include "Graphics/Managers/thumbnailmanager.h"
 
 namespace Graphics
 {
@@ -31,10 +32,10 @@ public:
 
     [[nodiscard]] double getDivision() const;
 
-    [[nodiscard]] int roundPosition(int positionInSamples) const;
+    [[nodiscard]] juce::int64 roundPosition(juce::int64 positionInSamples) const;
 
-    [[nodiscard]] int samplesToPixels(int samples) const;
-    [[nodiscard]] int pixelsToSamples(int pixels) const;
+    [[nodiscard]] int samplesToPixels(juce::int64 samples) const;
+    [[nodiscard]] juce::int64 pixelsToSamples(int pixels) const;
 
     void paintEvent(QPaintEvent *) override;
     void resizeEvent(QResizeEvent *event) override;
@@ -52,6 +53,7 @@ private:
     Clip *mMovingClip = nullptr;
     QPoint clickPosition;
 
+    QSharedPointer<ThumbnailManager> mThumbnailManager;
     QSharedPointer<TimelineProperties> mTimelineProperties;
     QSharedPointer<Audio::Project> mProject;
 

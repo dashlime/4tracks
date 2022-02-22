@@ -4,6 +4,7 @@
 #include <QFlags>
 
 #include "Graphics/Overlays/selectionoverlay.h"
+#include "Audio/JuceIncludes.h"
 
 namespace Graphics
 {
@@ -64,9 +65,9 @@ public:
     struct SelectionArea
     {
         int startTrackIndex;
-        int startSample;
+        juce::int64 startSample;
         int nbTracks;
-        int nbSamples;
+        juce::int64 nbSamples;
     };
 
     void setSelectedArea(int startTrackIndex, int startSample, int nbTracks, int nbSamples);

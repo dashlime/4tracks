@@ -28,6 +28,8 @@ public:
     bool addClip(const QSharedPointer<Clip> &newClip);
     QVector<QSharedPointer<Clip>> getClips() const;
 
+    [[nodiscard]] QSharedPointer<AudioResource> getAlreadyLoadedResource(const QString &sourcePath) const;
+
     int createTrack(const QString &trackName);
     int createAudioClip(const QSharedPointer<Track> &parentTrack, const QString &filePath);
     int createMIDIClip(const QSharedPointer<Track> &parentTrack);
@@ -39,6 +41,9 @@ public:
     void removeTrack(QSharedPointer<Track> trackToRemove);
 
     void removeClip(QSharedPointer<Clip> clipToRemove);
+
+    void removeArea(int startTrack, int nbTracks, juce::int64 startSample, juce::int64 nbSamples);
+    int duplicateClip(const QSharedPointer<Clip> &clipToDuplicate);
 
     void clearAllTracks();
 

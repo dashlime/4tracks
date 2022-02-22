@@ -3,17 +3,21 @@
 namespace Graphics
 {
 
-AudioThumbnail::AudioThumbnail() = default;
+AudioThumbnail::AudioThumbnail(const QSharedPointer<Audio::AudioResource> &resource)
+    : mAudioResource(resource)
+{}
 
-void AudioThumbnail::loadThumbnail(const QSharedPointer<Audio::AudioClip> &clip, int sourceSamplesPerThumbnailSample)
+void AudioThumbnail::loadThumbnail(int sourceSamplesPerThumbnailSample)
 {
-    int thumbnailSamples = clip->getAudioBuffer()->getNumSamples() / sourceSamplesPerThumbnailSample;
+    mThumbnailValues.clear();
+    juce::int64 thumbnailSamples = mAudioResource->getAudioData()->getNumSamples() / sourceSamplesPerThumbnailSample;
 
-    for (int i = 0; i < thumbnailSamples; i++) {
+    for (juce::int64 i = 0; i < thumbnailSamples; i++) {
         float min = 0;
         float max = 0;
         for (int j = 0; j < sourceSamplesPerThumbnailSample; j++) {
-            float value = clip->getAudioBuffer()->getSample(0, i * sourceSamplesPerThumbnailSample + j);
+            float value =
+                mAudioResource->getAudioData()->getSample(0, i * (juce::int64) sourceSamplesPerThumbnailSample + j);
             min = value < min ? value : min;
             max = value > max ? value : max;
         }
@@ -21,19 +25,14 @@ void AudioThumbnail::loadThumbnail(const QSharedPointer<Audio::AudioClip> &clip,
     }
 }
 
-void AudioThumbnail::drawThumbnail(QPainter &p, QRect rect)
+const std::vector<AudioThumbnail::MinMaxValues> &AudioThumbnail::getThumbnailValues() const
 {
-    float verticalCenter = (float) rect.height() / 2;
-    float ratio = verticalCenter;
+    return mThumbnailValues;
+}
 
-    double thumbnailValuesPerPixel = (double) mThumbnailValues.size() / (double) rect.width();
-
-    p.translate(rect.topLeft());
-    for (int i = 0; i < rect.width(); i++) {
-        float min = mThumbnailValues.at(i * thumbnailValuesPerPixel).getMinValue();
-        float max = mThumbnailValues.at(i * thumbnailValuesPerPixel).getMaxValue();
-        p.drawLine(i, int(min * ratio + verticalCenter), i, int(max * ratio + verticalCenter));
-    }
+QSharedPointer<Audio::AudioResource> AudioThumbnail::getAudioResource() const
+{
+    return mAudioResource;
 }
 
 } // namespace Graphics

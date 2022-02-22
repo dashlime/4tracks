@@ -2,23 +2,30 @@
 #define GRAPHICS_AUDIOTHUMBNAIL_H
 
 #include <QtWidgets>
+#include "Audio/Resources/audioresource.h"
 #include "Audio/Clip/audioclip.h"
 
 namespace Graphics
 {
 
-class AudioThumbnail
+class AudioThumbnail: public QObject
 {
+Q_OBJECT
+
 public:
-    AudioThumbnail();
-
-    void loadThumbnail(const QSharedPointer<Audio::AudioClip> &clip, int sourceSamplesPerThumbnailSample);
-    void drawThumbnail(QPainter &p, QRect rect);
-
-private:
     class MinMaxValues;
 
+    explicit AudioThumbnail(const QSharedPointer<Audio::AudioResource> &resource);
+
+    void loadThumbnail(int sourceSamplesPerThumbnailSample);
+
+    [[nodiscard]] const std::vector<MinMaxValues> &getThumbnailValues() const;
+
+    [[nodiscard]] QSharedPointer<Audio::AudioResource> getAudioResource() const;
+
+private:
     std::vector<MinMaxValues> mThumbnailValues;
+    QSharedPointer<Audio::AudioResource> mAudioResource;
 };
 
 class AudioThumbnail::MinMaxValues

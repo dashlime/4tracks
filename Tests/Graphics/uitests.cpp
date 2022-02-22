@@ -7,3 +7,11 @@ void SelectionManagerTests::SetUp()
 
 void SelectionManagerTests::TearDown()
 {}
+
+void ThumbnailManagerTests::SetUp()
+{
+    mThumbnailManager.reset(new Graphics::ThumbnailManager());
+}
+
+void ThumbnailManagerTests::TearDown()
+{}

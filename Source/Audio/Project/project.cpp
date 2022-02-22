@@ -30,6 +30,8 @@ void Project::addTrack(const QSharedPointer<Track> &newTrack)
     });
 
     emit trackAdded(newTrack->getTrackProperties()->getIndex());
+
+    mProjectProperties->updateSavedState(ProjectProperties::UNSAVED);
 }
 
 QVector<QSharedPointer<Track>> Project::getTracks() const
@@ -43,6 +45,8 @@ bool Project::addClip(const QSharedPointer<Clip> &newClip)
     if (result) {
         mClips.append(newClip);
         emit clipAdded((int) mClips.size() - 1);
+
+        mProjectProperties->updateSavedState(ProjectProperties::UNSAVED);
     }
 
     return result;
@@ -51,6 +55,16 @@ bool Project::addClip(const QSharedPointer<Clip> &newClip)
 QVector<QSharedPointer<Clip>> Project::getClips() const
 {
     return mClips;
+}
+
+QSharedPointer<AudioResource> Project::getAlreadyLoadedResource(const QString &sourcePath) const
+{
+    for (const auto &clip: mClips)
+        if (clip->getType() == Clip::AUDIO_CLIP)
+            if (qSharedPointerCast<AudioClip>(clip)->getAudioResource()->getSourceFilePath() == sourcePath)
+                return qSharedPointerCast<AudioClip>(clip)->getAudioResource();
+
+    return {};
 }
 
 int Project::createTrack(const QString &trackName)
@@ -68,7 +82,13 @@ int Project::createAudioClip(const QSharedPointer<Track> &parentTrack, const QSt
     if (parentTrack == nullptr)
         return -1;
 
-    bool result = addClip(QSharedPointer<Audio::AudioClip>::create(filePath, parentTrack.get()));
+    bool result;
+
+    auto resource = getAlreadyLoadedResource(filePath);
+    if (resource)
+        result = addClip(QSharedPointer<Audio::AudioClip>::create(resource, parentTrack.get()));
+    else
+        result = addClip(QSharedPointer<Audio::AudioClip>::create(filePath, parentTrack.get()));
 
     if (!result)
         return -1;
@@ -126,6 +146,7 @@ void Project::removeTrack(QSharedPointer<Track> trackToRemove)
             rearrangeTrackIndexes();
 
             emit trackRemoved(trackIndex);
+            mProjectProperties->updateSavedState(ProjectProperties::UNSAVED);
 
             return;
         }
@@ -146,10 +167,87 @@ void Project::removeClip(QSharedPointer<Clip> clipToRemove)
             mClips.erase(it);
 
             emit clipRemoved(clipID);
+            mProjectProperties->updateSavedState(ProjectProperties::UNSAVED);
             return;
         }
         it++;
     }
+}
+
+void Project::removeArea(int startTrack, int nbTracks, juce::int64 startSample, juce::int64 nbSamples)
+{
+    if (nbSamples < 0) {
+        startSample = startSample + nbSamples;
+        nbSamples = -nbSamples;
+    }
+
+    if (nbTracks < 0) {
+        startTrack = startTrack + nbTracks;
+        nbTracks = -nbTracks + 1;
+    }
+
+    for (int i = startTrack; i < startTrack + nbTracks; i++) {
+        for (auto &clip: mTracks.at(i)->getClips()) {
+            juce::int64 clipPosition = clip->getClipProperties()->getPositionInSamples();
+            juce::int64 clipStartOffset = clip->getClipProperties()->getStartOffset();
+            juce::int64 clipEndOffset = clip->getClipProperties()->getEndOffset();
+
+            if (startSample <= clipPosition + clipStartOffset
+                && startSample + nbSamples >= clipPosition + clipEndOffset) {
+                removeClip(clip);
+            }
+            else if (startSample > clipPosition + clipStartOffset
+                && startSample + nbSamples < clipPosition + clipEndOffset) {
+                juce::int64 baseEndOffset = clip->getClipProperties()->getEndOffset();
+
+                clip->getClipProperties()->setEndOffset(startSample - clipPosition);
+                int newClipID = duplicateClip(clip);
+
+                mClips.at(newClipID)->getClipProperties()->setStartOffset(startSample + nbSamples - clipPosition);
+                mClips.at(newClipID)->getClipProperties()->setEndOffset(baseEndOffset);
+                mClips.at(newClipID)->getClipProperties()
+                    ->setPositionInSamples(clip->getClipProperties()->getPositionInSamples());
+            }
+            else {
+                // set end offset
+                if (startSample > clipPosition + clipStartOffset
+                    && startSample < clipPosition + clipEndOffset) {
+                    clip->getClipProperties()->setEndOffset(startSample - clipPosition);
+                }
+                    // set start offset
+                else if (startSample + nbSamples > clipPosition + clipStartOffset
+                    && startSample + nbSamples < clipPosition + clipEndOffset) {
+                    clip->getClipProperties()->setStartOffset(startSample + nbSamples - clipPosition);
+                }
+            }
+        }
+    }
+}
+
+int Project::duplicateClip(const QSharedPointer<Clip> &clipToDuplicate)
+{
+    juce::int64 oldClipPosition = clipToDuplicate->getClipProperties()->getPositionInSamples();
+    juce::int64 oldClipStartOffset = clipToDuplicate->getClipProperties()->getStartOffset();
+    juce::int64 oldClipEndOffset = clipToDuplicate->getClipProperties()->getEndOffset();
+
+    QSharedPointer<Clip> newClip;
+
+    if (clipToDuplicate->getType() == Clip::AUDIO_CLIP) {
+        newClip = QSharedPointer<AudioClip>::create(qSharedPointerCast<AudioClip>(clipToDuplicate)->getAudioResource(),
+                                                    clipToDuplicate->getClipProperties()->getParentTrack());
+    }
+    else if (clipToDuplicate->getType() == Clip::MIDI_CLIP) {
+        newClip = QSharedPointer<MidiClip>::create(clipToDuplicate->getClipProperties()->getParentTrack());
+    }
+
+    newClip->getClipProperties()->setStartOffset(oldClipStartOffset);
+    newClip->getClipProperties()->setEndOffset(oldClipEndOffset);
+    newClip->getClipProperties()->setPositionInSamples(oldClipPosition + oldClipEndOffset - oldClipStartOffset);
+
+    if (!addClip(newClip))
+        return -1;
+
+    return (int) mClips.size() - 1;
 }
 
 void Project::clearAllTracks()
