@@ -1,11 +1,13 @@
-FIND_LIBRARY(RT rt)
-FIND_LIBRARY(DL dl)
-FIND_PACKAGE(X11 REQUIRED)
-FIND_PACKAGE(Threads REQUIRED)
-FIND_PACKAGE(Freetype REQUIRED)
+if (UNIX)
+    INCLUDE_DIRECTORIES(AFTER ${FREETYPE_INCLUDE_DIRS})
+    FIND_LIBRARY(RT rt)
+    FIND_LIBRARY(DL dl)
+    FIND_PACKAGE(X11 REQUIRED)
+    FIND_PACKAGE(Threads REQUIRED)
+    FIND_PACKAGE(Freetype REQUIRED)
+    SET (JUCE_LIBRARIES ${RT} ${DL} ${X11_LIBRARIES} ${FREETYPE_LIBRARIES})
+endif()
 
-INCLUDE_DIRECTORIES(AFTER ${FREETYPE_INCLUDE_DIRS})
-SET (JUCE_LIBRARIES ${RT} ${DL} ${X11_LIBRARIES} ${FREETYPE_LIBRARIES})
 SET (JUCE_SOURCE
         modules/juce_core/juce_core.cpp
         modules/juce_data_structures/juce_data_structures.cpp
@@ -13,7 +15,7 @@ SET (JUCE_SOURCE
         modules/juce_audio_formats/juce_audio_formats.cpp
         modules/juce_audio_devices/juce_audio_devices.cpp
         modules/juce_audio_basics/juce_audio_basics.cpp
-)
+        )
 
 ADD_LIBRARY(juce_static_lib STATIC ${JUCE_SOURCE})
 TARGET_LINK_LIBRARIES(juce_static_lib ${CMAKE_THREAD_LIBS_INIT} ${JUCE_LIBRARIES})

@@ -17,7 +17,7 @@
 namespace Graphics
 {
 
-class QDESIGNER_WIDGET_EXPORT Timeline: public QWidget
+class Timeline: public QWidget
 {
 Q_OBJECT
 public:

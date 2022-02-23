@@ -9,16 +9,42 @@ if (CMAKE_BUILD_TYPE MATCHES Coverage)
     set(CMAKE_CXX_FLAGS "-fprofile-arcs -ftest-coverage")
 endif ()
 
-set(LIBS
-        Qt6::Core
-        Qt6::Gui
-        Qt6::Xml
-        Qt6::Widgets
-        juce_static_lib
-        asound
-        curl
-        dl
-        gcov)
+if (UNIX)
+    set(LIBS
+            Qt6::Core
+            Qt6::Gui
+            Qt6::Xml
+            Qt6::Widgets
+            juce_static_lib
+            asound
+            curl
+            dl
+            gcov)
+elseif (WIN32)
+    set(LIBS
+            Qt6::Core
+            Qt6::Gui
+            Qt6::Xml
+            Qt6::Widgets
+            juce_static_lib
+            gdi32
+            user32
+            kernel32
+            comctl32
+            uuid
+            wsock32
+            wininet
+            version
+            ole32
+            ws2_32
+            oleaut32
+            imm32
+            comdlg32
+            shlwapi
+            rpcrt4
+            winmm
+            gcov)
+endif()
 
 # create static lib for unit tests
 list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp")
