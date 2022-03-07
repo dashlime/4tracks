@@ -5,10 +5,10 @@ project(4tracks LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 COMPONENTS Widgets REQUIRED)
-find_package(Qt6 COMPONENTS Core)
-find_package(Qt6 COMPONENTS Gui)
-find_package(Qt6 COMPONENTS Xml)
+find_package(Qt6Widgets REQUIRED)
+find_package(Qt6Core)
+find_package(Qt6Gui)
+find_package(Qt6Xml)
 
 include_directories(
     Source
