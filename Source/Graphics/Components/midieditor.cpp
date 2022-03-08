@@ -39,6 +39,13 @@ void MidiEditor::paintEvent(QPaintEvent *event)
     for (int i = 0; i * pixelsInDivision < width(); i++) {
         p.drawLine(i * pixelsInDivision, 0, i * pixelsInDivision, height());
     }
+
+    p.setPen(QColorConstants::Black);
+
+    p.translate(-90, 0);
+    for (int i = 0; i < nbNotesToDraw; i++) {
+        p.drawText(QRect(5, i * 20, 65, 20), Qt::AlignVCenter | Qt::AlignLeft,mClip->midiNoteName(nbNotesToDraw - i));
+    }
 }
 
 } // Graphics

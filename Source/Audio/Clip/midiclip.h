@@ -14,6 +14,7 @@ public:
     explicit MidiClip(Track *parentTrack);
 
     [[nodiscard]] bool currentScaleContains(int midiNoteNumber) const;
+    [[nodiscard]] QString midiNoteName(int midiNoteNumber) const;
 
     [[nodiscard]] Type getType() const override;
 };
