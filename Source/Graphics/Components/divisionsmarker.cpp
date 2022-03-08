@@ -10,6 +10,30 @@ DivisionsMarker::DivisionsMarker(double division, double pixelsPerBeat, QWidget 
     setFixedHeight(10);
 }
 
+QString DivisionsMarker::beatToString(double beat)
+{
+    if (beat == 0)
+        return "1";
+
+    beat /= 4;
+
+    QString result = "";
+
+    double currentDivision = 1;
+    while (beat != 0) {
+        int beatNumber = (int) floor(beat / currentDivision) + 1;
+        beat = fmod(beat, currentDivision);
+        result += QString::number(beatNumber);
+        result += ".";
+
+        currentDivision /= 4;
+    }
+
+    result.chop(1);
+
+    return result;
+}
+
 void DivisionsMarker::refresh(double newDivision, double pixelsPerBeat)
 {
     mDivision = newDivision;
@@ -30,7 +54,7 @@ void DivisionsMarker::paintEvent(QPaintEvent *)
     p.setFont(font);
 
     for (int i = 0; i * mPixelsPerBeat * mDivision < width(); i += 4) {
-        p.drawText(int(i * mPixelsPerBeat * mDivision), 10, QString::number(mDivision * i / 4));
+        p.drawText(int(i * mPixelsPerBeat * mDivision), 10, beatToString(mDivision * i));
     }
 }
 

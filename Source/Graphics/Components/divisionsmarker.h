@@ -12,6 +12,8 @@ Q_OBJECT
 public:
     explicit DivisionsMarker(double division, double pixelsPerBeat, QWidget *parent = nullptr);
 
+    [[nodiscard]] static QString beatToString(double beat);
+
     void refresh(double newDivision, double pixelsPerBeat);
 
     void paintEvent(QPaintEvent *) override;

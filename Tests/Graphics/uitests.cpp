@@ -15,3 +15,9 @@ void ThumbnailManagerTests::SetUp()
 
 void ThumbnailManagerTests::TearDown()
 {}
+
+void DivisionsMarkerTests::SetUp()
+{}
+
+void DivisionsMarkerTests::TearDown()
+{}
