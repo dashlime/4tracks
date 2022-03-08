@@ -6,8 +6,10 @@
 #include <cmath>
 
 #include <QLayout>
+#include <QWidget>
 
 #include "Audio/JuceIncludes.h"
+#include "Constants.h"
 
 class Utils
 {
@@ -48,6 +50,41 @@ public:
             }
             delete item;
         }
+    }
+    static double calculateDivision(double pixelsPerBeatAmount)
+    {
+        double division = (double) MINIMUM_SPACE_BETWEEN_GRID_LINES / pixelsPerBeatAmount;
+        int index = (int) Utils::search_closest(DEFAULT_DIVISIONS, division);
+        division = DEFAULT_DIVISIONS[index];
+        return division;
+    }
+    static juce::int64 roundPosition(juce::int64 positionInSamples, double pixelsPerBeatAmount, double bpm, bool forceRoundingToPriorPosition = false)
+    {
+        int samplesPerMinute = DEFAULT_SAMPLE_RATE * 60;
+
+        double samplesInDivision = calculateDivision(pixelsPerBeatAmount) / bpm * (double) samplesPerMinute;
+
+        juce::int64 result;
+        if (!forceRoundingToPriorPosition)
+            result = juce::int64(round((double) positionInSamples / samplesInDivision) * samplesInDivision);
+        else
+            result = juce::int64(floor((double) positionInSamples / samplesInDivision) * samplesInDivision);
+
+        return result;
+    }
+    static int samplesToPixels(juce::int64 samples, double pixelsPerBeatAmount, double bpm)
+    {
+        int samplesPerMinute = DEFAULT_SAMPLE_RATE * 60;
+        double pixelsPerMinute = bpm * pixelsPerBeatAmount;
+
+        return int((double) samples / (double) samplesPerMinute * pixelsPerMinute);
+    }
+    static juce::int64 pixelsToSamples(int pixels, double pixelsPerBeatAmount, double bpm)
+    {
+        int samplesPerMinute = DEFAULT_SAMPLE_RATE * 60;
+        double samplesPerPixel = (double) samplesPerMinute / bpm / pixelsPerBeatAmount;
+
+        return juce::int64(samplesPerPixel * pixels);
     }
 };
 

@@ -56,7 +56,7 @@ void Selection::objectSelected(SelectableObject *object, QFlags<Modifier> modifi
 
     if (modifiers.testFlag(RightButtonModifier)) {
         if (!mSelectedObjects.contains(ptr)) {
-            setSelectionType(TracksSelected);
+            setSelectionType(object->getType() == SelectableObject::Clip ? ClipsSelected : TracksSelected);
             mSelectedObjects.push_back(ptr);
             ptr->setSelectedState(true);
         }
@@ -73,7 +73,7 @@ void Selection::objectSelected(SelectableObject *object, QFlags<Modifier> modifi
             }
         }
         else {
-            setSelectionType(TracksSelected);
+            setSelectionType(object->getType() == SelectableObject::Clip ? ClipsSelected : TracksSelected);
             mSelectedObjects.push_back(ptr);
             ptr->setSelectedState(true);
         }

@@ -9,6 +9,7 @@
 #include "Graphics/Dialogs/settingsdialog.h"
 #include "Utils/projectsaver.h"
 #include "timelinescrollwidget.h"
+#include "clipeditorpanel.h"
 
 namespace Graphics
 {
@@ -47,6 +48,7 @@ private:
     Ui::MainWindow *ui;
     QSharedPointer<Audio::Project> mProject;
     Timeline mUiTimeline;
+    ClipEditorPanel mClipEditorPanel;
     TimelineScrollWidget mTimelineScrollWidget;
     juce::AudioSourcePlayer mPlayer;
     juce::AudioDeviceManager mDeviceManager;

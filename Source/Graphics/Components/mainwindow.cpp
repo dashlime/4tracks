@@ -6,7 +6,7 @@ namespace Graphics
 
 MainWindow::MainWindow(const QString &projectToLoad, QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow), mProject(QSharedPointer<Audio::Project>::create("Untitled Project")),
-      mUiTimeline(mProject), mTimelineScrollWidget(&mUiTimeline, mProject)
+      mUiTimeline(mProject), mTimelineScrollWidget(&mUiTimeline, mProject), mClipEditorPanel(mUiTimeline.getTimelineProperties())
 {
     ui->setupUi(this);
 
@@ -25,6 +25,7 @@ MainWindow::MainWindow(const QString &projectToLoad, QWidget *parent)
 
     // init UI
     ui->centralwidget->layout()->addWidget(&mUiTimeline);
+    ui->centralwidget->layout()->addWidget(&mClipEditorPanel);
 
     updateTitle();
 

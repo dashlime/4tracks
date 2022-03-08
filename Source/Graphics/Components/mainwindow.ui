@@ -6,8 +6,8 @@
             <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>800</width>
-                <height>600</height>
+                <width>1000</width>
+                <height>700</height>
             </rect>
         </property>
         <property name="palette">
@@ -274,14 +274,6 @@
             </layout>
         </widget>
         <widget class="QMenuBar" name="menubar">
-            <property name="geometry">
-                <rect>
-                    <x>0</x>
-                    <y>0</y>
-                    <width>800</width>
-                    <height>24</height>
-                </rect>
-            </property>
             <widget class="QMenu" name="menuFile">
                 <property name="title">
                     <string>File</string>

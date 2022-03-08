@@ -32,7 +32,7 @@ public:
 
     [[nodiscard]] double getDivision() const;
 
-    [[nodiscard]] juce::int64 roundPosition(juce::int64 positionInSamples) const;
+    [[nodiscard]] juce::int64 roundPosition(juce::int64 positionInSamples, bool forceRoundingToPriorPosition = false) const;
 
     [[nodiscard]] int samplesToPixels(juce::int64 samples) const;
     [[nodiscard]] juce::int64 pixelsToSamples(int pixels) const;
@@ -42,6 +42,7 @@ public:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *) override;
     void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
 
 public slots:
     void drawPositionBar();

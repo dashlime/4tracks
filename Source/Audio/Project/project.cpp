@@ -229,6 +229,7 @@ int Project::duplicateClip(const QSharedPointer<Clip> &clipToDuplicate)
     juce::int64 oldClipPosition = clipToDuplicate->getClipProperties()->getPositionInSamples();
     juce::int64 oldClipStartOffset = clipToDuplicate->getClipProperties()->getStartOffset();
     juce::int64 oldClipEndOffset = clipToDuplicate->getClipProperties()->getEndOffset();
+    juce::int64 oldClipLength = clipToDuplicate->getClipProperties()->getLengthInSamples();
 
     QSharedPointer<Clip> newClip;
 
@@ -240,6 +241,7 @@ int Project::duplicateClip(const QSharedPointer<Clip> &clipToDuplicate)
         newClip = QSharedPointer<MidiClip>::create(clipToDuplicate->getClipProperties()->getParentTrack());
     }
 
+    newClip->getClipProperties()->setLengthInSamples(oldClipLength);
     newClip->getClipProperties()->setStartOffset(oldClipStartOffset);
     newClip->getClipProperties()->setEndOffset(oldClipEndOffset);
     newClip->getClipProperties()->setPositionInSamples(oldClipPosition + oldClipEndOffset - oldClipStartOffset);

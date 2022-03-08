@@ -43,6 +43,17 @@ public:
     QSharedPointer<Audio::Project> mParentProject;
 };
 
+class MidiClipTests: public ::testing::Test
+{
+public:
+    void SetUp() override;
+    void TearDown() override;
+
+    QSharedPointer<Audio::MidiClip> mMidiClip;
+    QSharedPointer<Audio::Track> mParentTrack;
+    QSharedPointer<Audio::Project> mParentProject;
+};
+
 class AudioProjectSaverTests: public ::testing::Test
 {
 public:

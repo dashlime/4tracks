@@ -63,6 +63,18 @@ Graphics--Timeline:focus
     border: 3px solid #71717A;
 }
 
+Graphics--ClipEditorPanel
+{
+    background-color: #F4F4F5;
+    border: 3px solid #A1A1AA;
+    border-radius: 3px;
+}
+
+Graphics--ClipEditorPanel:focus
+{
+    border: 3px solid #71717A;
+}
+
 QScrollBar:vertical
 {
     background:rgba(0,0,0,0);

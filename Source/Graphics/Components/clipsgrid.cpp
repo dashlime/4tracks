@@ -144,38 +144,24 @@ void ClipsGrid::updateMinimumSize()
 
 double ClipsGrid::getDivision() const
 {
-    double division = MINIMUM_SPACE_BETWEEN_GRID_LINES / mTimelineProperties->getPixelsPerBeatAmount();
-    int index = (int) Utils::search_closest(DEFAULT_DIVISIONS, division);
-    division = DEFAULT_DIVISIONS[index];
-    return division;
+    return Utils::calculateDivision(mTimelineProperties->getPixelsPerBeatAmount());
 }
 
-juce::int64 ClipsGrid::roundPosition(juce::int64 positionInSamples) const
+juce::int64 ClipsGrid::roundPosition(juce::int64 positionInSamples, bool forceRoundingToPriorPosition) const
 {
-    int samplesPerMinute = DEFAULT_SAMPLE_RATE * 60;
-
-    int samplesInDivision = int(getDivision() / mProject->getProjectProperties()->getBpm() * (double) samplesPerMinute);
-    int result = (int) round((double) positionInSamples / samplesInDivision) * samplesInDivision;
-
-    return result;
+    return Utils::roundPosition(positionInSamples, mTimelineProperties->getPixelsPerBeatAmount(),
+                                mProject->getProjectProperties()->getBpm(),
+                                forceRoundingToPriorPosition);
 }
 
 int ClipsGrid::samplesToPixels(juce::int64 samples) const
 {
-    int samplesPerMinute = DEFAULT_SAMPLE_RATE * 60;
-    int pixelsPerMinute =
-        int(mProject->getProjectProperties()->getBpm() * mTimelineProperties->getPixelsPerBeatAmount());
-
-    return int((double) samples / (double) samplesPerMinute * (double) pixelsPerMinute);
+    return Utils::samplesToPixels(samples, mTimelineProperties->getPixelsPerBeatAmount(), mProject->getProjectProperties()->getBpm());
 }
 
 juce::int64 ClipsGrid::pixelsToSamples(int pixels) const
 {
-    int samplesPerMinute = DEFAULT_SAMPLE_RATE * 60;
-    int samplesPerPixel = int((double) samplesPerMinute / mProject->getProjectProperties()->getBpm()
-                                  / mTimelineProperties->getPixelsPerBeatAmount());
-
-    return samplesPerPixel * pixels;
+    return Utils::pixelsToSamples(pixels, mTimelineProperties->getPixelsPerBeatAmount(), mProject->getProjectProperties()->getBpm());
 }
 
 void ClipsGrid::drawPositionBar()
@@ -237,6 +223,7 @@ void ClipsGrid::mousePressEvent(QMouseEvent *event)
             }
         }
     }
+
     // if nothing have been selected and selection area wasn't right-clicked
     if (!clipClicked && !(selectionAreaClicked && rightClick))
         mTimelineProperties->getCurrentSelection()->setSelectionType(Selection::NoSelection);
@@ -338,6 +325,27 @@ void ClipsGrid::mouseMoveEvent(QMouseEvent *event)
         area.nbSamples = samples - area.startSample;
 
         mTimelineProperties->getCurrentSelection()->setSelectedArea(area);
+    }
+}
+
+void ClipsGrid::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        int trackClickedIndex = event->pos().y() / (DEFAULT_TRACK_HEIGHT + 1);
+        auto track = mProject->getTrackByIndex(trackClickedIndex);
+        if (track->getType() == Audio::Track::ANY_TRACK || track->getType() == Audio::Track::MIDI_TRACK) {
+            int clipID = mProject->createMIDIClip(track);
+
+            juce::int64 positionInSamples = pixelsToSamples(event->pos().x());
+            positionInSamples = roundPosition(positionInSamples, true);
+
+            auto properties = mProject->getClips().at(clipID)->getClipProperties();
+            properties->setPositionInSamples(positionInSamples);
+
+            juce::int64 samplesInDivision = pixelsToSamples(int(mTimelineProperties->getPixelsPerBeatAmount() * getDivision()));
+            properties->setLengthInSamples(samplesInDivision);
+            properties->setEndOffset(samplesInDivision);
+        }
     }
 }
 

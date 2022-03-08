@@ -139,8 +139,6 @@ int Timeline::getClipsGridWidth() const
 
 void Timeline::resizeEvent(QResizeEvent *)
 {
-    mMainLayout.setGeometry(QRect(0, 0, width(), height()));
-
     mClipsGrid->setGeometry(mClipsGrid->x(), 0, mClipsGridViewport.width(), mClipsGridViewport.height());
     mDivisionsMarker
         ->setGeometry(mDivisionsMarker->x(), 0, mDivisionsMarkerViewport.width(), mDivisionsMarkerViewport.height());
