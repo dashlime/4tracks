@@ -28,7 +28,6 @@ private:
 
     QWidget mDivisionsMarkerContainer;
     QHBoxLayout mDivisionsMarkerLayout;
-    QWidget mDivisionsMarkerSpacer;
     QPointer<DivisionsMarker> mDivisionsMarker;
 
     QPointer<QScrollArea> mVerticalScrollArea;

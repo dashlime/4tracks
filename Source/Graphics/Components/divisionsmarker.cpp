@@ -43,7 +43,11 @@ void DivisionsMarker::refresh(double newDivision, double pixelsPerBeat)
 
 void DivisionsMarker::paintEvent(QPaintEvent *)
 {
+    QStyleOption opt;
+    opt.initFrom(this);
     QPainter p(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+
     p.setPen(QColorConstants::Black);
 
     if (mPixelsPerBeat == 0 || mDivision == 0)

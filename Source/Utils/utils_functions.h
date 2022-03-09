@@ -51,9 +51,9 @@ public:
             delete item;
         }
     }
-    static double calculateDivision(double pixelsPerBeatAmount)
+    static double calculateDivision(double pixelsPerBeatAmount, GRID_SIZE_TYPE gridSizeType = DEFAULT)
     {
-        double division = (double) MINIMUM_SPACE_BETWEEN_GRID_LINES / pixelsPerBeatAmount;
+        double division = (double) MINIMUM_SPACE_BETWEEN_GRID_LINES[gridSizeType] / pixelsPerBeatAmount;
         int index = (int) Utils::search_closest(DEFAULT_DIVISIONS, division);
         division = DEFAULT_DIVISIONS[index];
         return division;

@@ -7,7 +7,8 @@ MidiClipPanel::MidiClipPanel(const QSharedPointer<Audio::MidiClip> &clip, QWidge
     : QWidget(parent), mClip(clip)
 {
     setLayout(&mMainLayout);
-    mMainLayout.setContentsMargins(90, 0, 0, 0);
+    mMainLayout.setContentsMargins(2, 0, 0, 0);
+    mMainLayout.setSpacing(0);
 
     mMidiEditor = new MidiEditor(clip);
     mMidiNotesPanel = new MidiNotesPanel(clip);
@@ -16,20 +17,17 @@ MidiClipPanel::MidiClipPanel(const QSharedPointer<Audio::MidiClip> &clip, QWidge
 
     double pixelsPerBeatAmount = mMidiEditor->calculatePixelsPerBeatAmount();
     double division = Utils::calculateDivision(pixelsPerBeatAmount);
-
-    mDivisionsMarkerSpacer.setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
-    mDivisionsMarkerSpacer.setFixedWidth(90);
     mDivisionsMarker = new DivisionsMarker(division, pixelsPerBeatAmount);
 
-    connect(mMidiEditor, &MidiEditor::pixelsPerBeatAmountChanged, [=](double newPixelsPerBeatAmount) {
-        mDivisionsMarker->refresh(Utils::calculateDivision(newPixelsPerBeatAmount), newPixelsPerBeatAmount);
-    });
-
     mDivisionsMarkerContainer.setLayout(&mDivisionsMarkerLayout);
-    mDivisionsMarkerLayout.addWidget(&mDivisionsMarkerSpacer);
     mDivisionsMarkerLayout.addWidget(mDivisionsMarker);
-    mDivisionsMarkerLayout.setContentsMargins(0, 0, 0, 0);
-    mDivisionsMarkerLayout.setSpacing(0);
+    mDivisionsMarkerLayout.addStretch(1);
+    mDivisionsMarkerLayout.setContentsMargins(90, 0, 0, 0);
+
+    connect(mMidiEditor, &MidiEditor::pixelsPerBeatAmountChanged, [=](double newPixelsPerBeatAmount) {
+        mDivisionsMarker->refresh(Utils::calculateDivision(newPixelsPerBeatAmount, LARGE), newPixelsPerBeatAmount);
+        mDivisionsMarker->setFixedWidth(mMidiEditor->width());
+    });
 
     mVerticalScrollWidget->setLayout(&mVerticalScrollLayout);
     mVerticalScrollLayout.addWidget(mMidiNotesPanel);
@@ -50,6 +48,13 @@ MidiClipPanel::MidiClipPanel(const QSharedPointer<Audio::MidiClip> &clip, QWidge
 }
 
 void MidiClipPanel::paintEvent(QPaintEvent *event)
-{}
+{
+    QStyleOption opt;
+    opt.initFrom(this);
+    QPainter p(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+
+    p.fillRect(QRect(0, 0, 2, height()), QColor("#A1A1AA"));
+}
 
 } // Graphics

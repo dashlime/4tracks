@@ -12,6 +12,7 @@ ClipEditorPanel::ClipEditorPanel(const QSharedPointer<TimelineProperties> &prope
 
     setFocusPolicy(Qt::ClickFocus);
     setMinimumHeight(DEFAULT_BOTTOM_PANEL_HEIGHT);
+    setFixedHeight(DEFAULT_BOTTOM_PANEL_HEIGHT);
 
     setupComponents();
     setupLayouts();

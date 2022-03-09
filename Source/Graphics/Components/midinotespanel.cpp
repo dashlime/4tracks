@@ -24,7 +24,6 @@ void MidiNotesPanel::paintEvent(QPaintEvent *event)
 
         p.drawLine(0, i * 20, width(), i * 20);
     }
-    p.drawLine(0, 0, 0, height());
     p.drawLine(70, 0, 70, height());
     p.drawLine(90, 0, 90, height());
 
