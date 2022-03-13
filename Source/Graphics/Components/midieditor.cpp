@@ -39,7 +39,7 @@ void MidiEditor::refreshMidiNotes()
             double bpm = mClip->getClipProperties()->getParentTrack()->getTrackProperties()->getParentProject()
                 ->getProjectProperties()->getBpm();
 
-            auto *note = new MidiNote(midiNote->getMidiMessage(), mClip, this);
+            auto *note = new MidiNote(midiNote, mClip, this);
             int width = Utils::samplesToPixels(midiNote->getNoteOffObject()->getPositionInSamples() - midiNote->getPositionInSamples(), mCurrentPixelsPerBeatAmount, bpm);
 
             int nbNotesToDraw = NOTES_IN_OCTAVE * (END_MIDI_OCTAVE - START_MIDI_OCTAVE);
@@ -93,29 +93,43 @@ void MidiEditor::resizeEvent(QResizeEvent *)
 
 void MidiEditor::mouseDoubleClickEvent(QMouseEvent *event)
 {
-    double bpm = mClip->getClipProperties()->getParentTrack()->getTrackProperties()->getParentProject()->getProjectProperties()->getBpm();
-    juce::int64 notePositionInSamples = Utils::pixelsToSamples(event->pos().x(), mCurrentPixelsPerBeatAmount, bpm);
-    notePositionInSamples = Utils::roundPosition(notePositionInSamples, mCurrentPixelsPerBeatAmount, bpm, true, LARGE);
+    bool noteClicked = false;
+    for (const auto& note: mNotes) {
+        if (note->geometry().contains(event->pos())) {
+            noteClicked = true;
 
-    int nbNotesToDraw = NOTES_IN_OCTAVE * (END_MIDI_OCTAVE - START_MIDI_OCTAVE);
-    int midiNoteNumber = nbNotesToDraw - event->pos().y() / 20;
+            mClip->getMidiData()->removeNote(note->getMidiNote());
+        }
+    }
 
-    int pixelsInDivision = int(Utils::calculateDivision(mCurrentPixelsPerBeatAmount, LARGE) * mCurrentPixelsPerBeatAmount);
+    if (!noteClicked) {
+        double bpm = mClip->getClipProperties()->getParentTrack()->getTrackProperties()->getParentProject()
+            ->getProjectProperties()->getBpm();
+        juce::int64 notePositionInSamples = Utils::pixelsToSamples(event->pos().x(), mCurrentPixelsPerBeatAmount, bpm);
+        notePositionInSamples =
+            Utils::roundPosition(notePositionInSamples, mCurrentPixelsPerBeatAmount, bpm, true, LARGE);
 
-    juce::int64 samplesInDivision = Utils::pixelsToSamples( pixelsInDivision, mCurrentPixelsPerBeatAmount, bpm);
+        int nbNotesToDraw = NOTES_IN_OCTAVE * (END_MIDI_OCTAVE - START_MIDI_OCTAVE);
+        int midiNoteNumber = nbNotesToDraw - event->pos().y() / 20;
 
-    auto noteOff = QSharedPointer<Audio::MidiNote>::create(
-        notePositionInSamples + samplesInDivision,
-        juce::MidiMessage::noteOff(1, midiNoteNumber));
+        int pixelsInDivision =
+            int(Utils::calculateDivision(mCurrentPixelsPerBeatAmount, LARGE) * mCurrentPixelsPerBeatAmount);
 
-    auto noteOn = QSharedPointer<Audio::MidiNote>::create(
-        notePositionInSamples,
-        juce::MidiMessage::noteOn(1, midiNoteNumber, 1.f));
+        juce::int64 samplesInDivision = Utils::pixelsToSamples(pixelsInDivision, mCurrentPixelsPerBeatAmount, bpm);
 
-    noteOn->setNoteOffObject(noteOff);
+        auto noteOff = QSharedPointer<Audio::MidiNote>::create(
+            notePositionInSamples + samplesInDivision,
+            juce::MidiMessage::noteOff(1, midiNoteNumber));
 
-    mClip->getMidiData()->addNote(noteOn);
-    mClip->getMidiData()->addNote(noteOff);
+        auto noteOn = QSharedPointer<Audio::MidiNote>::create(
+            notePositionInSamples,
+            juce::MidiMessage::noteOn(1, midiNoteNumber, 1.f));
+
+        noteOn->setNoteOffObject(noteOff);
+
+        mClip->getMidiData()->addNote(noteOn);
+        mClip->getMidiData()->addNote(noteOff);
+    }
 }
 
 } // Graphics

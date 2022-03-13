@@ -59,6 +59,14 @@ void MidiData::addNote(const QSharedPointer<MidiNote> &note)
     emit dataChanged();
 }
 
+void MidiData::removeNote(const QSharedPointer<MidiNote> &note)
+{
+    mNotes.remove(mNotes.indexOf(note));
+    mNotes.remove(mNotes.indexOf(note->getNoteOffObject()));
+
+    emit dataChanged();
+}
+
 QVector<QSharedPointer<MidiNote>> MidiData::getMidiNotes() const
 {
     return mNotes;

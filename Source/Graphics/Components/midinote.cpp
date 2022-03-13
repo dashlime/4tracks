@@ -3,15 +3,15 @@
 namespace Graphics
 {
 
-MidiNote::MidiNote(const juce::MidiMessage &noteOnEvent,
+MidiNote::MidiNote(const QSharedPointer<Audio::MidiNote> &note,
                    const QSharedPointer<Audio::MidiClip>& clip,
                    QWidget *parent)
-    : QWidget(parent), mClip(clip)
+    : QWidget(parent), mClip(clip), mNote(note)
 {
     setLayout(new QHBoxLayout());
     layout()->setContentsMargins(2, 0, 0, 0);
 
-    mNoteLabel.setText(mClip->midiNoteName(noteOnEvent.getNoteNumber()));
+    mNoteLabel.setText(mClip->midiNoteName(note->getMidiMessage().getNoteNumber()));
     auto font = QApplication::font();
     font.setPixelSize(10);
 
@@ -19,6 +19,11 @@ MidiNote::MidiNote(const juce::MidiMessage &noteOnEvent,
     mNoteLabel.setStyleSheet("color: white;");
 
     layout()->addWidget(&mNoteLabel);
+}
+
+QSharedPointer<Audio::MidiNote> MidiNote::getMidiNote() const
+{
+    return mNote;
 }
 
 void MidiNote::paintEvent(QPaintEvent *)

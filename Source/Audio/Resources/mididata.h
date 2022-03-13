@@ -41,6 +41,7 @@ public:
     MidiData();
 
     void addNote(const QSharedPointer<MidiNote>& note);
+    void removeNote(const QSharedPointer<MidiNote>& note);
 
     [[nodiscard]] QVector<QSharedPointer<MidiNote>> getMidiNotes() const;
 
