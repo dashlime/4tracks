@@ -5,7 +5,18 @@ namespace Audio
 
 MidiClip::MidiClip(Track *parentTrack)
     : Clip("Midi Clip", parentTrack)
-{}
+{
+    mMidiData = QSharedPointer<MidiData>::create();
+
+    connect(mMidiData.get(), &MidiData::dataChanged, [=]() {
+        emit dataChanged();
+    });
+}
+
+QSharedPointer<MidiData> MidiClip::getMidiData() const
+{
+    return mMidiData;
+}
 
 bool MidiClip::currentScaleContains(int midiNoteNumber) const
 {

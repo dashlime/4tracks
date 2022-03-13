@@ -29,8 +29,13 @@ void MidiNotesPanel::paintEvent(QPaintEvent *event)
 
     p.setPen(QColorConstants::Black);
 
+    auto font = QApplication::font();
+    font.setPixelSize(12);
+    font.setWeight(QFont::Weight::Bold);
+    p.setFont(font);
+
     for (int i = 0; i < nbNotesToDraw; i++) {
-        p.drawText(QRect(5, i * 20, 65, 20), Qt::AlignVCenter | Qt::AlignLeft,mClip->midiNoteName(nbNotesToDraw - i));
+        p.drawText(QRect(3, i * 20, 65, 20), Qt::AlignVCenter | Qt::AlignLeft,mClip->midiNoteName(nbNotesToDraw - i));
     }
 }
 

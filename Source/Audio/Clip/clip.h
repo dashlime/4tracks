@@ -32,6 +32,10 @@ public:
 
     [[nodiscard]] virtual Type getType() const = 0;
     virtual void nextReadPositionChanged();
+
+signals:
+    void dataChanged();
+
 protected:
     QSharedPointer<ClipProperties> mClipProperties;
 

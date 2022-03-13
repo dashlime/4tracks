@@ -52,9 +52,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::setupStylesheet()
 {
-    QFont roboto("Roboto");
+    QFontDatabase::addApplicationFont(":/fonts/Roboto-Regular.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/Roboto-Bold.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/Roboto-Medium.ttf");
 
-    QApplication::setFont(roboto);
+    QApplication::setFont(QFont("Roboto"));
 
     QFile mainStyleSheet(":/stylesheets/main.qss");
     mainStyleSheet.open(QIODevice::ReadOnly);

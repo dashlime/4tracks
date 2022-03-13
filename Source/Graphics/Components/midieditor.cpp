@@ -3,10 +3,20 @@
 namespace Graphics
 {
 
-MidiEditor::MidiEditor(const QSharedPointer<Audio::MidiClip> &clip, QWidget *parent) : QWidget(parent), mClip(clip)
+MidiEditor::MidiEditor(const QSharedPointer<Audio::MidiClip> &clip, QWidget *parent) : QWidget(parent), mClip(clip), mCurrentPixelsPerBeatAmount(calculatePixelsPerBeatAmount())
 {
     int totalNotes = NOTES_IN_OCTAVE * (END_MIDI_OCTAVE - START_MIDI_OCTAVE);
     setMinimumHeight(totalNotes * 20);
+
+    connect(this, &MidiEditor::pixelsPerBeatAmountChanged, [=](double newPixelsPerBeatAmount)
+    {
+        refreshMidiNotes();
+    });
+
+    connect(mClip.get(), &Audio::Clip::dataChanged, [=]()
+    {
+        refreshMidiNotes();
+    });
 }
 
 double MidiEditor::calculatePixelsPerBeatAmount() const
@@ -15,6 +25,34 @@ double MidiEditor::calculatePixelsPerBeatAmount() const
     double bpm = mClip->getClipProperties()->getParentTrack()->getTrackProperties()->getParentProject()->getProjectProperties()->getBpm();
     double samplesInBeat = samplesPerMinute / bpm;
     return (double) (width() - 1) / (double) mClip->getClipProperties()->getLengthInSamples() * samplesInBeat;
+}
+
+void MidiEditor::refreshMidiNotes()
+{
+    for (const auto& note : mNotes)
+        note->deleteLater();
+
+    mNotes.clear();
+
+    for (const auto& midiNote : mClip->getMidiData()->getMidiNotes()) {
+        if (midiNote->getMidiMessage().isNoteOn() && midiNote->getNoteOffObject()) {
+            double bpm = mClip->getClipProperties()->getParentTrack()->getTrackProperties()->getParentProject()
+                ->getProjectProperties()->getBpm();
+
+            auto *note = new MidiNote(midiNote->getMidiMessage(), mClip, this);
+            int width = Utils::samplesToPixels(midiNote->getNoteOffObject()->getPositionInSamples() - midiNote->getPositionInSamples(), mCurrentPixelsPerBeatAmount, bpm);
+
+            int nbNotesToDraw = NOTES_IN_OCTAVE * (END_MIDI_OCTAVE - START_MIDI_OCTAVE);
+
+            note->setGeometry(Utils::samplesToPixels(midiNote->getPositionInSamples(), mCurrentPixelsPerBeatAmount, bpm) + 1,
+                              (nbNotesToDraw - midiNote->getMidiMessage().getNoteNumber()) * 20 + 1,
+                              width,
+                              19);
+            note->show();
+
+            mNotes.push_back(note);
+        }
+    }
 }
 
 void MidiEditor::paintEvent(QPaintEvent *event)
@@ -51,6 +89,33 @@ void MidiEditor::resizeEvent(QResizeEvent *)
     mCurrentPixelsPerBeatAmount = calculatePixelsPerBeatAmount();
     emit pixelsPerBeatAmountChanged(mCurrentPixelsPerBeatAmount);
     update();
+}
+
+void MidiEditor::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    double bpm = mClip->getClipProperties()->getParentTrack()->getTrackProperties()->getParentProject()->getProjectProperties()->getBpm();
+    juce::int64 notePositionInSamples = Utils::pixelsToSamples(event->pos().x(), mCurrentPixelsPerBeatAmount, bpm);
+    notePositionInSamples = Utils::roundPosition(notePositionInSamples, mCurrentPixelsPerBeatAmount, bpm, true, LARGE);
+
+    int nbNotesToDraw = NOTES_IN_OCTAVE * (END_MIDI_OCTAVE - START_MIDI_OCTAVE);
+    int midiNoteNumber = nbNotesToDraw - event->pos().y() / 20;
+
+    int pixelsInDivision = int(Utils::calculateDivision(mCurrentPixelsPerBeatAmount, LARGE) * mCurrentPixelsPerBeatAmount);
+
+    juce::int64 samplesInDivision = Utils::pixelsToSamples( pixelsInDivision, mCurrentPixelsPerBeatAmount, bpm);
+
+    auto noteOff = QSharedPointer<Audio::MidiNote>::create(
+        notePositionInSamples + samplesInDivision,
+        juce::MidiMessage::noteOff(1, midiNoteNumber));
+
+    auto noteOn = QSharedPointer<Audio::MidiNote>::create(
+        notePositionInSamples,
+        juce::MidiMessage::noteOn(1, midiNoteNumber, 1.f));
+
+    noteOn->setNoteOffObject(noteOff);
+
+    mClip->getMidiData()->addNote(noteOn);
+    mClip->getMidiData()->addNote(noteOff);
 }
 
 } // Graphics

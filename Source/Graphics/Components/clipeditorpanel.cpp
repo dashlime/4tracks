@@ -37,6 +37,11 @@ void ClipEditorPanel::setupLayouts()
 
 void ClipEditorPanel::setupComponents()
 {
+    auto font = QApplication::font();
+    font.setPixelSize(12);
+    font.setWeight(QFont::Weight::Medium);
+    mClipNameLabel.setFont(font);
+
     mClipNameLabel.setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
     mClipNameLabel.setFixedHeight(20);
 }

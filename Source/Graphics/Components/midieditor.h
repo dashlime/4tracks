@@ -8,6 +8,7 @@
 #include "Utils/utils_functions.h"
 #include "Audio/Clip/midiclip.h"
 #include "divisionsmarker.h"
+#include "midinote.h"
 
 namespace Graphics
 {
@@ -20,15 +21,20 @@ public:
 
     [[nodiscard]] double calculatePixelsPerBeatAmount() const;
 
+    void refreshMidiNotes();
+
     void paintEvent(QPaintEvent *event) override;
     void resizeEvent(QResizeEvent *) override;
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
 
 signals:
     void pixelsPerBeatAmountChanged(double newPixelsPerBeatAmount);
 
 private:
     QSharedPointer<Audio::MidiClip> mClip;
-    double mCurrentPixelsPerBeatAmount;
+    QVector<QPointer<MidiNote>> mNotes;
+
+    double mCurrentPixelsPerBeatAmount{};
 };
 
 } // Graphics
