@@ -21,9 +21,14 @@ Selection::Modifiers Selection::generateSelectionModifiers(QMouseEvent *event)
 Selection::Selection()
 {}
 
-void Selection::setSelectionCallback(Callback *callback)
+Selection::SelectionType Selection::getSelectionTypeForObject(Selection::SelectableObject* object)
 {
-    mCallback = callback;
+    if (object->getType() == SelectableObject::Track)
+        return TracksSelected;
+    if (object->getType() == SelectableObject::Clip)
+        return ClipsSelected;
+    if (object->getType() == SelectableObject::MidiNote)
+        return MidiNotesSelected;
 }
 
 void Selection::setSelectionType(SelectionType type)
@@ -31,8 +36,7 @@ void Selection::setSelectionType(SelectionType type)
     clearSelection();
     mSelectionType = type;
 
-    if (mCallback != nullptr)
-        mCallback->selectionChanged();
+    emit selectionChanged();
 }
 
 Selection::SelectionType Selection::getSelectionType() const
@@ -47,10 +51,8 @@ void Selection::objectSelected(SelectableObject *object, QMouseEvent *event)
 
 void Selection::objectSelected(SelectableObject *object, QFlags<Modifier> modifiers)
 {
-    if (object->getType() == SelectableObject::Track && mSelectionType != TracksSelected)
-        setSelectionType(TracksSelected);
-    if (object->getType() == SelectableObject::Clip && mSelectionType != ClipsSelected)
-        setSelectionType(ClipsSelected);
+    if (getSelectionTypeForObject(object) != mSelectionType)
+        setSelectionType(getSelectionTypeForObject(object));
 
     QPointer<SelectableObject> ptr(object);
 
@@ -73,14 +75,13 @@ void Selection::objectSelected(SelectableObject *object, QFlags<Modifier> modifi
             }
         }
         else {
-            setSelectionType(object->getType() == SelectableObject::Clip ? ClipsSelected : TracksSelected);
+            setSelectionType(getSelectionTypeForObject(object));
             mSelectedObjects.push_back(ptr);
             ptr->setSelectedState(true);
         }
     }
 
-    if (mCallback != nullptr)
-        mCallback->selectionChanged();
+    emit selectionChanged();
 }
 
 QVector<QPointer<Selection::SelectableObject>> Selection::getSelectedObjects() const
@@ -98,8 +99,7 @@ void Selection::setSelectedArea(int startTrackIndex, int startSample, int nbTrac
     mSelectedArea.nbTracks = nbTracks;
     mSelectedArea.nbSamples = nbSamples;
 
-    if (mCallback != nullptr)
-        mCallback->selectionChanged();
+    emit selectionChanged();
 }
 
 void Selection::setSelectedArea(SelectionArea area)
@@ -109,8 +109,7 @@ void Selection::setSelectedArea(SelectionArea area)
 
     mSelectedArea = area;
 
-    if (mCallback != nullptr)
-        mCallback->selectionChanged();
+    emit selectionChanged();
 }
 
 Selection::SelectionArea Selection::getSelectedArea() const

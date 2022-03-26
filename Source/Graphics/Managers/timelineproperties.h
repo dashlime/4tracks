@@ -9,7 +9,7 @@
 namespace Graphics
 {
 
-class TimelineProperties: public QObject, public Selection::Callback
+class TimelineProperties: public QObject
 {
 Q_OBJECT
 
@@ -17,14 +17,12 @@ public:
     explicit TimelineProperties(const QSharedPointer<Selection> &currentSelection);
 
     void setCurrentSelection(const QSharedPointer<Selection> &currentSelection);
-    const QSharedPointer<Selection> &getCurrentSelection() const;
+    [[nodiscard]] const QSharedPointer<Selection> &getCurrentSelection() const;
 
     void setZoomLevel(double zoomLevel);
-    double getZoomLevel() const;
+    [[nodiscard]] double getZoomLevel() const;
 
-    double getPixelsPerBeatAmount() const;
-
-    void selectionChanged() override;
+    [[nodiscard]] double getPixelsPerBeatAmount() const;
 
 signals:
     void currentSelectionChanged();

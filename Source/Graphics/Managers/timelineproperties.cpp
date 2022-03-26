@@ -11,7 +11,11 @@ TimelineProperties::TimelineProperties(const QSharedPointer<Selection> &currentS
 void TimelineProperties::setCurrentSelection(const QSharedPointer<Selection> &currentSelection)
 {
     mCurrentSelection = currentSelection;
-    mCurrentSelection->setSelectionCallback(this);
+
+    connect(mCurrentSelection.get(), &Selection::selectionChanged, [=]()
+    {
+        emit currentSelectionChanged();
+    });
 }
 
 const QSharedPointer<Selection> &TimelineProperties::getCurrentSelection() const
@@ -36,11 +40,6 @@ double TimelineProperties::getZoomLevel() const
 double TimelineProperties::getPixelsPerBeatAmount() const
 {
     return mPixelsPerBeat;
-}
-
-void TimelineProperties::selectionChanged()
-{
-    emit currentSelectionChanged();
 }
 
 }

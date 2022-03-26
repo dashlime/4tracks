@@ -5,11 +5,12 @@
 
 #include "Audio/JuceIncludes.h"
 #include "Audio/Clip/midiclip.h"
+#include "Graphics/Managers/selection.h"
 
 namespace Graphics
 {
 
-class MidiNote: public QWidget
+class MidiNote: public Selection::SelectableObject
 {
     Q_OBJECT
 
@@ -19,6 +20,9 @@ public:
     [[nodiscard]] QSharedPointer<Audio::MidiNote> getMidiNote() const;
 
     void paintEvent(QPaintEvent *event) override;
+
+    void setSelectedState(bool isSelected) override;
+    [[nodiscard]] Type getType() const override;
 
 private:
     QLabel mNoteLabel;

@@ -9,12 +9,14 @@
 namespace Graphics
 {
 
-class Selection
+class Selection: public QObject
 {
+    Q_OBJECT
+
 public:
     enum SelectionType
     {
-        NoSelection, TracksSelected, ClipsSelected, AreaSelected
+        NoSelection, TracksSelected, ClipsSelected, AreaSelected, MidiNotesSelected
     };
     enum Modifier
     {
@@ -23,14 +25,6 @@ public:
     Q_DECLARE_FLAGS(Modifiers, Modifier)
 
     static Modifiers generateSelectionModifiers(QMouseEvent *event);
-
-    class Callback
-    {
-    public:
-        Callback() = default;
-
-        virtual void selectionChanged() = 0;
-    };
 
     class SelectableObject: public QWidget
     {
@@ -45,14 +39,14 @@ public:
 
         enum Type
         {
-            Track, Clip
+            Track, Clip, MidiNote
         };
         [[nodiscard]] virtual Type getType() const = 0;
     };
 
     Selection();
 
-    void setSelectionCallback(Callback *callback);
+    static SelectionType getSelectionTypeForObject(SelectableObject* object);
 
     void setSelectionType(SelectionType type);
     [[nodiscard]] SelectionType getSelectionType() const;
@@ -75,6 +69,8 @@ public:
 
     [[nodiscard]] SelectionArea getSelectedArea() const;
 
+signals:
+    void selectionChanged();
 
 private:
     void clearSelection();
@@ -82,7 +78,6 @@ private:
     SelectionType mSelectionType = NoSelection;
     QVector<QPointer<SelectableObject>> mSelectedObjects;
     SelectionArea mSelectedArea = SelectionArea();
-    Callback *mCallback = nullptr;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Selection::Modifiers)

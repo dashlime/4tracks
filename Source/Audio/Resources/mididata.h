@@ -46,7 +46,8 @@ public:
     [[nodiscard]] QVector<QSharedPointer<MidiNote>> getMidiNotes() const;
 
 signals:
-    void dataChanged();
+    void noteAdded(const QSharedPointer<MidiNote>& note);
+    void noteRemoved(const QSharedPointer<MidiNote>& note);
 
 private:
     QVector<QSharedPointer<MidiNote>> mNotes;
