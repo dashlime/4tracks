@@ -24,7 +24,8 @@ MidiClipPanel::MidiClipPanel(const QSharedPointer<Audio::MidiClip> &clip, QWidge
     mDivisionsMarkerLayout.addStretch(1);
     mDivisionsMarkerLayout.setContentsMargins(90, 0, 0, 0);
 
-    connect(mMidiEditor, &MidiEditor::pixelsPerBeatAmountChanged, [=](double newPixelsPerBeatAmount) {
+    connect(mMidiEditor, &MidiEditor::pixelsPerBeatAmountChanged, [=](double newPixelsPerBeatAmount)
+    {
         mDivisionsMarker->refresh(Utils::calculateDivision(newPixelsPerBeatAmount, LARGE), newPixelsPerBeatAmount);
         mDivisionsMarker->setFixedWidth(mMidiEditor->width());
     });

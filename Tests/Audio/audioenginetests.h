@@ -1,8 +1,8 @@
 #include "gtest/gtest.h"
 
 #include "Audio/Project/project.h"
-#include "Audio/Utils/audiofileloader.h"
-#include "Utils/projectsaver.h"
+#include "Audio/Resources/audiofileloader.h"
+#include "Audio/Project/projectsaver.h"
 
 class TrackTests: public ::testing::Test
 {
@@ -61,5 +61,5 @@ public:
     void TearDown() override;
 
     QSharedPointer<Audio::Project> mProject;
-    QScopedPointer<ProjectSaver> mProjectSaver;
+    QScopedPointer<Audio::ProjectSaver> mProjectSaver;
 };

@@ -5,17 +5,19 @@
 
 #include "Audio/JuceIncludes.h"
 #include "Audio/Clip/midiclip.h"
-#include "Graphics/Managers/selection.h"
+#include "Graphics/Managers/selectionmanager.h"
 
 namespace Graphics
 {
 
-class MidiNote: public Selection::SelectableObject
+class MidiNote: public SelectionManager::SelectableObject
 {
-    Q_OBJECT
+Q_OBJECT
 
 public:
-    MidiNote(const QSharedPointer<Audio::MidiNote>& note, const QSharedPointer<Audio::MidiClip>& clip, QWidget *parent = nullptr);
+    MidiNote(const QSharedPointer<Audio::MidiNote> &note,
+             const QSharedPointer<Audio::MidiClip> &clip,
+             QWidget *parent = nullptr);
 
     [[nodiscard]] QSharedPointer<Audio::MidiNote> getMidiNote() const;
 

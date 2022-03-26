@@ -3,13 +3,13 @@
 
 #include <QtWidgets>
 
-#include "timeline.h"
+#include "Graphics/Components/Timeline/timeline.h"
 #include "Audio/Project/project.h"
 #include "Audio/JuceIncludes.h"
-#include "Graphics/Dialogs/settingsdialog.h"
-#include "Utils/projectsaver.h"
-#include "timelinescrollwidget.h"
-#include "clipeditorpanel.h"
+#include "Graphics/Windows/settingsdialog.h"
+#include "Audio/Project/projectsaver.h"
+#include "Graphics/Components/Timeline/timelinescrollwidget.h"
+#include "Graphics/Components/BottomPanel/clipeditorpanel.h"
 
 namespace Graphics
 {

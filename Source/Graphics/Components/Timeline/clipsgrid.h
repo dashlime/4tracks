@@ -4,12 +4,12 @@
 #include <QtWidgets>
 
 #include "Audio/Project/project.h"
-#include "clip.h"
-#include "Utils/utils_functions.h"
+#include "Graphics/Components/Clips/clip.h"
+#include "Utils/utils.h"
 #include "Graphics/Overlays/positionbaroverlay.h"
 #include "Graphics/Overlays/selectionoverlay.h"
-#include "Graphics/Managers/selection.h"
-#include "Graphics/Managers/timelineproperties.h"
+#include "Graphics/Managers/selectionmanager.h"
+#include "timelineproperties.h"
 #include "Graphics/Managers/thumbnailmanager.h"
 
 namespace Graphics
@@ -32,7 +32,8 @@ public:
 
     [[nodiscard]] double getDivision() const;
 
-    [[nodiscard]] juce::int64 roundPosition(juce::int64 positionInSamples, bool forceRoundingToPriorPosition = false) const;
+    [[nodiscard]] juce::int64
+    roundPosition(juce::int64 positionInSamples, bool forceRoundingToPriorPosition = false) const;
 
     [[nodiscard]] int samplesToPixels(juce::int64 samples) const;
     [[nodiscard]] juce::int64 pixelsToSamples(int pixels) const;

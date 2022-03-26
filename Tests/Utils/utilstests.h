@@ -3,7 +3,7 @@
 
 #include "gtest/gtest.h"
 
-#include "Utils/utils_functions.h"
+#include "Utils/utils.h"
 
 class UtilsTests: public ::testing::Test
 {

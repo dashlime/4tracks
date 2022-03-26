@@ -3,7 +3,8 @@
 namespace Graphics
 {
 
-ClipEditorPanel::ClipEditorPanel(const QSharedPointer<TimelineProperties> &properties, QWidget *parent) : QWidget(parent), mTimelineProperties(properties)
+ClipEditorPanel::ClipEditorPanel(const QSharedPointer<TimelineProperties> &properties, QWidget *parent)
+    : QWidget(parent), mTimelineProperties(properties)
 {
     connect(mTimelineProperties.get(), &TimelineProperties::currentSelectionChanged, [=]()
     {
@@ -53,11 +54,12 @@ void ClipEditorPanel::updateUI()
 
     auto currentSelection = mTimelineProperties->getCurrentSelection();
 
-    if (currentSelection->getSelectionType() == Selection::ClipsSelected
+    if (currentSelection->getSelectionType() == SelectionManager::ClipsSelected
         && !currentSelection->getSelectedObjects().empty()) {
         if (currentSelection->getSelectedObjects().size() > 1) {
             mClipNameLabel.setText(QString::number(currentSelection->getSelectedObjects().size()) + " clips");
-        } else {
+        }
+        else {
             auto clip = ((Clip *) currentSelection->getSelectedObjects().at(0).get())->getClip();
 
             mClipNameLabel.setText(clip->getClipProperties()->getName());
@@ -68,7 +70,8 @@ void ClipEditorPanel::updateUI()
                 mMidiClipPanel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
             }
         }
-    } else {
+    }
+    else {
         mClipNameLabel.setText("No clip selected");
     }
 }

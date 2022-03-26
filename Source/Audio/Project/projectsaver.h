@@ -6,6 +6,9 @@
 #include <QtXml>
 #include <QXmlStreamWriter>
 
+namespace Audio
+{
+
 class ProjectSaver
 {
 public:
@@ -19,5 +22,7 @@ public:
 private:
     QSharedPointer<Audio::Project> mProject;
 };
+
+}
 
 #endif // PROJECTSAVER_H

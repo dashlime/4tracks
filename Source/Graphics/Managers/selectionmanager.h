@@ -9,9 +9,9 @@
 namespace Graphics
 {
 
-class Selection: public QObject
+class SelectionManager: public QObject
 {
-    Q_OBJECT
+Q_OBJECT
 
 public:
     enum SelectionType
@@ -44,9 +44,9 @@ public:
         [[nodiscard]] virtual Type getType() const = 0;
     };
 
-    Selection();
+    SelectionManager();
 
-    static SelectionType getSelectionTypeForObject(SelectableObject* object);
+    static SelectionType getSelectionTypeForObject(SelectableObject *object);
 
     void setSelectionType(SelectionType type);
     [[nodiscard]] SelectionType getSelectionType() const;
@@ -80,7 +80,7 @@ private:
     SelectionArea mSelectedArea = SelectionArea();
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(Selection::Modifiers)
+Q_DECLARE_OPERATORS_FOR_FLAGS(SelectionManager::Modifiers)
 
 } // namespace Graphics
 

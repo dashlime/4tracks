@@ -5,14 +5,14 @@
 #include <QtUiPlugin/QDesignerExportWidget>
 #include <vector>
 
-#include "track.h"
-#include "Graphics/Managers/selection.h"
+#include "Graphics/Components/Tracks/track.h"
+#include "Graphics/Managers/selectionmanager.h"
 #include "clipsgrid.h"
 #include "Audio/Project/project.h"
 #include "Audio/Clip/clip.h"
-#include "Utils/utils_functions.h"
+#include "Utils/utils.h"
 #include "divisionsmarker.h"
-#include "Graphics/Managers/timelineproperties.h"
+#include "timelineproperties.h"
 
 namespace Graphics
 {

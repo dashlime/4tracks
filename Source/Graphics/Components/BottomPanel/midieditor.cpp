@@ -3,7 +3,8 @@
 namespace Graphics
 {
 
-MidiEditor::MidiEditor(const QSharedPointer<Audio::MidiClip> &clip, QWidget *parent) : QWidget(parent), mClip(clip), mCurrentPixelsPerBeatAmount(calculatePixelsPerBeatAmount())
+MidiEditor::MidiEditor(const QSharedPointer<Audio::MidiClip> &clip, QWidget *parent)
+    : QWidget(parent), mClip(clip), mCurrentPixelsPerBeatAmount(calculatePixelsPerBeatAmount())
 {
     int totalNotes = NOTES_IN_OCTAVE * (END_MIDI_OCTAVE - START_MIDI_OCTAVE);
     setMinimumHeight(totalNotes * 20);
@@ -13,35 +14,39 @@ MidiEditor::MidiEditor(const QSharedPointer<Audio::MidiClip> &clip, QWidget *par
         refreshMidiNotes();
     });
 
-    connect(mClip->getMidiData().get(), &Audio::MidiData::noteAdded, [=](const QSharedPointer<Audio::MidiNote> &noteAdded)
-    {
-        if (noteAdded->getMidiMessage().isNoteOff())
-            return;
+    connect(mClip->getMidiData().get(),
+            &Audio::MidiData::noteAdded,
+            [=](const QSharedPointer<Audio::MidiNote> &noteAdded)
+            {
+                if (noteAdded->getMidiMessage().isNoteOff())
+                    return;
 
-        auto note = new MidiNote(noteAdded, mClip, this);
+                auto note = new MidiNote(noteAdded, mClip, this);
 
-        note->show();
-        note->setMouseTracking(true);
+                note->show();
+                note->setMouseTracking(true);
 
-        mNotes.push_back(note);
-        refreshMidiNotes();
-    });
+                mNotes.push_back(note);
+                refreshMidiNotes();
+            });
 
-    connect(mClip->getMidiData().get(), &Audio::MidiData::noteRemoved, [=](const QSharedPointer<Audio::MidiNote> &noteRemoved)
-    {
-        int i = 0;
-        for (const auto& note : mNotes) {
-            if (note->getMidiNote() == noteRemoved) {
-                note->deleteLater();
-                mNotes.remove(i);
-            }
-            i++;
-        }
+    connect(mClip->getMidiData().get(),
+            &Audio::MidiData::noteRemoved,
+            [=](const QSharedPointer<Audio::MidiNote> &noteRemoved)
+            {
+                int i = 0;
+                for (const auto &note: mNotes) {
+                    if (note->getMidiNote() == noteRemoved) {
+                        note->deleteLater();
+                        mNotes.remove(i);
+                    }
+                    i++;
+                }
 
-        mCurrentSelection.setSelectionType(Selection::NoSelection);
+                mCurrentSelection.setSelectionType(SelectionManager::NoSelection);
 
-        refreshMidiNotes();
-    });
+                refreshMidiNotes();
+            });
 
     setupMidiNotes();
     setMouseTracking(true);
@@ -50,24 +55,31 @@ MidiEditor::MidiEditor(const QSharedPointer<Audio::MidiClip> &clip, QWidget *par
 double MidiEditor::calculatePixelsPerBeatAmount() const
 {
     double samplesPerMinute = DEFAULT_SAMPLE_RATE * 60;
-    double bpm = mClip->getClipProperties()->getParentTrack()->getTrackProperties()->getParentProject()->getProjectProperties()->getBpm();
+    double bpm =
+        mClip->getClipProperties()->getParentTrack()->getTrackProperties()->getParentProject()->getProjectProperties()
+            ->getBpm();
     double samplesInBeat = samplesPerMinute / bpm;
     return (double) (width() - 1) / (double) mClip->getClipProperties()->getLengthInSamples() * samplesInBeat;
 }
 
 void MidiEditor::refreshMidiNotes()
 {
-    for (const auto& midiNote : mNotes) {
+    for (const auto &midiNote: mNotes) {
         double bpm = mClip->getClipProperties()->getParentTrack()->getTrackProperties()->getParentProject()
             ->getProjectProperties()->getBpm();
 
-        int width = Utils::samplesToPixels(midiNote->getMidiNote()->getNoteOffObject()->getPositionInSamples() - midiNote->getMidiNote()->getPositionInSamples(), mCurrentPixelsPerBeatAmount, bpm);
+        int width = Utils::samplesToPixels(midiNote->getMidiNote()->getNoteOffObject()->getPositionInSamples()
+                                               - midiNote->getMidiNote()->getPositionInSamples(),
+                                           mCurrentPixelsPerBeatAmount,
+                                           bpm);
         int nbNotesToDraw = NOTES_IN_OCTAVE * (END_MIDI_OCTAVE - START_MIDI_OCTAVE);
 
-        midiNote->setGeometry(Utils::samplesToPixels(midiNote->getMidiNote()->getPositionInSamples(), mCurrentPixelsPerBeatAmount, bpm) + 1,
-                          (nbNotesToDraw - midiNote->getMidiNote()->getMidiMessage().getNoteNumber()) * 20 + 1,
-                          width,
-                          19);
+        midiNote->setGeometry(
+            Utils::samplesToPixels(midiNote->getMidiNote()->getPositionInSamples(), mCurrentPixelsPerBeatAmount, bpm)
+                + 1,
+            (nbNotesToDraw - midiNote->getMidiNote()->getMidiMessage().getNoteNumber()) * 20 + 1,
+            width,
+            19);
     }
 }
 
@@ -110,7 +122,7 @@ void MidiEditor::resizeEvent(QResizeEvent *)
 void MidiEditor::mouseDoubleClickEvent(QMouseEvent *event)
 {
     bool noteClicked = false;
-    for (const auto& note: mNotes) {
+    for (const auto &note: mNotes) {
         if (note->geometry().contains(event->pos())) {
             noteClicked = true;
 
@@ -152,7 +164,7 @@ void MidiEditor::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->buttons().testFlag(Qt::NoButton)) {
         setCursor(Qt::ArrowCursor);
-        for (const auto& note: mNotes) {
+        for (const auto &note: mNotes) {
             if (note->geometry().contains(event->pos())) {
                 auto pos = event->pos();
                 pos -= note->pos();
@@ -163,19 +175,26 @@ void MidiEditor::mouseMoveEvent(QMouseEvent *event)
                 }
             }
         }
-    } else if (event->buttons().testFlag(Qt::LeftButton)) {
+    }
+    else if (event->buttons().testFlag(Qt::LeftButton)) {
         double bpm = mClip->getClipProperties()->getParentTrack()->getTrackProperties()->getParentProject()
             ->getProjectProperties()->getBpm();
 
         if (mExtendingByTheRight) {
-            for (const auto& object: mCurrentSelection.getSelectedObjects()) {
-                if (object->getType() == Selection::SelectableObject::MidiNote) {
+            for (const auto &object: mCurrentSelection.getSelectedObjects()) {
+                if (object->getType() == SelectionManager::SelectableObject::MidiNote) {
                     auto note = (MidiNote *) object.get();
 
-                    juce::int64 currentPosInSamples = Utils::pixelsToSamples(event->pos().x(), mCurrentPixelsPerBeatAmount, bpm);
-                    juce::int64 roundedPosition = Utils::roundPosition(currentPosInSamples, mCurrentPixelsPerBeatAmount, bpm, false, LARGE);
+                    juce::int64 currentPosInSamples =
+                        Utils::pixelsToSamples(event->pos().x(), mCurrentPixelsPerBeatAmount, bpm);
+                    juce::int64 roundedPosition =
+                        Utils::roundPosition(currentPosInSamples, mCurrentPixelsPerBeatAmount, bpm, false, LARGE);
 
-                    note->setGeometry(note->x(), note->y(), Utils::samplesToPixels(roundedPosition, mCurrentPixelsPerBeatAmount, bpm) - note->x(), note->height());
+                    note->setGeometry(note->x(),
+                                      note->y(),
+                                      Utils::samplesToPixels(roundedPosition, mCurrentPixelsPerBeatAmount, bpm)
+                                          - note->x(),
+                                      note->height());
                 }
             }
         }
@@ -186,7 +205,7 @@ void MidiEditor::mousePressEvent(QMouseEvent *event)
 {
     mClickedPos = event->pos();
 
-    for (const auto& note: mNotes) {
+    for (const auto &note: mNotes) {
         if (note->geometry().contains(event->pos())) {
             auto pos = event->pos();
             pos -= note->pos();
@@ -194,10 +213,12 @@ void MidiEditor::mousePressEvent(QMouseEvent *event)
             if (pos.x() >= note->width() - 3) {
                 mExtendingByTheRight = true;
                 mExtendingByTheLeft = false;
-            } else if (pos.x() < 3) {
+            }
+            else if (pos.x() < 3) {
                 mExtendingByTheRight = false;
                 mExtendingByTheLeft = true;
-            } else {
+            }
+            else {
                 mExtendingByTheRight = false;
                 mExtendingByTheLeft = false;
             }
@@ -209,14 +230,14 @@ void MidiEditor::mousePressEvent(QMouseEvent *event)
 
 void MidiEditor::setupMidiNotes()
 {
-    mCurrentSelection.setSelectionType(Selection::NoSelection);
+    mCurrentSelection.setSelectionType(SelectionManager::NoSelection);
 
-    for (const auto& note : mNotes)
+    for (const auto &note: mNotes)
         note->deleteLater();
 
     mNotes.clear();
 
-    for (const auto& midiNote : mClip->getMidiData()->getMidiNotes()) {
+    for (const auto &midiNote: mClip->getMidiData()->getMidiNotes()) {
         if (midiNote->getMidiMessage().isNoteOn() && midiNote->getNoteOffObject()) {
             auto *note = new MidiNote(midiNote, mClip, this);
             note->show();

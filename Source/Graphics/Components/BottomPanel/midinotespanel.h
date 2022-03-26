@@ -12,7 +12,7 @@ class MidiNotesPanel: public QWidget
 {
 Q_OBJECT
 public:
-    explicit MidiNotesPanel(const QSharedPointer<Audio::MidiClip>& clip, QWidget *parent = nullptr);
+    explicit MidiNotesPanel(const QSharedPointer<Audio::MidiClip> &clip, QWidget *parent = nullptr);
 
     void paintEvent(QPaintEvent *event) override;
 private:

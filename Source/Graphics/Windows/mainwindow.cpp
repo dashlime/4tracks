@@ -6,7 +6,8 @@ namespace Graphics
 
 MainWindow::MainWindow(const QString &projectToLoad, QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow), mProject(QSharedPointer<Audio::Project>::create("Untitled Project")),
-      mUiTimeline(mProject), mTimelineScrollWidget(&mUiTimeline, mProject), mClipEditorPanel(mUiTimeline.getTimelineProperties())
+      mUiTimeline(mProject), mTimelineScrollWidget(&mUiTimeline, mProject),
+      mClipEditorPanel(mUiTimeline.getTimelineProperties())
 {
     ui->setupUi(this);
 
@@ -229,7 +230,7 @@ void MainWindow::saveProject()
             if (fileDialog.selectedFiles().empty())
                 return;
 
-            ProjectSaver saver(mProject);
+            Audio::ProjectSaver saver(mProject);
             saver.saveToDirectory(fileDialog.selectedFiles().first());
 
             mProject->getProjectProperties()->updateSavedState(Audio::ProjectProperties::SAVED);
@@ -238,7 +239,7 @@ void MainWindow::saveProject()
         }
     }
     else {
-        ProjectSaver saver(mProject);
+        Audio::ProjectSaver saver(mProject);
         saver.saveToDirectory(currentProjectPath);
 
         mProject->getProjectProperties()->updateSavedState(Audio::ProjectProperties::SAVED);
@@ -260,7 +261,7 @@ void MainWindow::loadProject(QFile file)
                 && mProject->getProjectProperties()->getSavedState() == Audio::ProjectProperties::SAVED) {
                 mProject->clearAllTracks();
 
-                ProjectSaver saver(mProject);
+                Audio::ProjectSaver saver(mProject);
                 saver.openProject(fileDialog.selectedFiles().first());
                 mProject->getProjectProperties()->updateSavedState(Audio::ProjectProperties::SAVED);
                 currentProjectPath = QFileInfo(fileDialog.selectedFiles().first()).absolutePath();
@@ -272,7 +273,7 @@ void MainWindow::loadProject(QFile file)
     }
 
     else {
-        ProjectSaver saver(mProject);
+        Audio::ProjectSaver saver(mProject);
         saver.openProject(file.fileName());
         mProject->getProjectProperties()->updateSavedState(Audio::ProjectProperties::SAVED);
         currentProjectPath = file.fileName();

@@ -64,7 +64,7 @@ void ClipsGrid::setupCallbacks()
 
     connect(mProject.get(), &Audio::Project::clipRemoved, [=](int clipID)
     {
-        mTimelineProperties->getCurrentSelection()->setSelectionType(Selection::NoSelection);
+        mTimelineProperties->getCurrentSelection()->setSelectionType(SelectionManager::NoSelection);
 
         mClips.at(clipID)->deleteLater();
         mClips.remove(clipID);
@@ -115,7 +115,7 @@ void ClipsGrid::updateClipsGeometry()
 
 void ClipsGrid::updateSelectionOverlay()
 {
-    Selection::SelectionArea area = mTimelineProperties->getCurrentSelection()->getSelectedArea();
+    SelectionManager::SelectionArea area = mTimelineProperties->getCurrentSelection()->getSelectedArea();
 
     int x = samplesToPixels(area.startSample);
     int w = samplesToPixels(area.nbSamples);
@@ -156,12 +156,16 @@ juce::int64 ClipsGrid::roundPosition(juce::int64 positionInSamples, bool forceRo
 
 int ClipsGrid::samplesToPixels(juce::int64 samples) const
 {
-    return Utils::samplesToPixels(samples, mTimelineProperties->getPixelsPerBeatAmount(), mProject->getProjectProperties()->getBpm());
+    return Utils::samplesToPixels(samples,
+                                  mTimelineProperties->getPixelsPerBeatAmount(),
+                                  mProject->getProjectProperties()->getBpm());
 }
 
 juce::int64 ClipsGrid::pixelsToSamples(int pixels) const
 {
-    return Utils::pixelsToSamples(pixels, mTimelineProperties->getPixelsPerBeatAmount(), mProject->getProjectProperties()->getBpm());
+    return Utils::pixelsToSamples(pixels,
+                                  mTimelineProperties->getPixelsPerBeatAmount(),
+                                  mProject->getProjectProperties()->getBpm());
 }
 
 void ClipsGrid::drawPositionBar()
@@ -212,7 +216,7 @@ void ClipsGrid::mousePressEvent(QMouseEvent *event)
     bool clipClicked = false;
 
     bool selectionAreaClicked = mSelectionOverlay.geometry().contains(event->pos());
-    if (mTimelineProperties->getCurrentSelection()->getSelectionType() != Selection::AreaSelected)
+    if (mTimelineProperties->getCurrentSelection()->getSelectionType() != SelectionManager::AreaSelected)
         selectionAreaClicked = false;
 
     if (!selectionAreaClicked) {
@@ -226,7 +230,7 @@ void ClipsGrid::mousePressEvent(QMouseEvent *event)
 
     // if nothing have been selected and selection area wasn't right-clicked
     if (!clipClicked && !(selectionAreaClicked && rightClick))
-        mTimelineProperties->getCurrentSelection()->setSelectionType(Selection::NoSelection);
+        mTimelineProperties->getCurrentSelection()->setSelectionType(SelectionManager::NoSelection);
 
     if (rightClick) {
         if (selectionAreaClicked) {
@@ -310,9 +314,9 @@ void ClipsGrid::mouseMoveEvent(QMouseEvent *event)
         int trackIndex = event->pos().y() / (DEFAULT_TRACK_HEIGHT + 1);
         juce::int64 samples = roundPosition(pixelsToSamples(event->pos().x()));
 
-        Selection::SelectionArea area = mTimelineProperties->getCurrentSelection()->getSelectedArea();
-        if (mTimelineProperties->getCurrentSelection()->getSelectionType() != Selection::AreaSelected) {
-            mTimelineProperties->getCurrentSelection()->setSelectionType(Selection::AreaSelected);
+        SelectionManager::SelectionArea area = mTimelineProperties->getCurrentSelection()->getSelectedArea();
+        if (mTimelineProperties->getCurrentSelection()->getSelectionType() != SelectionManager::AreaSelected) {
+            mTimelineProperties->getCurrentSelection()->setSelectionType(SelectionManager::AreaSelected);
             area.startTrackIndex = trackIndex;
             area.startSample = samples;
         }
@@ -342,7 +346,8 @@ void ClipsGrid::mouseDoubleClickEvent(QMouseEvent *event)
             auto properties = mProject->getClips().at(clipID)->getClipProperties();
             properties->setPositionInSamples(positionInSamples);
 
-            juce::int64 samplesInDivision = pixelsToSamples(int(mTimelineProperties->getPixelsPerBeatAmount() * getDivision()));
+            juce::int64
+                samplesInDivision = pixelsToSamples(int(mTimelineProperties->getPixelsPerBeatAmount() * getDivision()));
             properties->setLengthInSamples(samplesInDivision);
             properties->setEndOffset(samplesInDivision);
         }

@@ -52,7 +52,7 @@ void MidiClipTests::TearDown()
 void AudioProjectSaverTests::SetUp()
 {
     mProject = QSharedPointer<Audio::Project>::create("Test project");
-    mProjectSaver.reset(new ProjectSaver(mProject));
+    mProjectSaver.reset(new Audio::ProjectSaver(mProject));
 }
 
 void AudioProjectSaverTests::TearDown()

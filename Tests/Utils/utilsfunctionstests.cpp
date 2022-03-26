@@ -2,7 +2,7 @@
 
 TEST_F(UtilsTests, SearchClosest)
 {
-    QVector<double> array = { -2, -0.5, 0, 2, 5.5, 18 };
+    QVector<double> array = {-2, -0.5, 0, 2, 5.5, 18};
 
     EXPECT_EQ(array[Utils::search_closest(array, -1.5)], -2);
     EXPECT_EQ(array[Utils::search_closest(array, 0.5)], 0);
@@ -18,7 +18,7 @@ TEST_F(UtilsTests, CalculateDivision)
     EXPECT_EQ(Utils::calculateDivision(pixelsPerBeatAmount), 4);
 
     pixelsPerBeatAmount = 60;
-    EXPECT_EQ(Utils::calculateDivision(pixelsPerBeatAmount), 1/2.f);
+    EXPECT_EQ(Utils::calculateDivision(pixelsPerBeatAmount), 1 / 2.f);
 }
 
 TEST_F(UtilsTests, RoundPosition)
@@ -34,7 +34,7 @@ TEST_F(UtilsTests, RoundPosition)
     auto result = round((double) samples / samplesInDivision) * samplesInDivision;
 
     EXPECT_EQ(result, roundedSamples);
-    
+
     roundedSamples = Utils::roundPosition(samples, pixelsPerBeatAmount, bpm, true);
     result = floor((double) samples / samplesInDivision) * samplesInDivision;
     EXPECT_EQ(result, roundedSamples);

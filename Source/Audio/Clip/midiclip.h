@@ -12,7 +12,7 @@ namespace Audio
 
 class MidiClip: public Clip
 {
-    Q_OBJECT
+Q_OBJECT
 
 public:
     explicit MidiClip(Track *parentTrack);

@@ -1,5 +1,5 @@
-#ifndef UTILS_FUNCTIONS_H
-#define UTILS_FUNCTIONS_H
+#ifndef UTILS_H
+#define UTILS_H
 
 #include <iostream>
 #include <vector>
@@ -58,11 +58,16 @@ public:
         division = DEFAULT_DIVISIONS[index];
         return division;
     }
-    static juce::int64 roundPosition(juce::int64 positionInSamples, double pixelsPerBeatAmount, double bpm, bool forceRoundingToPriorPosition = false, GRID_SIZE_TYPE gridSizeType = DEFAULT)
+    static juce::int64 roundPosition(juce::int64 positionInSamples,
+                                     double pixelsPerBeatAmount,
+                                     double bpm,
+                                     bool forceRoundingToPriorPosition = false,
+                                     GRID_SIZE_TYPE gridSizeType = DEFAULT)
     {
         int samplesPerMinute = DEFAULT_SAMPLE_RATE * 60;
 
-        double samplesInDivision = calculateDivision(pixelsPerBeatAmount, gridSizeType) / bpm * (double) samplesPerMinute;
+        double
+            samplesInDivision = calculateDivision(pixelsPerBeatAmount, gridSizeType) / bpm * (double) samplesPerMinute;
 
         juce::int64 result;
         if (!forceRoundingToPriorPosition)
@@ -88,4 +93,4 @@ public:
     }
 };
 
-#endif // UTILS_FUNCTIONS_H
+#endif // UTILS_H

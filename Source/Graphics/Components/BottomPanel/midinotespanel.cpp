@@ -3,7 +3,8 @@
 namespace Graphics
 {
 
-MidiNotesPanel::MidiNotesPanel(const QSharedPointer<Audio::MidiClip> &clip, QWidget *parent) : QWidget(parent), mClip(clip)
+MidiNotesPanel::MidiNotesPanel(const QSharedPointer<Audio::MidiClip> &clip, QWidget *parent)
+    : QWidget(parent), mClip(clip)
 {
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
     setFixedWidth(90);
@@ -20,7 +21,11 @@ void MidiNotesPanel::paintEvent(QPaintEvent *event)
 
     int nbNotesToDraw = NOTES_IN_OCTAVE * (END_MIDI_OCTAVE - START_MIDI_OCTAVE);
     for (int i = 0; i < nbNotesToDraw; i++) {
-        p.fillRect(70, i * 20, 20, 20, mClip->currentScaleContains(nbNotesToDraw - i) ? QColorConstants::White : QColorConstants::Black);
+        p.fillRect(70,
+                   i * 20,
+                   20,
+                   20,
+                   mClip->currentScaleContains(nbNotesToDraw - i) ? QColorConstants::White : QColorConstants::Black);
 
         p.drawLine(0, i * 20, width(), i * 20);
     }
@@ -35,7 +40,7 @@ void MidiNotesPanel::paintEvent(QPaintEvent *event)
     p.setFont(font);
 
     for (int i = 0; i < nbNotesToDraw; i++) {
-        p.drawText(QRect(3, i * 20, 65, 20), Qt::AlignVCenter | Qt::AlignLeft,mClip->midiNoteName(nbNotesToDraw - i));
+        p.drawText(QRect(3, i * 20, 65, 20), Qt::AlignVCenter | Qt::AlignLeft, mClip->midiNoteName(nbNotesToDraw - i));
     }
 }
 

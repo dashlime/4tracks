@@ -5,19 +5,20 @@
 
 #include "Audio/Project/project.h"
 #include "Constants.h"
-#include "Utils/utils_functions.h"
+#include "Utils/utils.h"
 #include "Audio/Clip/midiclip.h"
-#include "divisionsmarker.h"
+#include "Graphics/Components/Timeline/divisionsmarker.h"
 #include "Audio/Resources/mididata.h"
+#include "Audio/Resources/midinote.h"
 #include "midinote.h"
-#include "Graphics/Managers/selection.h"
+#include "Graphics/Managers/selectionmanager.h"
 
 namespace Graphics
 {
 
 class MidiEditor: public QWidget
 {
-    Q_OBJECT
+Q_OBJECT
 public:
     explicit MidiEditor(const QSharedPointer<Audio::MidiClip> &clip, QWidget *parent = nullptr);
 
@@ -41,7 +42,7 @@ private:
     QVector<QPointer<MidiNote>> mNotes;
 
     QPoint mClickedPos;
-    Selection mCurrentSelection;
+    SelectionManager mCurrentSelection;
 
     bool mExtendingByTheRight = false;
     bool mExtendingByTheLeft = false;

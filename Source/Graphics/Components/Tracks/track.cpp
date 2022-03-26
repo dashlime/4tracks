@@ -90,9 +90,9 @@ void Track::setSelectedState(bool isSelected)
     repaint();
 }
 
-Selection::SelectableObject::Type Track::getType() const
+SelectionManager::SelectableObject::Type Track::getType() const
 {
-    return Selection::SelectableObject::Track;
+    return SelectionManager::SelectableObject::Track;
 }
 
 }

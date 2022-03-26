@@ -3,7 +3,7 @@
 
 #include "clip.h"
 #include "Audio/AudioSources/resamplingpositionableaudiosource.h"
-#include "Audio/Utils/audiofileloader.h"
+#include "Audio/Resources/audiofileloader.h"
 #include "Constants.h"
 #include "clipproperties.h"
 #include "Audio/Resources/audioresource.h"

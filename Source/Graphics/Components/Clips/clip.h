@@ -9,7 +9,7 @@
 #include "Graphics/Widgets/elidedlabel.h"
 #include "audiothumbnail.h"
 #include "Audio/Project/project.h"
-#include "Graphics/Managers/selection.h"
+#include "Graphics/Managers/selectionmanager.h"
 #include "Graphics/Managers/thumbnailmanager.h"
 
 namespace Graphics
@@ -20,7 +20,7 @@ namespace Ui
 class Clip;
 }
 
-class Clip: public Selection::SelectableObject
+class Clip: public SelectionManager::SelectableObject
 {
 Q_OBJECT
 
@@ -37,7 +37,7 @@ public:
     void resizeEvent(QResizeEvent *) override;
 
     void setSelectedState(bool isSelected) override;
-    [[nodiscard]] Selection::SelectableObject::Type getType() const override;
+    [[nodiscard]] SelectionManager::SelectableObject::Type getType() const override;
 
 private:
     Ui::Clip *ui;

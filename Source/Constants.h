@@ -10,11 +10,15 @@
 
 #define DEFAULT_MIDI_CHANNEL 1
 
-static const QVector<bool> MAJOR_SCALE_SCHEME = {true, false, true, false, true, true, false, true, false, true, false, true};
+static const QVector<bool>
+    MAJOR_SCALE_SCHEME = {true, false, true, false, true, true, false, true, false, true, false, true};
 
 #define DEFAULT_SAMPLE_RATE 48000
 #define DEFAULT_PIXEL_PER_BEAT_AMOUNT 2
-enum GRID_SIZE_TYPE { DEFAULT, LARGE };
+enum GRID_SIZE_TYPE
+{
+    DEFAULT, LARGE
+};
 
 static const QVector<int> MINIMUM_SPACE_BETWEEN_GRID_LINES = {30, 60};
 

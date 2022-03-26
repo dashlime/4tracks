@@ -5,7 +5,7 @@ namespace Graphics
 
 Timeline::Timeline(const QSharedPointer<Audio::Project> &project, QWidget *parent)
     : QWidget(parent), mProject(project),
-      mTimelineProperties(new TimelineProperties(QSharedPointer<Selection>::create())),
+      mTimelineProperties(new TimelineProperties(QSharedPointer<SelectionManager>::create())),
       mClipsGrid(new ClipsGrid(mProject, mTimelineProperties))
 {
     setFocusPolicy(Qt::ClickFocus);
@@ -114,7 +114,7 @@ void Timeline::setupCallbacks()
         mTracksLayout.removeWidget(mTracks.at(index));
         mTracks.at(index)->deleteLater();
         mTracks.remove(index);
-        mTimelineProperties->getCurrentSelection()->setSelectionType(Selection::NoSelection);
+        mTimelineProperties->getCurrentSelection()->setSelectionType(SelectionManager::NoSelection);
     });
 
     connect(mTimelineProperties.get(), &TimelineProperties::zoomLevelChanged, [=]()
@@ -163,7 +163,7 @@ void Timeline::mousePressEvent(QMouseEvent *event)
     }
 
     if (!trackClicked) {
-        mTimelineProperties->getCurrentSelection()->setSelectionType(Selection::NoSelection);
+        mTimelineProperties->getCurrentSelection()->setSelectionType(SelectionManager::NoSelection);
         return;
     }
 

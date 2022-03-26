@@ -2,7 +2,7 @@
 #define THUMBNAILMANAGER_H
 
 #include "Audio/Resources/audioresource.h"
-#include "Graphics/Components/audiothumbnail.h"
+#include "Graphics/Components/Clips/audiothumbnail.h"
 
 #include <QSharedPointer>
 

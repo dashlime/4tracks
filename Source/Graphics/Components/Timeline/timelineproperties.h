@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include "selection.h"
+#include "Graphics/Managers/selectionmanager.h"
 #include "Constants.h"
 
 namespace Graphics
@@ -14,10 +14,10 @@ class TimelineProperties: public QObject
 Q_OBJECT
 
 public:
-    explicit TimelineProperties(const QSharedPointer<Selection> &currentSelection);
+    explicit TimelineProperties(const QSharedPointer<SelectionManager> &currentSelection);
 
-    void setCurrentSelection(const QSharedPointer<Selection> &currentSelection);
-    [[nodiscard]] const QSharedPointer<Selection> &getCurrentSelection() const;
+    void setCurrentSelection(const QSharedPointer<SelectionManager> &currentSelection);
+    [[nodiscard]] const QSharedPointer<SelectionManager> &getCurrentSelection() const;
 
     void setZoomLevel(double zoomLevel);
     [[nodiscard]] double getZoomLevel() const;
@@ -30,7 +30,7 @@ signals:
     void pixelsPerBeatAmountChanged();
 
 private:
-    QSharedPointer<Selection> mCurrentSelection;
+    QSharedPointer<SelectionManager> mCurrentSelection;
 
     double mZoomLevel = 1.f;
     double mPixelsPerBeat = mZoomLevel * DEFAULT_PIXEL_PER_BEAT_AMOUNT;

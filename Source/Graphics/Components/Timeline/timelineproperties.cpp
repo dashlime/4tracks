@@ -3,22 +3,22 @@
 namespace Graphics
 {
 
-TimelineProperties::TimelineProperties(const QSharedPointer<Selection> &currentSelection)
+TimelineProperties::TimelineProperties(const QSharedPointer<SelectionManager> &currentSelection)
 {
     setCurrentSelection(currentSelection);
 }
 
-void TimelineProperties::setCurrentSelection(const QSharedPointer<Selection> &currentSelection)
+void TimelineProperties::setCurrentSelection(const QSharedPointer<SelectionManager> &currentSelection)
 {
     mCurrentSelection = currentSelection;
 
-    connect(mCurrentSelection.get(), &Selection::selectionChanged, [=]()
+    connect(mCurrentSelection.get(), &SelectionManager::selectionChanged, [=]()
     {
         emit currentSelectionChanged();
     });
 }
 
-const QSharedPointer<Selection> &TimelineProperties::getCurrentSelection() const
+const QSharedPointer<SelectionManager> &TimelineProperties::getCurrentSelection() const
 {
     return mCurrentSelection;
 }

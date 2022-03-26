@@ -3,8 +3,8 @@
 
 #include <QWidget>
 
-#include "Graphics/Managers/timelineproperties.h"
-#include "clip.h"
+#include "Graphics/Components/Timeline/timelineproperties.h"
+#include "Graphics/Components/Clips/clip.h"
 #include "midiclippanel.h"
 
 namespace Graphics
@@ -12,7 +12,7 @@ namespace Graphics
 
 class ClipEditorPanel: public QWidget
 {
-    Q_OBJECT
+Q_OBJECT
 public:
     explicit ClipEditorPanel(const QSharedPointer<TimelineProperties> &properties, QWidget *parent = nullptr);
 

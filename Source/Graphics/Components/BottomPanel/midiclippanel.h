@@ -12,7 +12,7 @@ namespace Graphics
 
 class MidiClipPanel: public QWidget
 {
-    Q_OBJECT
+Q_OBJECT
 public:
     explicit MidiClipPanel(const QSharedPointer<Audio::MidiClip> &clip, QWidget *parent = nullptr);
 

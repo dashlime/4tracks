@@ -1,9 +1,9 @@
-#include "selection.h"
+#include "selectionmanager.h"
 
 namespace Graphics
 {
 
-Selection::Modifiers Selection::generateSelectionModifiers(QMouseEvent *event)
+SelectionManager::Modifiers SelectionManager::generateSelectionModifiers(QMouseEvent *event)
 {
     auto flags = Modifiers();
     if (event->modifiers().testFlag(Qt::ControlModifier))
@@ -18,10 +18,10 @@ Selection::Modifiers Selection::generateSelectionModifiers(QMouseEvent *event)
     return flags;
 }
 
-Selection::Selection()
+SelectionManager::SelectionManager()
 {}
 
-Selection::SelectionType Selection::getSelectionTypeForObject(Selection::SelectableObject* object)
+SelectionManager::SelectionType SelectionManager::getSelectionTypeForObject(SelectionManager::SelectableObject *object)
 {
     if (object->getType() == SelectableObject::Track)
         return TracksSelected;
@@ -29,9 +29,11 @@ Selection::SelectionType Selection::getSelectionTypeForObject(Selection::Selecta
         return ClipsSelected;
     if (object->getType() == SelectableObject::MidiNote)
         return MidiNotesSelected;
+
+    return NoSelection;
 }
 
-void Selection::setSelectionType(SelectionType type)
+void SelectionManager::setSelectionType(SelectionType type)
 {
     clearSelection();
     mSelectionType = type;
@@ -39,17 +41,17 @@ void Selection::setSelectionType(SelectionType type)
     emit selectionChanged();
 }
 
-Selection::SelectionType Selection::getSelectionType() const
+SelectionManager::SelectionType SelectionManager::getSelectionType() const
 {
     return mSelectionType;
 }
 
-void Selection::objectSelected(SelectableObject *object, QMouseEvent *event)
+void SelectionManager::objectSelected(SelectableObject *object, QMouseEvent *event)
 {
     objectSelected(object, generateSelectionModifiers(event));
 }
 
-void Selection::objectSelected(SelectableObject *object, QFlags<Modifier> modifiers)
+void SelectionManager::objectSelected(SelectableObject *object, QFlags<Modifier> modifiers)
 {
     if (getSelectionTypeForObject(object) != mSelectionType)
         setSelectionType(getSelectionTypeForObject(object));
@@ -84,12 +86,12 @@ void Selection::objectSelected(SelectableObject *object, QFlags<Modifier> modifi
     emit selectionChanged();
 }
 
-QVector<QPointer<Selection::SelectableObject>> Selection::getSelectedObjects() const
+QVector<QPointer<SelectionManager::SelectableObject>> SelectionManager::getSelectedObjects() const
 {
     return mSelectedObjects;
 }
 
-void Selection::setSelectedArea(int startTrackIndex, int startSample, int nbTracks, int nbSamples)
+void SelectionManager::setSelectedArea(int startTrackIndex, int startSample, int nbTracks, int nbSamples)
 {
     if (mSelectionType != AreaSelected)
         return;
@@ -102,7 +104,7 @@ void Selection::setSelectedArea(int startTrackIndex, int startSample, int nbTrac
     emit selectionChanged();
 }
 
-void Selection::setSelectedArea(SelectionArea area)
+void SelectionManager::setSelectedArea(SelectionArea area)
 {
     if (mSelectionType != AreaSelected)
         return;
@@ -112,12 +114,12 @@ void Selection::setSelectedArea(SelectionArea area)
     emit selectionChanged();
 }
 
-Selection::SelectionArea Selection::getSelectedArea() const
+SelectionManager::SelectionArea SelectionManager::getSelectedArea() const
 {
     return mSelectedArea;
 }
 
-void Selection::clearSelection()
+void SelectionManager::clearSelection()
 {
     for (const auto &obj: mSelectedObjects) {
         obj->setSelectedState(false);

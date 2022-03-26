@@ -6,7 +6,7 @@
 #include "Audio/Track/track.h"
 #include "Audio/Track/trackproperties.h"
 #include "Audio/Project/project.h"
-#include "Graphics/Managers/selection.h"
+#include "Graphics/Managers/selectionmanager.h"
 
 namespace Graphics
 {
@@ -16,7 +16,7 @@ namespace Ui
 class Track;
 }
 
-class Track: public Selection::SelectableObject
+class Track: public SelectionManager::SelectableObject
 {
 Q_OBJECT
 
@@ -32,7 +32,7 @@ public:
     void paintEvent(QPaintEvent *) override;
 
     void setSelectedState(bool isSelected) override;
-    [[nodiscard]] Selection::SelectableObject::Type getType() const override;
+    [[nodiscard]] SelectionManager::SelectableObject::Type getType() const override;
 
 private:
     Ui::Track *ui;

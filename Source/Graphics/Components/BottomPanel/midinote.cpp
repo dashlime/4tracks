@@ -4,9 +4,9 @@ namespace Graphics
 {
 
 MidiNote::MidiNote(const QSharedPointer<Audio::MidiNote> &note,
-                   const QSharedPointer<Audio::MidiClip>& clip,
+                   const QSharedPointer<Audio::MidiClip> &clip,
                    QWidget *parent)
-    : Selection::SelectableObject(parent), mClip(clip), mNote(note)
+    : SelectionManager::SelectableObject(parent), mClip(clip), mNote(note)
 {
     setLayout(new QHBoxLayout());
     layout()->setContentsMargins(2, 0, 0, 0);
@@ -42,14 +42,15 @@ void MidiNote::setSelectedState(bool isSelected)
 {
     if (isSelected) {
         setStyleSheet("background-color: rgba(239, 68, 68, 50%);");
-    } else {
+    }
+    else {
         setStyleSheet("background-color: rgba(239, 68, 68, 100%);");
     }
 }
 
-Selection::SelectableObject::Type MidiNote::getType() const
+SelectionManager::SelectableObject::Type MidiNote::getType() const
 {
-    return Selection::SelectableObject::MidiNote;
+    return SelectionManager::SelectableObject::MidiNote;
 }
 
 }
