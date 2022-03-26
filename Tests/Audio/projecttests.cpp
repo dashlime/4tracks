@@ -71,6 +71,8 @@ TEST_F(ProjectTests, RemoveTrack)
     mProjectToTest->removeTrack(mProjectToTest->getTrackByIndex(trackToRemove));
 
     EXPECT_EQ(mProjectToTest->getTracks().size(), 1);
+
+    EXPECT_EQ(mProjectToTest->getProjectProperties()->getSavedState(), Audio::ProjectProperties::UNSAVED);
 }
 
 TEST_F(ProjectTests, ClearAllTracks)
@@ -87,6 +89,8 @@ TEST_F(ProjectTests, ClearAllTracks)
 
     EXPECT_EQ(mProjectToTest->getTracks().size(), 0);
     EXPECT_EQ(mProjectToTest->getClips().size(), 0);
+
+    EXPECT_EQ(mProjectToTest->getProjectProperties()->getSavedState(), Audio::ProjectProperties::UNSAVED);
 }
 
 TEST_F(ProjectTests, RemoveArea)
@@ -132,7 +136,7 @@ TEST_F(ProjectTests, RemoveArea)
     clip->getClipProperties()->setLengthInSamples(1000);
     clip->getClipProperties()->setEndOffset(1000);
 
-    mProjectToTest->removeArea(0, 1, 500, 100);
+    mProjectToTest->removeArea(0, -1, 600, -100);
 
     EXPECT_EQ(mProjectToTest->getClips().size(), 2);
     EXPECT_EQ(clip, mProjectToTest->getClips().at(0));
@@ -142,6 +146,8 @@ TEST_F(ProjectTests, RemoveArea)
 
     EXPECT_EQ(mProjectToTest->getClips().at(1)->getClipProperties()->getStartOffset(), 600);
     EXPECT_EQ(mProjectToTest->getClips().at(1)->getClipProperties()->getEndOffset(), 1000);
+
+    EXPECT_EQ(mProjectToTest->getProjectProperties()->getSavedState(), Audio::ProjectProperties::UNSAVED);
 }
 
 TEST_F(ProjectTests, RearrangeTrackIndexes)
@@ -154,6 +160,8 @@ TEST_F(ProjectTests, RearrangeTrackIndexes)
     EXPECT_EQ(mProjectToTest->getTracks().at(0)->getTrackProperties()->getIndex(), 0);
     EXPECT_EQ(mProjectToTest->getTracks().at(1)->getTrackProperties()->getIndex(), 2);
     EXPECT_EQ(mProjectToTest->getTracks().at(2)->getTrackProperties()->getIndex(), 1);
+
+    EXPECT_EQ(mProjectToTest->getProjectProperties()->getSavedState(), Audio::ProjectProperties::UNSAVED);
 }
 
 TEST_F(ProjectTests, GetTrackByIndex)
@@ -171,20 +179,41 @@ TEST_F(ProjectTests, CreateTrack)
     EXPECT_EQ(mProjectToTest->getTracks().size(), 2);
     EXPECT_EQ(firstIndex, 0);
     EXPECT_EQ(secondIndex, 1);
+
+    EXPECT_EQ(mProjectToTest->getProjectProperties()->getSavedState(), Audio::ProjectProperties::UNSAVED);
 }
 
 TEST_F(ProjectTests, CreateAudioClip)
 {
+    EXPECT_EQ(mProjectToTest->createAudioClip(mProjectToTest->getTrackByIndex(0), ""), -1);
+
     mProjectToTest->createTrack("Test track");
     mProjectToTest->createAudioClip(mProjectToTest->getTrackByIndex(0), "");
 
     EXPECT_EQ(mProjectToTest->getTrackByIndex(0)->getClips().size(), 1);
+
+    EXPECT_EQ(mProjectToTest->getProjectProperties()->getSavedState(), Audio::ProjectProperties::UNSAVED);
 }
 
 TEST_F(ProjectTests, CreateMIDIClip)
 {
+    EXPECT_EQ(mProjectToTest->createMIDIClip(mProjectToTest->getTrackByIndex(0)), -1);
+
     mProjectToTest->createTrack("Test track");
     mProjectToTest->createMIDIClip(mProjectToTest->getTrackByIndex(0));
 
     EXPECT_EQ(mProjectToTest->getTrackByIndex(0)->getClips().size(), 1);
+
+    EXPECT_EQ(mProjectToTest->getProjectProperties()->getSavedState(), Audio::ProjectProperties::UNSAVED);
+}
+
+TEST_F(ProjectTests, UpdateTotalLength)
+{
+    mProjectToTest->createTrack("Test track");
+    int id = mProjectToTest->createMIDIClip(mProjectToTest->getTrackByIndex(0));
+    mProjectToTest->getClips().at(id)->getClipProperties()->setLengthInSamples(1000);
+
+    EXPECT_EQ(mProjectToTest->getTotalLength(), 1000);
+
+    EXPECT_EQ(mProjectToTest->getProjectProperties()->getSavedState(), Audio::ProjectProperties::UNSAVED);
 }

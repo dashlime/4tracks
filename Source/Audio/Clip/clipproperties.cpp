@@ -7,14 +7,6 @@ ClipProperties::ClipProperties(Track *parentTrack, const QString &name)
     : mParentTrack(parentTrack), mName(name)
 {}
 
-void ClipProperties::setParentTrack(Track *parentTrack)
-{
-    mParentTrack = parentTrack;
-
-    emit parentTrackChanged();
-    emit savedStateChanged(ProjectProperties::UNSAVED);
-}
-
 Track *ClipProperties::getParentTrack() const
 {
     return mParentTrack;
@@ -51,6 +43,7 @@ void ClipProperties::setPositionInSamples(juce::int64 positionInSamples)
     mPositionInSamples = positionInSamples;
 
     emit clipMoved();
+    emit trackLengthChanged();
     emit savedStateChanged(ProjectProperties::UNSAVED);
 }
 
@@ -77,6 +70,7 @@ void ClipProperties::setEndOffset(juce::int64 offsetInSamples)
     mEndOffset = offsetInSamples;
 
     emit endOffsetChanged();
+    emit trackLengthChanged();
     emit savedStateChanged(ProjectProperties::UNSAVED);
 }
 

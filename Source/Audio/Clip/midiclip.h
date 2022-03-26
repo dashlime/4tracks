@@ -23,6 +23,7 @@ public:
     [[nodiscard]] QString midiNoteName(int midiNoteNumber) const;
 
     [[nodiscard]] Type getType() const override;
+    void nextReadPositionChanged() override;
 
 private:
     QSharedPointer<MidiData> mMidiData;

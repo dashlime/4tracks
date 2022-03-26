@@ -23,7 +23,4 @@ juce::int64 Clip::getReadPosition() const
     return mNextReadPosition;
 }
 
-void Clip::nextReadPositionChanged()
-{}
-
 }

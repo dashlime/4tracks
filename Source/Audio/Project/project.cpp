@@ -182,8 +182,10 @@ void Project::removeArea(int startTrack, int nbTracks, juce::int64 startSample, 
     }
 
     if (nbTracks < 0) {
-        startTrack = startTrack + nbTracks;
-        nbTracks = -nbTracks + 1;
+        // add 1 because track indexes starts with 0 and not with 1 :
+        //    ex: startTrack(1) + nbTracks(-2) + 1 = 0
+        startTrack = startTrack + nbTracks + 1;
+        nbTracks = -nbTracks;
     }
 
     for (int i = startTrack; i < startTrack + nbTracks; i++) {

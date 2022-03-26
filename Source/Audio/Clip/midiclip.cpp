@@ -44,4 +44,7 @@ Clip::Type MidiClip::getType() const
     return Clip::MIDI_CLIP;
 }
 
+void MidiClip::nextReadPositionChanged()
+{}
+
 }

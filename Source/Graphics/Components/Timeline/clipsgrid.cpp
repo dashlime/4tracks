@@ -127,7 +127,7 @@ void ClipsGrid::updateSelectionOverlay()
     }
     else {
         y = (area.startTrackIndex + 1) * (DEFAULT_TRACK_HEIGHT + 1);
-        h = (area.nbTracks - 1) * (DEFAULT_TRACK_HEIGHT + 1);
+        h = area.nbTracks * (DEFAULT_TRACK_HEIGHT + 1);
     }
 
     mSelectionOverlay.areaChanged(QRect(x, y, w, h));
@@ -324,7 +324,7 @@ void ClipsGrid::mouseMoveEvent(QMouseEvent *event)
         if (trackIndex >= area.startTrackIndex)
             area.nbTracks = trackIndex - area.startTrackIndex + 1;
         else
-            area.nbTracks = trackIndex - area.startTrackIndex;
+            area.nbTracks = trackIndex - area.startTrackIndex - 1;
 
         area.nbSamples = samples - area.startSample;
 

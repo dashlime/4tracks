@@ -19,3 +19,20 @@ TEST_F(MidiClipTests, GetMidiNoteName)
     // test with D#2
     EXPECT_TRUE(mMidiClip->midiNoteName(NOTES_IN_OCTAVE * 3 + 3) == "D#2");
 }
+
+TEST_F(MidiClipTests, AddAndRemoveNotes)
+{
+    auto noteOn = QSharedPointer<Audio::MidiNote>::create(0, juce::MidiMessage::noteOn(1, 10, 1.f));
+    auto noteOff = QSharedPointer<Audio::MidiNote>::create(10, juce::MidiMessage::noteOff(1, 10));
+
+    noteOn->setNoteOffObject(noteOff);
+
+    mMidiClip->getMidiData()->addNote(noteOn);
+    mMidiClip->getMidiData()->addNote(noteOff);
+
+    EXPECT_EQ(mMidiClip->getMidiData()->getMidiNotes().size(), 2);
+
+    mMidiClip->getMidiData()->removeNote(noteOn);
+
+    EXPECT_EQ(mMidiClip->getMidiData()->getMidiNotes().size(), 0);
+}
