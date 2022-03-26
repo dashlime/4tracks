@@ -135,11 +135,11 @@ void MidiEditor::mouseDoubleClickEvent(QMouseEvent *event)
 
         auto noteOff = QSharedPointer<Audio::MidiNote>::create(
             notePositionInSamples + samplesInDivision,
-            juce::MidiMessage::noteOff(1, midiNoteNumber));
+            juce::MidiMessage::noteOff(DEFAULT_MIDI_CHANNEL, midiNoteNumber));
 
         auto noteOn = QSharedPointer<Audio::MidiNote>::create(
             notePositionInSamples,
-            juce::MidiMessage::noteOn(1, midiNoteNumber, 1.f));
+            juce::MidiMessage::noteOn(DEFAULT_MIDI_CHANNEL, midiNoteNumber, 1.f));
 
         noteOn->setNoteOffObject(noteOff);
 

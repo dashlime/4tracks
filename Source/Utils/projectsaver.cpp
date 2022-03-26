@@ -39,6 +39,14 @@ void ProjectSaver::saveToDirectory(const QDir &dir)
 
         int fileId = 0;
         for (const auto &clip: track->getClips()) {
+            writer.writeStartElement("clip");
+            writer.writeAttribute("type", QString::number(track->getType()));
+            writer.writeAttribute("name", clip->getClipProperties()->getName());
+            writer.writeAttribute("position", QString::number(clip->getClipProperties()->getPositionInSamples()));
+            writer.writeAttribute("startOffset", QString::number(clip->getClipProperties()->getStartOffset()));
+            writer.writeAttribute("endOffset", QString::number(clip->getClipProperties()->getEndOffset()));
+            writer.writeAttribute("length", QString::number(clip->getClipProperties()->getLengthInSamples()));
+
             QString newFilePath;
             if (clip->getType() == Audio::Clip::AUDIO_CLIP) {
                 auto audioClip = qSharedPointerDynamicCast<Audio::AudioClip>(clip);
@@ -60,16 +68,24 @@ void ProjectSaver::saveToDirectory(const QDir &dir)
 
                     audioClip->getAudioResource()->setSourceFilePath(targetFile.fileName());
                 }
-            }
-            fileId++;
 
-            writer.writeStartElement("clip");
-            writer.writeAttribute("type", QString::number(track->getType()));
-            writer.writeAttribute("path", newFilePath);
-            writer.writeAttribute("name", clip->getClipProperties()->getName());
-            writer.writeAttribute("position", QString::number(clip->getClipProperties()->getPositionInSamples()));
-            writer.writeAttribute("startOffset", QString::number(clip->getClipProperties()->getStartOffset()));
-            writer.writeAttribute("endOffset", QString::number(clip->getClipProperties()->getEndOffset()));
+                writer.writeAttribute("path", newFilePath);
+                fileId++;
+            } else if (clip->getType() == Audio::Clip::MIDI_CLIP) {
+                auto midiClip = qSharedPointerDynamicCast<Audio::MidiClip>(clip);
+
+                writer.writeStartElement("midiData");
+                for (const auto& midiNote : midiClip->getMidiData()->getMidiNotes()) {
+                    if (midiNote->getMidiMessage().isNoteOn() && midiNote->getNoteOffObject() != nullptr) {
+                        writer.writeStartElement("note");
+                        writer.writeAttribute("noteNumber", QString::number(midiNote->getMidiMessage().getNoteNumber()));
+                        writer.writeAttribute("startSample", QString::number(midiNote->getPositionInSamples()));
+                        writer.writeAttribute("endSample", QString::number(midiNote->getNoteOffObject()->getPositionInSamples()));
+                        writer.writeEndElement();
+                    }
+                }
+                writer.writeEndElement();
+            }
             writer.writeEndElement();
         }
 
@@ -120,8 +136,24 @@ void ProjectSaver::openProject(QFile projectFile)
             int id = -1;
             if (trackType == Audio::Track::AUDIO_TRACK)
                 id = mProject->createAudioClip(track, domClip.attribute("path"));
-            else if (trackType == Audio::Track::MIDI_TRACK)
+            else if (trackType == Audio::Track::MIDI_TRACK) {
                 id = mProject->createMIDIClip(track);
+                auto clip = qSharedPointerDynamicCast<Audio::MidiClip>(mProject->getClips().at(id));
+
+                QDomElement domNote = domClip.firstChildElement("midiData").firstChildElement("note");
+                while(!domNote.isNull()) {
+                    auto noteOnMsg = juce::MidiMessage::noteOn(DEFAULT_MIDI_CHANNEL, domNote.attribute("noteNumber").toInt(), 1.f);
+                    auto noteOffMsg = juce::MidiMessage::noteOff(DEFAULT_MIDI_CHANNEL, domNote.attribute("noteNumber").toInt());
+                    auto noteOn = QSharedPointer<Audio::MidiNote>::create(domNote.attribute("startSample").toInt(), noteOnMsg);
+                    auto noteOff = QSharedPointer<Audio::MidiNote>::create(domNote.attribute("endSample").toInt(), noteOffMsg);
+                    noteOn->setNoteOffObject(noteOff);
+
+                    clip->getMidiData()->addNote(noteOn);
+                    clip->getMidiData()->addNote(noteOff);
+
+                    domNote = domNote.nextSiblingElement();
+                }
+            }
 
             if (id != -1) {
                 auto clip = mProject->getClips().at(id);
@@ -130,6 +162,7 @@ void ProjectSaver::openProject(QFile projectFile)
                 clip->getClipProperties()->setPositionInSamples(domClip.attribute("position").toInt());
                 clip->getClipProperties()->setStartOffset(domClip.attribute("startOffset").toInt());
                 clip->getClipProperties()->setEndOffset(domClip.attribute("endOffset").toInt());
+                clip->getClipProperties()->setLengthInSamples(domClip.attribute("length").toInt());
             }
 
             domClip = domClip.nextSiblingElement();

@@ -8,6 +8,8 @@
 #define START_MIDI_OCTAVE -1
 #define END_MIDI_OCTAVE 8
 
+#define DEFAULT_MIDI_CHANNEL 1
+
 static const QVector<bool> MAJOR_SCALE_SCHEME = {true, false, true, false, true, true, false, true, false, true, false, true};
 
 #define DEFAULT_SAMPLE_RATE 48000
