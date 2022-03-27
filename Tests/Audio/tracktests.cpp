@@ -108,3 +108,12 @@ TEST_F(TrackTests, GetTotalLength)
 
     EXPECT_EQ(mTrackToTest->getTotalLength(), 1000 + 2000);
 }
+
+TEST_F(TrackTests, UpdateName)
+{
+    mTrackToTest->getTrackProperties()->getParentProject()->getProjectProperties()->updateSavedState(Audio::ProjectProperties::SAVED);
+    mTrackToTest->getTrackProperties()->setName("test");
+
+    EXPECT_EQ(mProjectToTest->getProjectProperties()->getSavedState(), Audio::ProjectProperties::UNSAVED);
+    EXPECT_EQ(mTrackToTest->getTrackProperties()->getName(), "test");
+}

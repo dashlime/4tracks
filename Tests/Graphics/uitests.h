@@ -8,6 +8,7 @@
 #include "Graphics/Managers/selectionmanager.h"
 #include "Graphics/Managers/thumbnailmanager.h"
 #include "Graphics/Components/Timeline/divisionsmarker.h"
+#include "Graphics/Components/Tracks/track.h"
 
 class SelectionManagerTests: public ::testing::Test
 {

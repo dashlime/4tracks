@@ -16,6 +16,10 @@ MidiClip::MidiClip(Track *parentTrack)
     {
         emit dataChanged();
     });
+    connect(mMidiData.get(), &MidiData::noteDataChanged, [=]()
+    {
+        emit dataChanged();
+    });
 }
 
 QSharedPointer<MidiData> MidiClip::getMidiData() const

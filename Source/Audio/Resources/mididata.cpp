@@ -10,6 +10,10 @@ void MidiData::addNote(const QSharedPointer<MidiNote> &note)
 {
     mNotes.push_back(note);
 
+    connect(note.get(), &MidiNote::dataChanged, [=]() {
+        emit noteDataChanged(note);
+    });
+
     emit noteAdded(note);
 }
 
@@ -17,6 +21,8 @@ void MidiData::removeNote(const QSharedPointer<MidiNote> &note)
 {
     mNotes.remove(mNotes.indexOf(note));
     mNotes.remove(mNotes.indexOf(note->getNoteOffObject()));
+
+    note->disconnect();
 
     emit noteRemoved(note);
 }

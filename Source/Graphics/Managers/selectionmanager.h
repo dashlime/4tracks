@@ -32,8 +32,7 @@ public:
         explicit SelectableObject(QWidget *parent = nullptr)
             : QWidget(parent)
         {};
-        virtual ~SelectableObject()
-        {};
+        ~SelectableObject() override = default;
 
         virtual void setSelectedState(bool isSelected) = 0;
 

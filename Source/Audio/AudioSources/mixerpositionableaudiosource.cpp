@@ -55,30 +55,6 @@ void MixerPositionableAudioSource::removeInputSource(juce::PositionableAudioSour
     }
 }
 
-void MixerPositionableAudioSource::removeInputSource(int const source)
-{
-    juce::PositionableAudioSource *input = inputs[source];
-    if (input != nullptr) {
-        std::unique_ptr<juce::PositionableAudioSource> toDelete;
-
-        {
-            const juce::ScopedLock sl(lock);
-            const int index = inputs.indexOf(input);
-
-            if (index < 0)
-                return;
-
-            if (inputsToDelete[index])
-                toDelete.reset(input);
-
-            inputsToDelete.shiftBits(-1, index);
-            inputs.remove(index);
-        }
-
-        input->releaseResources();
-    }
-}
-
 void MixerPositionableAudioSource::removeAllInputs()
 {
     juce::OwnedArray<juce::PositionableAudioSource> toDelete;

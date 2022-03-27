@@ -36,3 +36,17 @@ TEST_F(MidiClipTests, AddAndRemoveNotes)
 
     EXPECT_EQ(mMidiClip->getMidiData()->getMidiNotes().size(), 0);
 }
+
+TEST_F(MidiClipTests, ChangeNotesParams)
+{
+    auto noteOn = QSharedPointer<Audio::MidiNote>::create(0, juce::MidiMessage::noteOn(1, 10, 1.f));
+    mMidiClip->getMidiData()->addNote(noteOn);
+
+    mParentProject->getProjectProperties()->updateSavedState(Audio::ProjectProperties::SAVED);
+    noteOn->setPositionInSamples(10);
+    EXPECT_EQ(mParentProject->getProjectProperties()->getSavedState(), Audio::ProjectProperties::UNSAVED);
+
+    mParentProject->getProjectProperties()->updateSavedState(Audio::ProjectProperties::SAVED);
+    noteOn->setMidiMessage(juce::MidiMessage::noteOn(1, 20, 1.f));
+    EXPECT_EQ(mParentProject->getProjectProperties()->getSavedState(), Audio::ProjectProperties::UNSAVED);
+}
