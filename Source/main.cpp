@@ -1,4 +1,4 @@
-#include "Graphics/Components/mainwindow.h"
+#include "Graphics/Windows/mainwindow.h"
 
 #include <QApplication>
 
@@ -12,6 +12,6 @@ int main(int argc, char *argv[])
         newWindow->setAttribute(Qt::WA_DeleteOnClose, true);
         newWindow->show();
     });
-    w.show();
+    w.showMaximized();
     return QApplication::exec();
 }

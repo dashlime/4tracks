@@ -44,7 +44,7 @@ elseif (WIN32)
             rpcrt4
             winmm
             gcov)
-endif()
+endif ()
 
 # create static lib for unit tests
 list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp")

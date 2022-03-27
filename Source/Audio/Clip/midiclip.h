@@ -3,15 +3,30 @@
 
 #include "clip.h"
 
+#include "Audio/Resources/mididata.h"
+
+#include "Constants.h"
+
 namespace Audio
 {
 
 class MidiClip: public Clip
 {
+Q_OBJECT
+
 public:
     explicit MidiClip(Track *parentTrack);
 
+    [[nodiscard]] QSharedPointer<MidiData> getMidiData() const;
+
+    [[nodiscard]] bool currentScaleContains(int midiNoteNumber) const;
+    [[nodiscard]] QString midiNoteName(int midiNoteNumber) const;
+
     [[nodiscard]] Type getType() const override;
+    void nextReadPositionChanged() override;
+
+private:
+    QSharedPointer<MidiData> mMidiData;
 };
 
 }

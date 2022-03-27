@@ -19,7 +19,6 @@ Q_OBJECT
 public:
     ClipProperties(Track *parentTrack, const QString &name);
 
-    void setParentTrack(Track *parentTrack);
     [[nodiscard]] Track *getParentTrack() const;
 
     void setName(const QString &name);
@@ -41,7 +40,6 @@ public:
     [[nodiscard]] juce::int64 getEndOffset() const;
 
 signals:
-    void parentTrackChanged();
     void nameChanged();
     void lengthChanged();
     void clipMoved();

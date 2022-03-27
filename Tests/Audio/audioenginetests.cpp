@@ -37,10 +37,22 @@ void AudioClipTests::SetUp()
 void AudioClipTests::TearDown()
 {}
 
+void MidiClipTests::SetUp()
+{
+    mParentProject = QSharedPointer<Audio::Project>::create("Test project");
+    mParentTrack = mParentProject->getTrackByIndex(mParentProject->createTrack("Test track"));
+
+    int clipID = mParentProject->createMIDIClip(mParentTrack);
+    mMidiClip = qSharedPointerCast<Audio::MidiClip>(mParentProject->getClips().at(clipID));
+}
+
+void MidiClipTests::TearDown()
+{}
+
 void AudioProjectSaverTests::SetUp()
 {
     mProject = QSharedPointer<Audio::Project>::create("Test project");
-    mProjectSaver.reset(new ProjectSaver(mProject));
+    mProjectSaver.reset(new Audio::ProjectSaver(mProject));
 }
 
 void AudioProjectSaverTests::TearDown()

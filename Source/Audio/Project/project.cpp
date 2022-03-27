@@ -182,8 +182,10 @@ void Project::removeArea(int startTrack, int nbTracks, juce::int64 startSample, 
     }
 
     if (nbTracks < 0) {
-        startTrack = startTrack + nbTracks;
-        nbTracks = -nbTracks + 1;
+        // add 1 because track indexes starts with 0 and not with 1 :
+        //    ex: startTrack(1) + nbTracks(-2) + 1 = 0
+        startTrack = startTrack + nbTracks + 1;
+        nbTracks = -nbTracks;
     }
 
     for (int i = startTrack; i < startTrack + nbTracks; i++) {
@@ -229,6 +231,7 @@ int Project::duplicateClip(const QSharedPointer<Clip> &clipToDuplicate)
     juce::int64 oldClipPosition = clipToDuplicate->getClipProperties()->getPositionInSamples();
     juce::int64 oldClipStartOffset = clipToDuplicate->getClipProperties()->getStartOffset();
     juce::int64 oldClipEndOffset = clipToDuplicate->getClipProperties()->getEndOffset();
+    juce::int64 oldClipLength = clipToDuplicate->getClipProperties()->getLengthInSamples();
 
     QSharedPointer<Clip> newClip;
 
@@ -240,6 +243,7 @@ int Project::duplicateClip(const QSharedPointer<Clip> &clipToDuplicate)
         newClip = QSharedPointer<MidiClip>::create(clipToDuplicate->getClipProperties()->getParentTrack());
     }
 
+    newClip->getClipProperties()->setLengthInSamples(oldClipLength);
     newClip->getClipProperties()->setStartOffset(oldClipStartOffset);
     newClip->getClipProperties()->setEndOffset(oldClipEndOffset);
     newClip->getClipProperties()->setPositionInSamples(oldClipPosition + oldClipEndOffset - oldClipStartOffset);

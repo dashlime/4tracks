@@ -43,6 +43,11 @@ bool Track::addClip(const QSharedPointer<Clip> &clip)
         emit mProperties->lengthChanged();
     });
 
+    connect(clip.get(), &Clip::dataChanged, [=]()
+    {
+        emit mProperties->savedStateChanged(ProjectProperties::UNSAVED);
+    });
+
     return true;
 }
 

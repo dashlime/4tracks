@@ -2,7 +2,7 @@
 
 void SelectionManagerTests::SetUp()
 {
-    mSelectionManager.reset(new Graphics::Selection());
+    mSelectionManager.reset(new Graphics::SelectionManager());
 }
 
 void SelectionManagerTests::TearDown()
@@ -14,4 +14,10 @@ void ThumbnailManagerTests::SetUp()
 }
 
 void ThumbnailManagerTests::TearDown()
+{}
+
+void DivisionsMarkerTests::SetUp()
+{}
+
+void DivisionsMarkerTests::TearDown()
 {}

@@ -13,7 +13,7 @@ Q_OBJECT
     Q_PROPERTY(bool isElided READ isElided)
 
 public:
-    explicit ElidedLabel(const QString &text, QWidget *parent = nullptr);
+    explicit ElidedLabel(const QString &text = "", QWidget *parent = nullptr);
 
     void setText(const QString &text);
     const QString &text() const

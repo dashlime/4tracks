@@ -7,20 +7,20 @@ TEST_F(SelectionManagerTests, GenerateSelectionModifiers)
                                   Qt::LeftButton,
                                   Qt::MouseButtons(),
                                   Qt::KeyboardModifiers());
-    auto modifiers = Graphics::Selection::generateSelectionModifiers(event);
-    EXPECT_FALSE(modifiers.testFlag(Graphics::Selection::CtrlModifier));
-    EXPECT_FALSE(modifiers.testFlag(Graphics::Selection::ShiftModifier));
-    EXPECT_FALSE(modifiers.testFlag(Graphics::Selection::RightButtonModifier));
+    auto modifiers = Graphics::SelectionManager::generateSelectionModifiers(event);
+    EXPECT_FALSE(modifiers.testFlag(Graphics::SelectionManager::CtrlModifier));
+    EXPECT_FALSE(modifiers.testFlag(Graphics::SelectionManager::ShiftModifier));
+    EXPECT_FALSE(modifiers.testFlag(Graphics::SelectionManager::RightButtonModifier));
 
     event = new QMouseEvent(QMouseEvent::MouseButtonPress,
                             QPoint(),
                             Qt::LeftButton,
                             Qt::MouseButtons(),
                             Qt::KeyboardModifiers(Qt::ControlModifier));
-    modifiers = Graphics::Selection::generateSelectionModifiers(event);
-    EXPECT_TRUE(modifiers.testFlag(Graphics::Selection::CtrlModifier));
-    EXPECT_FALSE(modifiers.testFlag(Graphics::Selection::ShiftModifier));
-    EXPECT_FALSE(modifiers.testFlag(Graphics::Selection::RightButtonModifier));
+    modifiers = Graphics::SelectionManager::generateSelectionModifiers(event);
+    EXPECT_TRUE(modifiers.testFlag(Graphics::SelectionManager::CtrlModifier));
+    EXPECT_FALSE(modifiers.testFlag(Graphics::SelectionManager::ShiftModifier));
+    EXPECT_FALSE(modifiers.testFlag(Graphics::SelectionManager::RightButtonModifier));
 
     delete event;
 }
