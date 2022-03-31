@@ -16,6 +16,8 @@ Q_OBJECT
 public:
     explicit MidiClipPanel(const QSharedPointer<Audio::MidiClip> &clip, QWidget *parent = nullptr);
 
+    [[nodiscard]] QSharedPointer<Audio::MidiClip> getAssociatedClip() const;
+
     void paintEvent(QPaintEvent *event) override;
 
 private:

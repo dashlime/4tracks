@@ -9,6 +9,9 @@ MidiEditor::MidiEditor(const QSharedPointer<Audio::MidiClip> &clip, QWidget *par
     int totalNotes = NOTES_IN_OCTAVE * (END_MIDI_OCTAVE - START_MIDI_OCTAVE);
     setMinimumHeight(totalNotes * 20);
 
+    setupMidiNotes();
+    setMouseTracking(true);
+
     connect(this, &MidiEditor::pixelsPerBeatAmountChanged, [=](double newPixelsPerBeatAmount)
     {
         refreshMidiNotes();
@@ -47,9 +50,6 @@ MidiEditor::MidiEditor(const QSharedPointer<Audio::MidiClip> &clip, QWidget *par
 
                 refreshMidiNotes();
             });
-
-    setupMidiNotes();
-    setMouseTracking(true);
 }
 
 double MidiEditor::calculatePixelsPerBeatAmount() const
@@ -62,24 +62,29 @@ double MidiEditor::calculatePixelsPerBeatAmount() const
     return (double) (width() - 1) / (double) mClip->getClipProperties()->getLengthInSamples() * samplesInBeat;
 }
 
+void MidiEditor::updateNoteGeometry(const QPointer<MidiNote>& note)
+{
+    double bpm = mClip->getClipProperties()->getParentTrack()->getTrackProperties()->getParentProject()
+        ->getProjectProperties()->getBpm();
+
+    int width = Utils::samplesToPixels(note->getMidiNote()->getNoteOffObject()->getPositionInSamples()
+                                           - note->getMidiNote()->getPositionInSamples(),
+                                       mCurrentPixelsPerBeatAmount,
+                                       bpm);
+    int nbNotesToDraw = NOTES_IN_OCTAVE * (END_MIDI_OCTAVE - START_MIDI_OCTAVE);
+
+    note->setGeometry(
+        Utils::samplesToPixels(note->getMidiNote()->getPositionInSamples(), mCurrentPixelsPerBeatAmount, bpm)
+            + 1,
+        (nbNotesToDraw - note->getMidiNote()->getMidiMessage().getNoteNumber()) * 20 + 1,
+        width,
+        19);
+}
+
 void MidiEditor::refreshMidiNotes()
 {
     for (const auto &midiNote: mNotes) {
-        double bpm = mClip->getClipProperties()->getParentTrack()->getTrackProperties()->getParentProject()
-            ->getProjectProperties()->getBpm();
-
-        int width = Utils::samplesToPixels(midiNote->getMidiNote()->getNoteOffObject()->getPositionInSamples()
-                                               - midiNote->getMidiNote()->getPositionInSamples(),
-                                           mCurrentPixelsPerBeatAmount,
-                                           bpm);
-        int nbNotesToDraw = NOTES_IN_OCTAVE * (END_MIDI_OCTAVE - START_MIDI_OCTAVE);
-
-        midiNote->setGeometry(
-            Utils::samplesToPixels(midiNote->getMidiNote()->getPositionInSamples(), mCurrentPixelsPerBeatAmount, bpm)
-                + 1,
-            (nbNotesToDraw - midiNote->getMidiNote()->getMidiMessage().getNoteNumber()) * 20 + 1,
-            width,
-            19);
+        updateNoteGeometry(midiNote);
     }
 }
 
@@ -176,27 +181,11 @@ void MidiEditor::mouseMoveEvent(QMouseEvent *event)
             }
         }
     }
-    else if (event->buttons().testFlag(Qt::LeftButton)) {
-        double bpm = mClip->getClipProperties()->getParentTrack()->getTrackProperties()->getParentProject()
-            ->getProjectProperties()->getBpm();
-
+    else if (event->buttons().testFlag(Qt::LeftButton) && mMovingNoteReference != nullptr) {
         if (mExtendingByTheRight) {
-            for (const auto &object: mCurrentSelection.getSelectedObjects()) {
-                if (object->getType() == SelectionManager::SelectableObject::MidiNote) {
-                    auto note = (MidiNote *) object.get();
-
-                    juce::int64 currentPosInSamples =
-                        Utils::pixelsToSamples(event->pos().x(), mCurrentPixelsPerBeatAmount, bpm);
-                    juce::int64 roundedPosition =
-                        Utils::roundPosition(currentPosInSamples, mCurrentPixelsPerBeatAmount, bpm, false, LARGE);
-
-                    note->setGeometry(note->x(),
-                                      note->y(),
-                                      Utils::samplesToPixels(roundedPosition, mCurrentPixelsPerBeatAmount, bpm)
-                                          - note->x(),
-                                      note->height());
-                }
-            }
+            handleExtendingByTheRight(event);
+        } else if (mExtendingByTheLeft) {
+            handleExtendingByTheLeft(event);
         }
     }
 }
@@ -213,17 +202,25 @@ void MidiEditor::mousePressEvent(QMouseEvent *event)
             if (pos.x() >= note->width() - 3) {
                 mExtendingByTheRight = true;
                 mExtendingByTheLeft = false;
+
+                mMovingNoteReference = note;
+                if (!mCurrentSelection.getSelectedObjects().contains(note))
+                    mCurrentSelection.objectSelected(note, event);
             }
             else if (pos.x() < 3) {
                 mExtendingByTheRight = false;
                 mExtendingByTheLeft = true;
+
+                mMovingNoteReference = note;
+                if (!mCurrentSelection.getSelectedObjects().contains(note))
+                    mCurrentSelection.objectSelected(note, event);
             }
             else {
                 mExtendingByTheRight = false;
                 mExtendingByTheLeft = false;
-            }
 
-            mCurrentSelection.objectSelected(note, event);
+                mCurrentSelection.objectSelected(note, event);
+            }
         }
     }
 }
@@ -247,6 +244,81 @@ void MidiEditor::setupMidiNotes()
             mNotes.push_back(note);
         }
     }
+}
+void MidiEditor::mouseReleaseEvent(QMouseEvent *event)
+{
+    mExtendingByTheRight = false;
+    mExtendingByTheLeft = true;
+
+    mMovingNoteReference = nullptr;
+}
+
+void MidiEditor::handleExtendingByTheLeft(QMouseEvent *event)
+{
+    auto roundedPosition = calculateCurrentRoundedPositionInSamples(event);
+
+    juce::int64 difference = roundedPosition - mMovingNoteReference->getMidiNote()->getPositionInSamples();
+
+    if (mMovingNoteReference->getMidiNote()->getNoteOffObject()->getPositionInSamples() - roundedPosition <= MIDI_NOTE_MINIMUM_LENGTH_IN_SAMPLES)
+        roundedPosition = mMovingNoteReference->getMidiNote()->getNoteOffObject()->getPositionInSamples() - MIDI_NOTE_MINIMUM_LENGTH_IN_SAMPLES;
+
+    mMovingNoteReference->getMidiNote()->setPositionInSamples(roundedPosition);
+
+    updateNoteGeometry(mMovingNoteReference);
+
+    for (const auto &object: mCurrentSelection.getSelectedObjects()) {
+        if (object->getType() == SelectionManager::SelectableObject::MidiNote && object != mMovingNoteReference) {
+            auto note = (MidiNote *) object.get();
+            auto startPos = note->getMidiNote()->getPositionInSamples();
+            auto endPos = note->getMidiNote()->getNoteOffObject()->getPositionInSamples();
+
+            note->getMidiNote()->setPositionInSamples(startPos + difference);
+
+            if (endPos - (startPos + difference) <= MIDI_NOTE_MINIMUM_LENGTH_IN_SAMPLES)
+                note->getMidiNote()->setPositionInSamples(endPos - MIDI_NOTE_MINIMUM_LENGTH_IN_SAMPLES);
+            updateNoteGeometry(note);
+        }
+    }
+}
+
+void MidiEditor::handleExtendingByTheRight(QMouseEvent *event)
+{
+    auto roundedPosition = calculateCurrentRoundedPositionInSamples(event);
+
+    juce::int64 difference = roundedPosition - mMovingNoteReference->getMidiNote()->getNoteOffObject()->getPositionInSamples();
+
+    if (roundedPosition - mMovingNoteReference->getMidiNote()->getPositionInSamples() <= MIDI_NOTE_MINIMUM_LENGTH_IN_SAMPLES)
+        roundedPosition = mMovingNoteReference->getMidiNote()->getPositionInSamples() + MIDI_NOTE_MINIMUM_LENGTH_IN_SAMPLES;
+
+    mMovingNoteReference->getMidiNote()->getNoteOffObject()->setPositionInSamples(roundedPosition);
+
+    updateNoteGeometry(mMovingNoteReference);
+
+    for (const auto &object: mCurrentSelection.getSelectedObjects()) {
+        if (object->getType() == SelectionManager::SelectableObject::MidiNote && object != mMovingNoteReference) {
+            auto note = (MidiNote *) object.get();
+            auto startPos = note->getMidiNote()->getPositionInSamples();
+            auto endPos = note->getMidiNote()->getNoteOffObject()->getPositionInSamples();
+
+            note->getMidiNote()->getNoteOffObject()->setPositionInSamples(endPos + difference);
+
+            if (endPos + difference - startPos <= MIDI_NOTE_MINIMUM_LENGTH_IN_SAMPLES)
+                note->getMidiNote()->getNoteOffObject()->setPositionInSamples(startPos + MIDI_NOTE_MINIMUM_LENGTH_IN_SAMPLES);
+            updateNoteGeometry(note);
+        }
+    }
+}
+juce::int64 MidiEditor::calculateCurrentRoundedPositionInSamples(QMouseEvent *event) const
+{
+    double bpm = mClip->getClipProperties()->getParentTrack()->getTrackProperties()->getParentProject()
+        ->getProjectProperties()->getBpm();
+
+    juce::int64 currentPosInSamples =
+        Utils::pixelsToSamples(event->pos().x(), mCurrentPixelsPerBeatAmount, bpm);
+    juce::int64 roundedPosition =
+        Utils::roundPosition(currentPosInSamples, mCurrentPixelsPerBeatAmount, bpm, false, LARGE);
+
+    return roundedPosition;
 }
 
 } // Graphics

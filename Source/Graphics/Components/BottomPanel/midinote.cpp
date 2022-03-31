@@ -9,7 +9,8 @@ MidiNote::MidiNote(const QSharedPointer<Audio::MidiNote> &note,
     : SelectionManager::SelectableObject(parent), mClip(clip), mNote(note)
 {
     setLayout(new QHBoxLayout());
-    layout()->setContentsMargins(2, 0, 0, 0);
+    layout()->setContentsMargins(0, 0, 0, 0);
+    mNoteLabel.setContentsMargins(2, 0, 0, 0);
 
     mNoteLabel.setText(mClip->midiNoteName(note->getMidiMessage().getNoteNumber()));
     auto font = QApplication::font();

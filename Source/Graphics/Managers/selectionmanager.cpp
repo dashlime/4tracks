@@ -60,7 +60,7 @@ void SelectionManager::objectSelected(SelectableObject *object, QFlags<Modifier>
 
     if (modifiers.testFlag(RightButtonModifier)) {
         if (!mSelectedObjects.contains(ptr)) {
-            setSelectionType(object->getType() == SelectableObject::Clip ? ClipsSelected : TracksSelected);
+            setSelectionType(getSelectionTypeForObject(object));
             mSelectedObjects.push_back(ptr);
             ptr->setSelectedState(true);
         }

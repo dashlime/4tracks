@@ -49,8 +49,11 @@ void ClipEditorPanel::setupComponents()
 
 void ClipEditorPanel::updateUI()
 {
-    if (mMidiClipPanel)
-        mMidiClipPanel->deleteLater();
+    if (mCurrentPanel != nullptr) {
+        mMainLayout.removeWidget(mCurrentPanel);
+        mCurrentPanel->hide();
+        mCurrentPanel = nullptr;
+    }
 
     auto currentSelection = mTimelineProperties->getCurrentSelection();
 
@@ -65,9 +68,14 @@ void ClipEditorPanel::updateUI()
             mClipNameLabel.setText(clip->getClipProperties()->getName());
 
             if (clip->getType() == Audio::Clip::MIDI_CLIP) {
-                mMidiClipPanel = new MidiClipPanel(qSharedPointerCast<Audio::MidiClip>(clip));
-                mMainLayout.addWidget(mMidiClipPanel);
-                mMidiClipPanel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+                auto midiClip = qSharedPointerDynamicCast<Audio::MidiClip>(clip);
+                auto panel = getAlreadyLoadedMidiClipPanel(midiClip);
+                if (panel == nullptr) {
+                    panel = new MidiClipPanel(qSharedPointerCast<Audio::MidiClip>(clip));
+                }
+                mCurrentPanel = panel;
+                mMainLayout.addWidget(panel);
+                panel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
             }
         }
     }
@@ -82,6 +90,15 @@ void ClipEditorPanel::paintEvent(QPaintEvent *)
     opt.initFrom(this);
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+}
+
+QPointer<MidiClipPanel> ClipEditorPanel::getAlreadyLoadedMidiClipPanel(const QSharedPointer<Audio::MidiClip> &clip)
+{
+    for (auto editor : mMidiClipPanels)
+        if (editor->getAssociatedClip() == clip)
+            return editor;
+
+    return {};
 }
 
 } // Graphics

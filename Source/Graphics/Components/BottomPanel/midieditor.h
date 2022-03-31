@@ -24,6 +24,7 @@ public:
 
     [[nodiscard]] double calculatePixelsPerBeatAmount() const;
 
+    void updateNoteGeometry(const QPointer<MidiNote>& note);
     void refreshMidiNotes();
 
     void paintEvent(QPaintEvent *event) override;
@@ -31,12 +32,17 @@ public:
     void mouseDoubleClickEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
 
 signals:
     void pixelsPerBeatAmountChanged(double newPixelsPerBeatAmount);
 
 private:
     void setupMidiNotes();
+    void handleExtendingByTheLeft(QMouseEvent *event);
+    void handleExtendingByTheRight(QMouseEvent *event);
+
+    [[nodiscard]] juce::int64 calculateCurrentRoundedPositionInSamples(QMouseEvent *event) const;
 
     QSharedPointer<Audio::MidiClip> mClip;
     QVector<QPointer<MidiNote>> mNotes;
@@ -46,6 +52,7 @@ private:
 
     bool mExtendingByTheRight = false;
     bool mExtendingByTheLeft = false;
+    QPointer<MidiNote> mMovingNoteReference;
 
     double mCurrentPixelsPerBeatAmount{};
 };

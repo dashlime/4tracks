@@ -8,6 +8,8 @@
 #define START_MIDI_OCTAVE -1
 #define END_MIDI_OCTAVE 8
 
+#define MIDI_NOTE_MINIMUM_LENGTH_IN_SAMPLES 500
+
 #define DEFAULT_MIDI_CHANNEL 1
 
 static const QVector<bool>

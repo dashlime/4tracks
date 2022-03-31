@@ -23,6 +23,8 @@ public:
 
     void paintEvent(QPaintEvent *) override;
 private:
+    QPointer<MidiClipPanel> getAlreadyLoadedMidiClipPanel(const QSharedPointer<Audio::MidiClip>& clip);
+
     QSharedPointer<TimelineProperties> mTimelineProperties;
 
     QHBoxLayout mMainLayout;
@@ -31,7 +33,9 @@ private:
     QVBoxLayout mClipPropertiesLayout;
 
     ElidedLabel mClipNameLabel;
-    QPointer<MidiClipPanel> mMidiClipPanel;
+    QVector<QPointer<MidiClipPanel>> mMidiClipPanels;
+
+    QPointer<MidiClipPanel> mCurrentPanel;
 };
 
 }

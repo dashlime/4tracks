@@ -48,6 +48,11 @@ MidiClipPanel::MidiClipPanel(const QSharedPointer<Audio::MidiClip> &clip, QWidge
     mMainLayout.addWidget(mVerticalScrollArea);
 }
 
+QSharedPointer<Audio::MidiClip> MidiClipPanel::getAssociatedClip() const
+{
+    return mClip;
+}
+
 void MidiClipPanel::paintEvent(QPaintEvent *event)
 {
     QStyleOption opt;
