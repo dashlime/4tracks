@@ -46,12 +46,12 @@ SelectionManager::SelectionType SelectionManager::getSelectionType() const
     return mSelectionType;
 }
 
-void SelectionManager::objectSelected(SelectableObject *object, QMouseEvent *event)
+void SelectionManager::handleMousePressEvent(SelectableObject *object, QMouseEvent *event)
 {
-    objectSelected(object, generateSelectionModifiers(event));
+    handleMousePressEvent(object, generateSelectionModifiers(event));
 }
 
-void SelectionManager::objectSelected(SelectableObject *object, QFlags<Modifier> modifiers)
+void SelectionManager::handleMousePressEvent(SelectableObject *object, QFlags<Modifier> modifiers)
 {
     if (getSelectionTypeForObject(object) != mSelectionType)
         setSelectionType(getSelectionTypeForObject(object));
@@ -67,19 +67,23 @@ void SelectionManager::objectSelected(SelectableObject *object, QFlags<Modifier>
     }
     else {
         if (modifiers.testFlag(CtrlModifier)) {
-            if (mSelectedObjects.contains(ptr)) {
-                mSelectedObjects.remove(mSelectedObjects.indexOf(ptr));
-                ptr->setSelectedState(false);
-            }
-            else {
+            if (!mSelectedObjects.contains(ptr)) {
                 mSelectedObjects.push_back(ptr);
                 ptr->setSelectedState(true);
+            } else {
+                mPendingObject = ptr;
+                mPendingObjectModifiers = modifiers;
             }
         }
         else {
-            setSelectionType(getSelectionTypeForObject(object));
-            mSelectedObjects.push_back(ptr);
-            ptr->setSelectedState(true);
+            if (mSelectedObjects.contains(ptr) && mSelectedObjects.size() > 1) {
+                mPendingObject = ptr;
+                mPendingObjectModifiers = modifiers;
+            } else {
+                setSelectionType(getSelectionTypeForObject(object));
+                mSelectedObjects.push_back(ptr);
+                ptr->setSelectedState(true);
+            }
         }
     }
 
@@ -129,6 +133,24 @@ void SelectionManager::clearSelection()
 
     mSelectedArea = SelectionArea();
     mSelectionType = NoSelection;
+}
+
+void SelectionManager::handleMouseReleaseEvent()
+{
+    if (mPendingObject != nullptr) {
+        if (mPendingObjectModifiers.testFlag(CtrlModifier) && mSelectedObjects.contains(mPendingObject)) {
+            mSelectedObjects.remove(mSelectedObjects.indexOf(mPendingObject));
+            mPendingObject->setSelectedState(false);
+        } else {
+            setSelectionType(getSelectionTypeForObject(mPendingObject));
+            mSelectedObjects.push_back(mPendingObject);
+            mPendingObject->setSelectedState(true);
+        }
+
+        mPendingObject = nullptr;
+
+        emit selectionChanged();
+    }
 }
 
 } // namespace Graphics

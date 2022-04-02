@@ -21,7 +21,7 @@ class Timeline: public QWidget
 {
 Q_OBJECT
 public:
-    Timeline(const QSharedPointer<Audio::Project> &project, QWidget *parent = nullptr);
+    explicit Timeline(const QSharedPointer<Audio::Project> &project, QWidget *parent = nullptr);
 
     [[nodiscard]] QSharedPointer<TimelineProperties> getTimelineProperties() const;
     [[nodiscard]] QPointer<ClipsGrid> getClipsGrid() const;
@@ -33,11 +33,12 @@ public:
 
     void setNewScrollPosition(int scrollPosInPixels);
 
-    int getClipsGridWidth() const;
+    [[nodiscard]] int getClipsGridWidth() const;
 
     void resizeEvent(QResizeEvent *) override;
     void paintEvent(QPaintEvent *) override;
     void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
 
 signals:
 

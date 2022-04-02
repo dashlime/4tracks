@@ -50,8 +50,10 @@ public:
     void setSelectionType(SelectionType type);
     [[nodiscard]] SelectionType getSelectionType() const;
 
-    void objectSelected(SelectableObject *object, QMouseEvent *event);
-    void objectSelected(SelectableObject *object, QFlags<Modifier> modifiers);
+    void handleMousePressEvent(SelectableObject *object, QMouseEvent *event);
+    void handleMousePressEvent(SelectableObject *object, QFlags<Modifier> modifiers);
+
+    void handleMouseReleaseEvent();
 
     [[nodiscard]] QVector<QPointer<SelectableObject>> getSelectedObjects() const;
 
@@ -77,6 +79,9 @@ private:
     SelectionType mSelectionType = NoSelection;
     QVector<QPointer<SelectableObject>> mSelectedObjects;
     SelectionArea mSelectedArea = SelectionArea();
+
+    QPointer<SelectableObject> mPendingObject;
+    QFlags<Modifier> mPendingObjectModifiers;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(SelectionManager::Modifiers)

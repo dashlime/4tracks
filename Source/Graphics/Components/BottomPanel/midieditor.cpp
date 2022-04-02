@@ -202,6 +202,7 @@ void MidiEditor::mousePressEvent(QMouseEvent *event)
     } else {
         mMoving = true;
     }
+    mCurrentSelection.handleMousePressEvent(mActionNoteReference, event);
 }
 
 void MidiEditor::setupMidiNotes()
@@ -226,15 +227,14 @@ void MidiEditor::setupMidiNotes()
 }
 void MidiEditor::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (mActionNoteReference != nullptr)
-        mCurrentSelection.objectSelected(mActionNoteReference, event);
-
     mExtendingByTheRight = false;
     mExtendingByTheLeft = false;
     mMoving = false;
 
     mActionNoteReference = nullptr;
     mMovingDifferenceAmount = QPoint(0, 0);
+
+    mCurrentSelection.handleMouseReleaseEvent();
 }
 
 void MidiEditor::handleExtendingByTheLeft(QMouseEvent *event)
@@ -295,6 +295,8 @@ void MidiEditor::handleExtendingByTheRight(QMouseEvent *event)
 
 void MidiEditor::handleMovingEvent(QMouseEvent *event)
 {
+    int nbNotesDrawn = NOTES_IN_OCTAVE * (END_MIDI_OCTAVE - START_MIDI_OCTAVE);
+
     auto newDiffX = calculatePositionInSamples(event->pos().x() - mClickedPos.x() - mMovingDifferenceAmount.x(), true);
     int newDiffY = (int) round(double(event->pos().y() - mClickedPos.y() - mMovingDifferenceAmount.y()) / 20);
 
@@ -304,6 +306,9 @@ void MidiEditor::handleMovingEvent(QMouseEvent *event)
     mActionNoteReference->getMidiNote()->getNoteOffObject()->setPositionInSamples(endPos + newDiffX);
 
     auto noteNumber = mActionNoteReference->getMidiNote()->getMidiMessage().getNoteNumber() - newDiffY;
+    if (noteNumber > nbNotesDrawn)
+        noteNumber = nbNotesDrawn;
+
     auto message = mActionNoteReference->getMidiNote()->getMidiMessage();
     message.setNoteNumber(noteNumber);
     mActionNoteReference->getMidiNote()->setMidiMessage(message);
@@ -323,6 +328,9 @@ void MidiEditor::handleMovingEvent(QMouseEvent *event)
             note->getMidiNote()->getNoteOffObject()->setPositionInSamples(endPos + newDiffX);
 
             noteNumber = note->getMidiNote()->getMidiMessage().getNoteNumber() - newDiffY;
+            if (noteNumber > nbNotesDrawn)
+                noteNumber = nbNotesDrawn;
+
             message = note->getMidiNote()->getMidiMessage();
             message.setNoteNumber(noteNumber);
             note->getMidiNote()->setMidiMessage(message);

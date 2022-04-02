@@ -22,6 +22,7 @@ public:
     [[nodiscard]] QSharedPointer<Audio::MidiNote> getMidiNote() const;
 
     void paintEvent(QPaintEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
 
     void setSelectedState(bool isSelected) override;
     [[nodiscard]] Type getType() const override;

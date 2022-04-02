@@ -222,7 +222,7 @@ void ClipsGrid::mousePressEvent(QMouseEvent *event)
     if (!selectionAreaClicked) {
         for (const auto &clip: mClips) {
             if (clip->geometry().contains(event->pos())) {
-                mTimelineProperties->getCurrentSelection()->objectSelected(clip, event);
+                mTimelineProperties->getCurrentSelection()->handleMousePressEvent(clip, event);
                 clipClicked = true;
             }
         }
@@ -278,6 +278,8 @@ void ClipsGrid::mouseReleaseEvent(QMouseEvent *)
             pixelsToSamples(mMovingClip->x()) - mMovingClip->getClip()->getClipProperties()->getStartOffset());
         mMovingClip = nullptr;
     }
+
+    mTimelineProperties->getCurrentSelection()->handleMouseReleaseEvent();
 }
 
 void ClipsGrid::mouseMoveEvent(QMouseEvent *event)

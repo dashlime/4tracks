@@ -39,6 +39,11 @@ void MidiNote::paintEvent(QPaintEvent *)
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
 
+void MidiNote::resizeEvent(QResizeEvent *event)
+{
+    mNoteLabel.setContentsMargins(2, 0, 0, 0);
+}
+
 void MidiNote::setSelectedState(bool isSelected)
 {
     if (isSelected) {
