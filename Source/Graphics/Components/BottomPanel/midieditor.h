@@ -41,8 +41,12 @@ private:
     void setupMidiNotes();
     void handleExtendingByTheLeft(QMouseEvent *event);
     void handleExtendingByTheRight(QMouseEvent *event);
+    void handleMovingEvent(QMouseEvent *event);
 
-    [[nodiscard]] juce::int64 calculateCurrentRoundedPositionInSamples(QMouseEvent *event) const;
+    [[nodiscard]] juce::int64 calculateCurrentRoundedPositionInSamples(QMouseEvent *event, bool forceRoundingToPriorPosition = false) const;
+    [[nodiscard]] juce::int64 calculatePositionInSamples(int x, bool rounded = false, bool forceRoundingToPriorPosition = false) const;
+    [[nodiscard]] juce::int64 calculateSamplesInDivisionAmount() const;
+    [[nodiscard]] QPointer<MidiNote> getNoteUnderCursor(QMouseEvent *event) const;
 
     QSharedPointer<Audio::MidiClip> mClip;
     QVector<QPointer<MidiNote>> mNotes;
@@ -52,7 +56,9 @@ private:
 
     bool mExtendingByTheRight = false;
     bool mExtendingByTheLeft = false;
-    QPointer<MidiNote> mMovingNoteReference;
+    bool mMoving = false;
+    QPoint mMovingDifferenceAmount;
+    QPointer<MidiNote> mActionNoteReference;
 
     double mCurrentPixelsPerBeatAmount{};
 };
