@@ -90,6 +90,29 @@ void SelectionManager::handleMousePressEvent(SelectableObject *object, QFlags<Mo
     emit selectionChanged();
 }
 
+void SelectionManager::handleMouseReleaseEvent()
+{
+    if (mPendingObject != nullptr) {
+        if (mPendingObjectModifiers.testFlag(CtrlModifier) && mSelectedObjects.contains(mPendingObject)) {
+            mSelectedObjects.remove(mSelectedObjects.indexOf(mPendingObject));
+            mPendingObject->setSelectedState(false);
+        } else {
+            setSelectionType(getSelectionTypeForObject(mPendingObject));
+            mSelectedObjects.push_back(mPendingObject);
+            mPendingObject->setSelectedState(true);
+        }
+
+        mPendingObject = nullptr;
+
+        emit selectionChanged();
+    }
+}
+
+void SelectionManager::clearPendingEvent()
+{
+    mPendingObject = nullptr;
+}
+
 QVector<QPointer<SelectionManager::SelectableObject>> SelectionManager::getSelectedObjects() const
 {
     return mSelectedObjects;
@@ -133,24 +156,6 @@ void SelectionManager::clearSelection()
 
     mSelectedArea = SelectionArea();
     mSelectionType = NoSelection;
-}
-
-void SelectionManager::handleMouseReleaseEvent()
-{
-    if (mPendingObject != nullptr) {
-        if (mPendingObjectModifiers.testFlag(CtrlModifier) && mSelectedObjects.contains(mPendingObject)) {
-            mSelectedObjects.remove(mSelectedObjects.indexOf(mPendingObject));
-            mPendingObject->setSelectedState(false);
-        } else {
-            setSelectionType(getSelectionTypeForObject(mPendingObject));
-            mSelectedObjects.push_back(mPendingObject);
-            mPendingObject->setSelectedState(true);
-        }
-
-        mPendingObject = nullptr;
-
-        emit selectionChanged();
-    }
 }
 
 } // namespace Graphics

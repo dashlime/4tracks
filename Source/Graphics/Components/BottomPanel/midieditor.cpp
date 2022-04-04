@@ -188,8 +188,11 @@ void MidiEditor::mousePressEvent(QMouseEvent *event)
     mClickedPos = event->pos();
 
     auto note = getNoteUnderCursor(event);
-    if (note.isNull())
+    if (note.isNull()) {
+        mCurrentSelection.setSelectionType(SelectionManager::NoSelection);
+
         return;
+    }
 
     auto pos = event->pos();
     pos -= note->pos();
@@ -263,6 +266,8 @@ void MidiEditor::handleExtendingByTheLeft(QMouseEvent *event)
             updateNoteGeometry(note);
         }
     }
+
+    mCurrentSelection.clearPendingEvent();
 }
 
 void MidiEditor::handleExtendingByTheRight(QMouseEvent *event)
@@ -291,6 +296,8 @@ void MidiEditor::handleExtendingByTheRight(QMouseEvent *event)
             updateNoteGeometry(note);
         }
     }
+
+    mCurrentSelection.clearPendingEvent();
 }
 
 void MidiEditor::handleMovingEvent(QMouseEvent *event)
@@ -308,6 +315,9 @@ void MidiEditor::handleMovingEvent(QMouseEvent *event)
     auto noteNumber = mActionNoteReference->getMidiNote()->getMidiMessage().getNoteNumber() - newDiffY;
     if (noteNumber > nbNotesDrawn)
         noteNumber = nbNotesDrawn;
+
+    if (noteNumber < 1)
+        noteNumber = 1;
 
     auto message = mActionNoteReference->getMidiNote()->getMidiMessage();
     message.setNoteNumber(noteNumber);
@@ -331,6 +341,9 @@ void MidiEditor::handleMovingEvent(QMouseEvent *event)
             if (noteNumber > nbNotesDrawn)
                 noteNumber = nbNotesDrawn;
 
+            if (noteNumber < 1)
+                noteNumber = 1;
+
             message = note->getMidiNote()->getMidiMessage();
             message.setNoteNumber(noteNumber);
             note->getMidiNote()->setMidiMessage(message);
@@ -346,6 +359,8 @@ void MidiEditor::handleMovingEvent(QMouseEvent *event)
 
     mMovingDifferenceAmount.setX(mMovingDifferenceAmount.x() + Utils::samplesToPixels(newDiffX, mCurrentPixelsPerBeatAmount, bpm));
     mMovingDifferenceAmount.setY(mMovingDifferenceAmount.y() + newDiffY * 20);
+
+    mCurrentSelection.clearPendingEvent();
 }
 
 juce::int64 MidiEditor::calculateCurrentRoundedPositionInSamples(QMouseEvent *event, bool forceRoundingToPriorPosition) const

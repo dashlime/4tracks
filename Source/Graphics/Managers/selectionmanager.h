@@ -55,6 +55,8 @@ public:
 
     void handleMouseReleaseEvent();
 
+    void clearPendingEvent();
+
     [[nodiscard]] QVector<QPointer<SelectableObject>> getSelectedObjects() const;
 
     struct SelectionArea
