@@ -26,6 +26,7 @@ public:
 
     void updateNoteGeometry(const QPointer<MidiNote>& note);
     void refreshMidiNotes();
+    void updateSelectionOverlay();
 
     void paintEvent(QPaintEvent *event) override;
     void resizeEvent(QResizeEvent *) override;
@@ -59,6 +60,8 @@ private:
     bool mMoving = false;
     QPoint mMovingDifferenceAmount;
     QPointer<MidiNote> mActionNoteReference;
+
+    SelectionOverlay mSelectionOverlay;
 
     double mCurrentPixelsPerBeatAmount{};
 };

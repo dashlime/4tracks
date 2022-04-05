@@ -7,7 +7,7 @@ MidiEditor::MidiEditor(const QSharedPointer<Audio::MidiClip> &clip, QWidget *par
     : QWidget(parent), mClip(clip), mCurrentPixelsPerBeatAmount(calculatePixelsPerBeatAmount())
 {
     int totalNotes = NOTES_IN_OCTAVE * (END_MIDI_OCTAVE - START_MIDI_OCTAVE);
-    setMinimumHeight(totalNotes * 20);
+    setMinimumHeight(totalNotes * DEFAULT_NOTE_HEIGHT);
 
     setupMidiNotes();
     setMouseTracking(true);
@@ -50,6 +50,13 @@ MidiEditor::MidiEditor(const QSharedPointer<Audio::MidiClip> &clip, QWidget *par
 
                 refreshMidiNotes();
             });
+
+    connect(&mCurrentSelection, &SelectionManager::selectionChanged, [=]()
+    {
+        updateSelectionOverlay();
+    });
+
+    mSelectionOverlay.setParent(this);
 }
 
 double MidiEditor::calculatePixelsPerBeatAmount() const
@@ -76,7 +83,7 @@ void MidiEditor::updateNoteGeometry(const QPointer<MidiNote>& note)
     note->setGeometry(
         Utils::samplesToPixels(note->getMidiNote()->getPositionInSamples(), mCurrentPixelsPerBeatAmount, bpm)
             + 1,
-        (nbNotesToDraw - note->getMidiNote()->getMidiMessage().getNoteNumber()) * 20 + 1,
+        (nbNotesToDraw - note->getMidiNote()->getMidiMessage().getNoteNumber()) * DEFAULT_NOTE_HEIGHT + 1,
         width,
         19);
 }
@@ -86,6 +93,28 @@ void MidiEditor::refreshMidiNotes()
     for (const auto &midiNote: mNotes) {
         updateNoteGeometry(midiNote);
     }
+}
+
+void MidiEditor::updateSelectionOverlay()
+{
+    SelectionManager::SelectionArea area = mCurrentSelection.getSelectedArea();
+
+    auto bpm = mClip->getClipProperties()->getParentTrack()->getTrackProperties()->getParentProject()->getProjectProperties()->getBpm();
+    int x = Utils::samplesToPixels(area.startSample, mCurrentPixelsPerBeatAmount, bpm);
+    int w = Utils::samplesToPixels(area.nbSamples, mCurrentPixelsPerBeatAmount, bpm);
+    int y, h;
+
+    if (area.nbTracks > 0) {
+        y = area.startTrackIndex * DEFAULT_NOTE_HEIGHT;
+        h = area.nbTracks * DEFAULT_NOTE_HEIGHT;
+    }
+    else {
+        y = (area.startTrackIndex + 1) * DEFAULT_NOTE_HEIGHT;
+        h = area.nbTracks * DEFAULT_NOTE_HEIGHT;
+    }
+
+    mSelectionOverlay.areaChanged(QRect(x, y, w, h));
+    mSelectionOverlay.raise();
 }
 
 void MidiEditor::paintEvent(QPaintEvent *event)
@@ -106,10 +135,10 @@ void MidiEditor::paintEvent(QPaintEvent *event)
     int nbNotesToDraw = NOTES_IN_OCTAVE * (END_MIDI_OCTAVE - START_MIDI_OCTAVE);
     for (int i = 0; i < nbNotesToDraw; i++) {
         if (!mClip->currentScaleContains(nbNotesToDraw - i)) {
-            p.fillRect(0, i * 20, width(), 20, QColor("#E4E4E7"));
+            p.fillRect(0, i * DEFAULT_NOTE_HEIGHT, width(), DEFAULT_NOTE_HEIGHT, QColor("#E4E4E7"));
         }
 
-        p.drawLine(0, i * 20, width(), i * 20);
+        p.drawLine(0, i * DEFAULT_NOTE_HEIGHT, width(), i * DEFAULT_NOTE_HEIGHT);
     }
 
     for (int i = 0; i * pixelsInDivision < width(); i++) {
@@ -121,6 +150,11 @@ void MidiEditor::resizeEvent(QResizeEvent *)
 {
     mCurrentPixelsPerBeatAmount = calculatePixelsPerBeatAmount();
     emit pixelsPerBeatAmountChanged(mCurrentPixelsPerBeatAmount);
+
+    mSelectionOverlay.setGeometry(0, 0, width(), height());
+    mSelectionOverlay.raise();
+    updateSelectionOverlay();
+
     update();
 }
 
@@ -138,7 +172,7 @@ void MidiEditor::mouseDoubleClickEvent(QMouseEvent *event)
         auto samplesInDivision = calculateSamplesInDivisionAmount();
 
         int nbNotesToDraw = NOTES_IN_OCTAVE * (END_MIDI_OCTAVE - START_MIDI_OCTAVE);
-        int midiNoteNumber = nbNotesToDraw - event->pos().y() / 20;
+        int midiNoteNumber = nbNotesToDraw - event->pos().y() / DEFAULT_NOTE_HEIGHT;
 
         auto noteOff = QSharedPointer<Audio::MidiNote>::create(
             notePositionInSamples + samplesInDivision,
@@ -170,8 +204,7 @@ void MidiEditor::mouseMoveEvent(QMouseEvent *event)
                 setCursor(Qt::SizeHorCursor);
             }
         }
-    }
-    else if (event->buttons().testFlag(Qt::LeftButton) && mActionNoteReference != nullptr) {
+    } else if (event->buttons().testFlag(Qt::LeftButton) && mActionNoteReference != nullptr) {
         if (mExtendingByTheRight) {
             handleExtendingByTheRight(event);
         } else if (mExtendingByTheLeft) {
@@ -179,6 +212,25 @@ void MidiEditor::mouseMoveEvent(QMouseEvent *event)
         } else if (mMoving){
             handleMovingEvent(event);
         }
+    } else if (event->buttons().testFlag(Qt::LeftButton)) {
+        int trackIndex = event->pos().y() / DEFAULT_NOTE_HEIGHT;
+        juce::int64 samples = calculatePositionInSamples(event->pos().x(), true);
+
+        SelectionManager::SelectionArea area = mCurrentSelection.getSelectedArea();
+        if (mCurrentSelection.getSelectionType() != SelectionManager::AreaSelected) {
+            mCurrentSelection.setSelectionType(SelectionManager::AreaSelected);
+            area.startTrackIndex = trackIndex;
+            area.startSample = samples;
+        }
+
+        if (trackIndex >= area.startTrackIndex)
+            area.nbTracks = trackIndex - area.startTrackIndex + 1;
+        else
+            area.nbTracks = trackIndex - area.startTrackIndex - 1;
+
+        area.nbSamples = samples - area.startSample;
+
+        mCurrentSelection.setSelectedArea(area);
     }
 }
 
@@ -305,7 +357,7 @@ void MidiEditor::handleMovingEvent(QMouseEvent *event)
     int nbNotesDrawn = NOTES_IN_OCTAVE * (END_MIDI_OCTAVE - START_MIDI_OCTAVE);
 
     auto newDiffX = calculatePositionInSamples(event->pos().x() - mClickedPos.x() - mMovingDifferenceAmount.x(), true);
-    int newDiffY = (int) round(double(event->pos().y() - mClickedPos.y() - mMovingDifferenceAmount.y()) / 20);
+    int newDiffY = (int) round(double(event->pos().y() - mClickedPos.y() - mMovingDifferenceAmount.y()) / DEFAULT_NOTE_HEIGHT);
 
     auto startPos = mActionNoteReference->getMidiNote()->getPositionInSamples();
     auto endPos = mActionNoteReference->getMidiNote()->getNoteOffObject()->getPositionInSamples();
@@ -358,7 +410,7 @@ void MidiEditor::handleMovingEvent(QMouseEvent *event)
         ->getProjectProperties()->getBpm();
 
     mMovingDifferenceAmount.setX(mMovingDifferenceAmount.x() + Utils::samplesToPixels(newDiffX, mCurrentPixelsPerBeatAmount, bpm));
-    mMovingDifferenceAmount.setY(mMovingDifferenceAmount.y() + newDiffY * 20);
+    mMovingDifferenceAmount.setY(mMovingDifferenceAmount.y() + newDiffY * DEFAULT_NOTE_HEIGHT);
 
     mCurrentSelection.clearPendingEvent();
 }

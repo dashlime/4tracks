@@ -22,12 +22,12 @@ void MidiNotesPanel::paintEvent(QPaintEvent *event)
     int nbNotesToDraw = NOTES_IN_OCTAVE * (END_MIDI_OCTAVE - START_MIDI_OCTAVE);
     for (int i = 0; i < nbNotesToDraw; i++) {
         p.fillRect(70,
-                   i * 20,
-                   20,
-                   20,
+                   i * DEFAULT_NOTE_HEIGHT,
+                   DEFAULT_NOTE_HEIGHT,
+                   DEFAULT_NOTE_HEIGHT,
                    mClip->currentScaleContains(nbNotesToDraw - i) ? QColorConstants::White : QColorConstants::Black);
 
-        p.drawLine(0, i * 20, width(), i * 20);
+        p.drawLine(0, i * DEFAULT_NOTE_HEIGHT, width(), i * DEFAULT_NOTE_HEIGHT);
     }
     p.drawLine(70, 0, 70, height());
     p.drawLine(90, 0, 90, height());
@@ -40,7 +40,7 @@ void MidiNotesPanel::paintEvent(QPaintEvent *event)
     p.setFont(font);
 
     for (int i = 0; i < nbNotesToDraw; i++) {
-        p.drawText(QRect(3, i * 20, 65, 20), Qt::AlignVCenter | Qt::AlignLeft, mClip->midiNoteName(nbNotesToDraw - i));
+        p.drawText(QRect(3, i * DEFAULT_NOTE_HEIGHT, 65, DEFAULT_NOTE_HEIGHT), Qt::AlignVCenter | Qt::AlignLeft, mClip->midiNoteName(nbNotesToDraw - i));
     }
 }
 
