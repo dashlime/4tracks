@@ -215,7 +215,7 @@ void ClipsGrid::mousePressEvent(QMouseEvent *event)
     bool rightClick = event->buttons().testFlag(Qt::RightButton);
     bool clipClicked = false;
 
-    bool selectionAreaClicked = mSelectionOverlay.geometry().contains(event->pos());
+    bool selectionAreaClicked = mSelectionOverlay.areaContains(event->pos());
     if (mTimelineProperties->getCurrentSelection()->getSelectionType() != SelectionManager::AreaSelected)
         selectionAreaClicked = false;
 

@@ -7,6 +7,14 @@ MidiNote::MidiNote(juce::int64 positionInSamples, const juce::MidiMessage &midiM
     : mPositionInSamples(positionInSamples), mMidiMessage(midiMessage)
 {}
 
+MidiNote::MidiNote(const QSharedPointer<MidiNote>& otherNote)
+    : mPositionInSamples(otherNote->getPositionInSamples()), mMidiMessage(otherNote->getMidiMessage())
+{
+    if (!otherNote->getNoteOffObject().isNull()) {
+        mNoteOffObject.reset(new MidiNote(otherNote->getNoteOffObject()));
+    }
+}
+
 juce::int64 MidiNote::getPositionInSamples() const
 {
     return mPositionInSamples;

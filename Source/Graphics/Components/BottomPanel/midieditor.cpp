@@ -37,6 +37,8 @@ MidiEditor::MidiEditor(const QSharedPointer<Audio::MidiClip> &clip, QWidget *par
             &Audio::MidiData::noteRemoved,
             [=](const QSharedPointer<Audio::MidiNote> &noteRemoved)
             {
+                mCurrentSelection.setSelectionType(SelectionManager::NoSelection);
+
                 int i = 0;
                 for (const auto &note: mNotes) {
                     if (note->getMidiNote() == noteRemoved) {
@@ -46,10 +48,13 @@ MidiEditor::MidiEditor(const QSharedPointer<Audio::MidiClip> &clip, QWidget *par
                     i++;
                 }
 
-                mCurrentSelection.setSelectionType(SelectionManager::NoSelection);
-
                 refreshMidiNotes();
             });
+
+    connect(mClip->getMidiData().get(), &Audio::MidiData::noteDataChanged, [=](const QSharedPointer<Audio::MidiNote> &noteChanged)
+    {
+        updateNoteGeometry(getGraphicsNoteForAudioNote(noteChanged));
+    });
 
     connect(&mCurrentSelection, &SelectionManager::selectionChanged, [=]()
     {
@@ -67,6 +72,15 @@ double MidiEditor::calculatePixelsPerBeatAmount() const
             ->getBpm();
     double samplesInBeat = samplesPerMinute / bpm;
     return (double) (width() - 1) / (double) mClip->getClipProperties()->getLengthInSamples() * samplesInBeat;
+}
+
+QPointer<MidiNote> MidiEditor::getGraphicsNoteForAudioNote(const QSharedPointer<Audio::MidiNote>& note) const
+{
+    for (auto uiNote: mNotes)
+        if (uiNote->getMidiNote() == note || uiNote->getMidiNote()->getNoteOffObject() == note)
+            return uiNote;
+
+    return {};
 }
 
 void MidiEditor::updateNoteGeometry(const QPointer<MidiNote>& note)
@@ -239,25 +253,63 @@ void MidiEditor::mousePressEvent(QMouseEvent *event)
     mMoving = false;
     mClickedPos = event->pos();
 
+    bool rightClick = event->buttons().testFlag(Qt::RightButton);
+
+    bool selectionAreaClicked = mSelectionOverlay.areaContains(event->pos());
+    if (mCurrentSelection.getSelectionType() != SelectionManager::AreaSelected)
+        selectionAreaClicked = false;
+
     auto note = getNoteUnderCursor(event);
-    if (note.isNull()) {
+    if (note.isNull() && !(selectionAreaClicked && rightClick)) {
         mCurrentSelection.setSelectionType(SelectionManager::NoSelection);
 
         return;
     }
 
-    auto pos = event->pos();
-    pos -= note->pos();
-    mActionNoteReference = note;
+    if (selectionAreaClicked) {
+        if (rightClick) {
+            QMenu menu(this);
 
-    if (pos.x() >= note->width() - 3) {
-        mExtendingByTheRight = true;
-    } else if (pos.x() < 3) {
-        mExtendingByTheLeft = true;
+            auto *deleteAction = new QAction("Delete", this);
+            menu.addAction(deleteAction);
+
+            connect(deleteAction, &QAction::triggered, [=](){
+                mClip->removeArea(mCurrentSelection.getSelectedArea().startTrackIndex, mCurrentSelection.getSelectedArea().nbTracks,
+                                  mCurrentSelection.getSelectedArea().startSample, mCurrentSelection.getSelectedArea().nbSamples);
+            });
+            menu.exec(event->globalPosition().toPoint());
+        }
     } else {
-        mMoving = true;
+        mCurrentSelection.handleMousePressEvent(note, event);
+        if (rightClick) {
+            QMenu menu(this);
+
+            auto *deleteAction = new QAction("Delete", this);
+            menu.addAction(deleteAction);
+
+            connect(deleteAction, &QAction::triggered, [this](){
+                for (const auto& obj: mCurrentSelection.getSelectedObjects()) {
+                    auto note = (MidiNote *) obj.get();
+                    mClip->getMidiData()->removeNote(note->getMidiNote());
+                }
+            });
+            menu.exec(event->globalPosition().toPoint());
+        } else {
+            auto pos = event->pos();
+            pos -= note->pos();
+            mActionNoteReference = note;
+
+            if (pos.x() >= note->width() - 3) {
+                mExtendingByTheRight = true;
+            }
+            else if (pos.x() < 3) {
+                mExtendingByTheLeft = true;
+            }
+            else {
+                mMoving = true;
+            }
+        }
     }
-    mCurrentSelection.handleMousePressEvent(mActionNoteReference, event);
 }
 
 void MidiEditor::setupMidiNotes()

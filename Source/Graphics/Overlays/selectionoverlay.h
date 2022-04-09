@@ -12,6 +12,7 @@ Q_OBJECT
 public:
     explicit SelectionOverlay(QWidget *parent = nullptr);
 
+    bool areaContains(QPoint point) const;
     void areaChanged(QRect selectionArea);
 
     void paintEvent(QPaintEvent *event) override;

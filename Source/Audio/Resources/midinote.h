@@ -13,6 +13,7 @@ Q_OBJECT
 
 public:
     MidiNote(juce::int64 positionInSamples, const juce::MidiMessage &midiMessage);
+    explicit MidiNote(const QSharedPointer<MidiNote>& otherNote);
 
     [[nodiscard]] juce::int64 getPositionInSamples() const;
     void setPositionInSamples(juce::int64 positionInSamples);

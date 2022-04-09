@@ -24,6 +24,8 @@ public:
 
     [[nodiscard]] double calculatePixelsPerBeatAmount() const;
 
+    [[nodiscard]] QPointer<MidiNote> getGraphicsNoteForAudioNote(const QSharedPointer<Audio::MidiNote>& note) const;
+
     void updateNoteGeometry(const QPointer<MidiNote>& note);
     void refreshMidiNotes();
     void updateSelectionOverlay();

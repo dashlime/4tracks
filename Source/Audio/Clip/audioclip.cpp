@@ -28,11 +28,6 @@ AudioClip::AudioClip(const QSharedPointer<AudioResource> &resource, Track *paren
     mAudioSource.reset(new juce::MemoryAudioSource(*resource->getAudioData(), false));
 }
 
-Clip::Type AudioClip::getType() const
-{
-    return Clip::AUDIO_CLIP;
-}
-
 QSharedPointer<AudioResource> AudioClip::getAudioResource() const
 {
     return mAudioResource;
@@ -63,10 +58,18 @@ void AudioClip::getNextAudioBlock(const juce::AudioSourceChannelInfo &bufferToFi
     mNextReadPosition += bufferToFill.numSamples;
 }
 
+Clip::Type AudioClip::getType() const
+{
+    return Clip::AUDIO_CLIP;
+}
+
 void AudioClip::nextReadPositionChanged()
 {
     if (mAudioSource)
         mAudioSource->setNextReadPosition(mNextReadPosition - mClipProperties->getPositionInSamples());
 }
+
+void AudioClip::removeArea(int startNote, int nbNotes, juce::int64 relativeStartSample, juce::int64 nbSamples)
+{}
 
 }

@@ -17,15 +17,15 @@ public:
     AudioClip(const QString &filePath, Track *parentTrack);
     AudioClip(const QSharedPointer<AudioResource> &resource, Track *parentTrack);
 
-    [[nodiscard]] Type getType() const override;
-
     [[nodiscard]] QSharedPointer<AudioResource> getAudioResource() const;
 
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
     void releaseResources() override;
     void getNextAudioBlock(const juce::AudioSourceChannelInfo &bufferToFill) override;
 
+    [[nodiscard]] Type getType() const override;
     void nextReadPositionChanged() override;
+    void removeArea(int startNote, int nbNotes, juce::int64 relativeStartSample, juce::int64 nbSamples) override;
 private:
     QSharedPointer<AudioResource> mAudioResource;
     QScopedPointer<juce::MemoryAudioSource> mAudioSource;

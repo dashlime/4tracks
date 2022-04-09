@@ -26,4 +26,14 @@ void SelectionOverlay::paintEvent(QPaintEvent *event)
     p.fillRect(mSelectionArea, selectionColor);
 }
 
+bool SelectionOverlay::areaContains(QPoint point) const
+{
+    point -= pos();
+
+    if (mSelectionArea.contains(point))
+        return true;
+
+    return false;
+}
+
 } // namespace Graphics
