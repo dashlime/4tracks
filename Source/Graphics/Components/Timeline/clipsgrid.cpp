@@ -118,16 +118,16 @@ void ClipsGrid::updateSelectionOverlay()
     SelectionManager::SelectionArea area = mTimelineProperties->getCurrentSelection()->getSelectedArea();
 
     int x = samplesToPixels(area.startSample);
-    int w = samplesToPixels(area.nbSamples);
+    int w = samplesToPixels(area.samplesNumber);
     int y, h;
 
-    if (area.nbTracks > 0) {
+    if (area.tracksNumber > 0) {
         y = area.startTrackIndex * (DEFAULT_TRACK_HEIGHT + 1);
-        h = area.nbTracks * (DEFAULT_TRACK_HEIGHT + 1);
+        h = area.tracksNumber * (DEFAULT_TRACK_HEIGHT + 1);
     }
     else {
         y = (area.startTrackIndex + 1) * (DEFAULT_TRACK_HEIGHT + 1);
-        h = area.nbTracks * (DEFAULT_TRACK_HEIGHT + 1);
+        h = area.tracksNumber * (DEFAULT_TRACK_HEIGHT + 1);
     }
 
     mSelectionOverlay.areaChanged(QRect(x, y, w, h));
@@ -222,7 +222,7 @@ void ClipsGrid::mousePressEvent(QMouseEvent *event)
     if (!selectionAreaClicked) {
         for (const auto &clip: mClips) {
             if (clip->geometry().contains(event->pos())) {
-                mTimelineProperties->getCurrentSelection()->handleMousePressEvent(clip, event);
+                mTimelineProperties->getCurrentSelection()->handleMousePressEvent(clip.get(), event);
                 clipClicked = true;
             }
         }
@@ -244,9 +244,9 @@ void ClipsGrid::mousePressEvent(QMouseEvent *event)
                 auto area = mTimelineProperties->getCurrentSelection()->getSelectedArea();
 
                 int startTrackID = area.startTrackIndex;
-                int nbTracks = area.nbTracks;
+                int nbTracks = area.tracksNumber;
                 juce::int64 startSample = area.startSample;
-                juce::int64 nbSamples = area.nbSamples;
+                juce::int64 nbSamples = area.samplesNumber;
 
                 mProject->removeArea(startTrackID, nbTracks, startSample, nbSamples);
             });
@@ -324,11 +324,11 @@ void ClipsGrid::mouseMoveEvent(QMouseEvent *event)
         }
 
         if (trackIndex >= area.startTrackIndex)
-            area.nbTracks = trackIndex - area.startTrackIndex + 1;
+            area.tracksNumber = trackIndex - area.startTrackIndex + 1;
         else
-            area.nbTracks = trackIndex - area.startTrackIndex - 1;
+            area.tracksNumber = trackIndex - area.startTrackIndex - 1;
 
-        area.nbSamples = samples - area.startSample;
+        area.samplesNumber = samples - area.startSample;
 
         mTimelineProperties->getCurrentSelection()->setSelectedArea(area);
     }

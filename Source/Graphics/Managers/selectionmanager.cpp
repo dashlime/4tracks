@@ -46,43 +46,41 @@ SelectionManager::SelectionType SelectionManager::getSelectionType() const
     return mSelectionType;
 }
 
-void SelectionManager::handleMousePressEvent(SelectableObject *object, QMouseEvent *event)
+void SelectionManager::handleMousePressEvent(const QPointer<SelectableObject>& object, QMouseEvent *event)
 {
     handleMousePressEvent(object, generateSelectionModifiers(event));
 }
 
-void SelectionManager::handleMousePressEvent(SelectableObject *object, QFlags<Modifier> modifiers)
+void SelectionManager::handleMousePressEvent(const QPointer<SelectableObject>& object, QFlags<Modifier> modifiers)
 {
     if (getSelectionTypeForObject(object) != mSelectionType)
         setSelectionType(getSelectionTypeForObject(object));
 
-    QPointer<SelectableObject> ptr(object);
-
     if (modifiers.testFlag(RightButtonModifier)) {
-        if (!mSelectedObjects.contains(ptr)) {
+        if (!mSelectedObjects.contains(object)) {
             setSelectionType(getSelectionTypeForObject(object));
-            mSelectedObjects.push_back(ptr);
-            ptr->setSelectedState(true);
+            mSelectedObjects.push_back(object);
+            object->setSelectedState(true);
         }
     }
     else {
         if (modifiers.testFlag(CtrlModifier)) {
-            if (!mSelectedObjects.contains(ptr)) {
-                mSelectedObjects.push_back(ptr);
-                ptr->setSelectedState(true);
+            if (!mSelectedObjects.contains(object)) {
+                mSelectedObjects.push_back(object);
+                object->setSelectedState(true);
             } else {
-                mPendingObject = ptr;
+                mPendingObject = object;
                 mPendingObjectModifiers = modifiers;
             }
         }
         else {
-            if (mSelectedObjects.contains(ptr) && mSelectedObjects.size() > 1) {
-                mPendingObject = ptr;
+            if (mSelectedObjects.contains(object) && mSelectedObjects.size() > 1) {
+                mPendingObject = object;
                 mPendingObjectModifiers = modifiers;
             } else {
                 setSelectionType(getSelectionTypeForObject(object));
-                mSelectedObjects.push_back(ptr);
-                ptr->setSelectedState(true);
+                mSelectedObjects.push_back(object);
+                object->setSelectedState(true);
             }
         }
     }
@@ -113,22 +111,32 @@ void SelectionManager::clearPendingEvent()
     mPendingObject = nullptr;
 }
 
+void SelectionManager::setSelectedObjects(const QVector<QPointer<SelectionManager::SelectableObject>>& objects)
+{
+    for (const auto& object: objects) {
+        if (mSelectionType != getSelectionTypeForObject(object))
+            setSelectionType(getSelectionTypeForObject(object));
+
+        if (!mSelectedObjects.contains(object)) {
+            object->setSelectedState(true);
+        }
+    }
+
+    for (const auto& object: mSelectedObjects) {
+        if (!objects.contains(object)) {
+            object->setSelectedState(false);
+        }
+    }
+
+    mSelectedObjects.clear();
+    mSelectedObjects.append(objects);
+
+    emit selectionChanged();
+}
+
 QVector<QPointer<SelectionManager::SelectableObject>> SelectionManager::getSelectedObjects() const
 {
     return mSelectedObjects;
-}
-
-void SelectionManager::setSelectedArea(int startTrackIndex, int startSample, int nbTracks, int nbSamples)
-{
-    if (mSelectionType != AreaSelected)
-        return;
-
-    mSelectedArea.startTrackIndex = startTrackIndex;
-    mSelectedArea.startSample = startSample;
-    mSelectedArea.nbTracks = nbTracks;
-    mSelectedArea.nbSamples = nbSamples;
-
-    emit selectionChanged();
 }
 
 void SelectionManager::setSelectedArea(SelectionArea area)

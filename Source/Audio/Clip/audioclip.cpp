@@ -69,7 +69,4 @@ void AudioClip::nextReadPositionChanged()
         mAudioSource->setNextReadPosition(mNextReadPosition - mClipProperties->getPositionInSamples());
 }
 
-void AudioClip::removeArea(int startNote, int nbNotes, juce::int64 relativeStartSample, juce::int64 nbSamples)
-{}
-
 }

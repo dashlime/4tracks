@@ -50,24 +50,24 @@ public:
     void setSelectionType(SelectionType type);
     [[nodiscard]] SelectionType getSelectionType() const;
 
-    void handleMousePressEvent(SelectableObject *object, QMouseEvent *event);
-    void handleMousePressEvent(SelectableObject *object, QFlags<Modifier> modifiers);
+    void handleMousePressEvent(const QPointer<SelectableObject>& object, QMouseEvent *event);
+    void handleMousePressEvent(const QPointer<SelectableObject>& object, QFlags<Modifier> modifiers);
 
     void handleMouseReleaseEvent();
 
     void clearPendingEvent();
 
+    void setSelectedObjects(const QVector<QPointer<SelectableObject>>& objects);
     [[nodiscard]] QVector<QPointer<SelectableObject>> getSelectedObjects() const;
 
     struct SelectionArea
     {
-        int startTrackIndex;
-        juce::int64 startSample;
-        int nbTracks;
-        juce::int64 nbSamples;
+        int startTrackIndex {};
+        juce::int64 startSample {};
+        int tracksNumber {};
+        juce::int64 samplesNumber {};
     };
 
-    void setSelectedArea(int startTrackIndex, int startSample, int nbTracks, int nbSamples);
     void setSelectedArea(SelectionArea area);
 
     [[nodiscard]] SelectionArea getSelectedArea() const;

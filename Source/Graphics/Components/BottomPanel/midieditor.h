@@ -30,6 +30,8 @@ public:
     void refreshMidiNotes();
     void updateSelectionOverlay();
 
+    void updateSelectedNotes();
+
     void paintEvent(QPaintEvent *event) override;
     void resizeEvent(QResizeEvent *) override;
     void mouseDoubleClickEvent(QMouseEvent *event) override;
@@ -64,6 +66,7 @@ private:
     QPointer<MidiNote> mActionNoteReference;
 
     SelectionOverlay mSelectionOverlay;
+    QRect mCurrentSelectionArea;
 
     double mCurrentPixelsPerBeatAmount{};
 };

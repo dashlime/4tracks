@@ -157,7 +157,7 @@ void Timeline::mousePressEvent(QMouseEvent *event)
     bool trackClicked = false;
     for (const auto &track: mTracks) {
         if (track->geometry().contains(event->pos())) {
-            mTimelineProperties->getCurrentSelection()->handleMousePressEvent(track, event);
+            mTimelineProperties->getCurrentSelection()->handleMousePressEvent(track.get(), event);
             trackClicked = true;
         }
     }

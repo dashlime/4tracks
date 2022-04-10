@@ -32,7 +32,6 @@ public:
 
     [[nodiscard]] virtual Type getType() const = 0;
     virtual void nextReadPositionChanged() = 0;
-    virtual void removeArea(int startNote, int nbNotes, juce::int64 relativeStartSample, juce::int64 nbSamples) = 0;
 
 signals:
     void dataChanged();

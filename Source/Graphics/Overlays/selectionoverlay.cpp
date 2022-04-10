@@ -3,8 +3,8 @@
 namespace Graphics
 {
 
-SelectionOverlay::SelectionOverlay(QWidget *parent)
-    : QWidget(parent)
+SelectionOverlay::SelectionOverlay(bool filled, QWidget *parent)
+    : QWidget(parent), mFilled(filled)
 {
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -20,10 +20,15 @@ void SelectionOverlay::paintEvent(QPaintEvent *event)
 {
     QPainter p(this);
 
-    QColor selectionColor("#3B82F6");
-    selectionColor.setAlpha(127);
+    if (mFilled) {
+        QColor selectionColor("#3B82F6");
+        selectionColor.setAlpha(127);
 
-    p.fillRect(mSelectionArea, selectionColor);
+        p.fillRect(mSelectionArea, selectionColor);
+    } else {
+        p.setPen(QColorConstants::Black);
+        p.drawRect(mSelectionArea);
+    }
 }
 
 bool SelectionOverlay::areaContains(QPoint point) const

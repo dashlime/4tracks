@@ -4,7 +4,7 @@ namespace Graphics
 {
 
 MidiEditor::MidiEditor(const QSharedPointer<Audio::MidiClip> &clip, QWidget *parent)
-    : QWidget(parent), mClip(clip), mCurrentPixelsPerBeatAmount(calculatePixelsPerBeatAmount())
+    : QWidget(parent), mClip(clip), mCurrentPixelsPerBeatAmount(calculatePixelsPerBeatAmount()), mSelectionOverlay(false, this)
 {
     int totalNotes = NOTES_IN_OCTAVE * (END_MIDI_OCTAVE - START_MIDI_OCTAVE);
     setMinimumHeight(totalNotes * DEFAULT_NOTE_HEIGHT);
@@ -54,11 +54,6 @@ MidiEditor::MidiEditor(const QSharedPointer<Audio::MidiClip> &clip, QWidget *par
     connect(mClip->getMidiData().get(), &Audio::MidiData::noteDataChanged, [=](const QSharedPointer<Audio::MidiNote> &noteChanged)
     {
         updateNoteGeometry(getGraphicsNoteForAudioNote(noteChanged));
-    });
-
-    connect(&mCurrentSelection, &SelectionManager::selectionChanged, [=]()
-    {
-        updateSelectionOverlay();
     });
 
     mSelectionOverlay.setParent(this);
@@ -111,24 +106,21 @@ void MidiEditor::refreshMidiNotes()
 
 void MidiEditor::updateSelectionOverlay()
 {
-    SelectionManager::SelectionArea area = mCurrentSelection.getSelectedArea();
-
-    auto bpm = mClip->getClipProperties()->getParentTrack()->getTrackProperties()->getParentProject()->getProjectProperties()->getBpm();
-    int x = Utils::samplesToPixels(area.startSample, mCurrentPixelsPerBeatAmount, bpm);
-    int w = Utils::samplesToPixels(area.nbSamples, mCurrentPixelsPerBeatAmount, bpm);
-    int y, h;
-
-    if (area.nbTracks > 0) {
-        y = area.startTrackIndex * DEFAULT_NOTE_HEIGHT;
-        h = area.nbTracks * DEFAULT_NOTE_HEIGHT;
-    }
-    else {
-        y = (area.startTrackIndex + 1) * DEFAULT_NOTE_HEIGHT;
-        h = area.nbTracks * DEFAULT_NOTE_HEIGHT;
-    }
-
-    mSelectionOverlay.areaChanged(QRect(x, y, w, h));
+    mSelectionOverlay.areaChanged(mCurrentSelectionArea);
     mSelectionOverlay.raise();
+}
+
+void MidiEditor::updateSelectedNotes()
+{
+    QVector<QPointer<SelectionManager::SelectableObject>> objects;
+    for (const auto& note: mNotes)
+        if (mCurrentSelectionArea.contains(note->geometry().topLeft()) ||
+            mCurrentSelectionArea.contains(note->geometry().topRight()) ||
+            mCurrentSelectionArea.contains(note->geometry().bottomLeft()) ||
+            mCurrentSelectionArea.contains(note->geometry().bottomRight()))
+            objects.push_back(note.get());
+
+    mCurrentSelection.setSelectedObjects(objects);
 }
 
 void MidiEditor::paintEvent(QPaintEvent *event)
@@ -138,18 +130,18 @@ void MidiEditor::paintEvent(QPaintEvent *event)
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 
-    p.setPen(QPen(QColor("#D4D4D8")));
+    p.setPen(QPen(QColor(212, 212, 216)));
 
     double division = Utils::calculateDivision(mCurrentPixelsPerBeatAmount, LARGE);
 
-    double pixelsInDivision = mCurrentPixelsPerBeatAmount * division;
+    int pixelsInDivision = int(mCurrentPixelsPerBeatAmount * division);
     if (pixelsInDivision == 0)
         return;
 
     int nbNotesToDraw = NOTES_IN_OCTAVE * (END_MIDI_OCTAVE - START_MIDI_OCTAVE);
     for (int i = 0; i < nbNotesToDraw; i++) {
         if (!mClip->currentScaleContains(nbNotesToDraw - i)) {
-            p.fillRect(0, i * DEFAULT_NOTE_HEIGHT, width(), DEFAULT_NOTE_HEIGHT, QColor("#E4E4E7"));
+            p.fillRect(0, i * DEFAULT_NOTE_HEIGHT, width(), DEFAULT_NOTE_HEIGHT, QColor(228, 228, 231));
         }
 
         p.drawLine(0, i * DEFAULT_NOTE_HEIGHT, width(), i * DEFAULT_NOTE_HEIGHT);
@@ -223,28 +215,17 @@ void MidiEditor::mouseMoveEvent(QMouseEvent *event)
             handleExtendingByTheRight(event);
         } else if (mExtendingByTheLeft) {
             handleExtendingByTheLeft(event);
-        } else if (mMoving){
+        } else if (mMoving) {
             handleMovingEvent(event);
         }
     } else if (event->buttons().testFlag(Qt::LeftButton)) {
-        int trackIndex = event->pos().y() / DEFAULT_NOTE_HEIGHT;
-        juce::int64 samples = calculatePositionInSamples(event->pos().x(), true);
+        mCurrentSelectionArea.setX(mClickedPos.x());
+        mCurrentSelectionArea.setY(mClickedPos.y());
+        mCurrentSelectionArea.setWidth(event->pos().x() - mClickedPos.x());
+        mCurrentSelectionArea.setHeight(event->pos().y() - mClickedPos.y());
 
-        SelectionManager::SelectionArea area = mCurrentSelection.getSelectedArea();
-        if (mCurrentSelection.getSelectionType() != SelectionManager::AreaSelected) {
-            mCurrentSelection.setSelectionType(SelectionManager::AreaSelected);
-            area.startTrackIndex = trackIndex;
-            area.startSample = samples;
-        }
-
-        if (trackIndex >= area.startTrackIndex)
-            area.nbTracks = trackIndex - area.startTrackIndex + 1;
-        else
-            area.nbTracks = trackIndex - area.startTrackIndex - 1;
-
-        area.nbSamples = samples - area.startSample;
-
-        mCurrentSelection.setSelectedArea(area);
+        updateSelectionOverlay();
+        updateSelectedNotes();
     }
 }
 
@@ -255,46 +236,27 @@ void MidiEditor::mousePressEvent(QMouseEvent *event)
 
     bool rightClick = event->buttons().testFlag(Qt::RightButton);
 
-    bool selectionAreaClicked = mSelectionOverlay.areaContains(event->pos());
-    if (mCurrentSelection.getSelectionType() != SelectionManager::AreaSelected)
-        selectionAreaClicked = false;
-
     auto note = getNoteUnderCursor(event);
-    if (note.isNull() && !(selectionAreaClicked && rightClick)) {
+    if (note.isNull()) {
         mCurrentSelection.setSelectionType(SelectionManager::NoSelection);
-
-        return;
-    }
-
-    if (selectionAreaClicked) {
-        if (rightClick) {
-            QMenu menu(this);
-
-            auto *deleteAction = new QAction("Delete", this);
-            menu.addAction(deleteAction);
-
-            connect(deleteAction, &QAction::triggered, [=](){
-                mClip->removeArea(mCurrentSelection.getSelectedArea().startTrackIndex, mCurrentSelection.getSelectedArea().nbTracks,
-                                  mCurrentSelection.getSelectedArea().startSample, mCurrentSelection.getSelectedArea().nbSamples);
-            });
-            menu.exec(event->globalPosition().toPoint());
-        }
     } else {
-        mCurrentSelection.handleMousePressEvent(note, event);
+        mCurrentSelection.handleMousePressEvent(note.get(), event);
         if (rightClick) {
             QMenu menu(this);
 
             auto *deleteAction = new QAction("Delete", this);
             menu.addAction(deleteAction);
 
-            connect(deleteAction, &QAction::triggered, [this](){
-                for (const auto& obj: mCurrentSelection.getSelectedObjects()) {
+            connect(deleteAction, &QAction::triggered, [this]()
+            {
+                for (const auto &obj: mCurrentSelection.getSelectedObjects()) {
                     auto note = (MidiNote *) obj.get();
                     mClip->getMidiData()->removeNote(note->getMidiNote());
                 }
             });
             menu.exec(event->globalPosition().toPoint());
-        } else {
+        }
+        else {
             auto pos = event->pos();
             pos -= note->pos();
             mActionNoteReference = note;
@@ -310,6 +272,21 @@ void MidiEditor::mousePressEvent(QMouseEvent *event)
             }
         }
     }
+}
+
+void MidiEditor::mouseReleaseEvent(QMouseEvent *event)
+{
+    mExtendingByTheRight = false;
+    mExtendingByTheLeft = false;
+    mMoving = false;
+
+    mActionNoteReference = nullptr;
+    mMovingDifferenceAmount = QPoint(0, 0);
+
+    mCurrentSelection.handleMouseReleaseEvent();
+
+    mCurrentSelectionArea = {};
+    updateSelectionOverlay();
 }
 
 void MidiEditor::setupMidiNotes()
@@ -332,17 +309,6 @@ void MidiEditor::setupMidiNotes()
         }
     }
 }
-void MidiEditor::mouseReleaseEvent(QMouseEvent *event)
-{
-    mExtendingByTheRight = false;
-    mExtendingByTheLeft = false;
-    mMoving = false;
-
-    mActionNoteReference = nullptr;
-    mMovingDifferenceAmount = QPoint(0, 0);
-
-    mCurrentSelection.handleMouseReleaseEvent();
-}
 
 void MidiEditor::handleExtendingByTheLeft(QMouseEvent *event)
 {
@@ -355,8 +321,6 @@ void MidiEditor::handleExtendingByTheLeft(QMouseEvent *event)
 
     mActionNoteReference->getMidiNote()->setPositionInSamples(roundedPosition);
 
-    updateNoteGeometry(mActionNoteReference);
-
     for (const auto &object: mCurrentSelection.getSelectedObjects()) {
         if (object->getType() == SelectionManager::SelectableObject::MidiNote && object != mActionNoteReference) {
             auto note = (MidiNote *) object.get();
@@ -367,7 +331,6 @@ void MidiEditor::handleExtendingByTheLeft(QMouseEvent *event)
 
             if (endPos - (startPos + difference) <= MIDI_NOTE_MINIMUM_LENGTH_IN_SAMPLES)
                 note->getMidiNote()->setPositionInSamples(endPos - MIDI_NOTE_MINIMUM_LENGTH_IN_SAMPLES);
-            updateNoteGeometry(note);
         }
     }
 
@@ -385,8 +348,6 @@ void MidiEditor::handleExtendingByTheRight(QMouseEvent *event)
 
     mActionNoteReference->getMidiNote()->getNoteOffObject()->setPositionInSamples(roundedPosition);
 
-    updateNoteGeometry(mActionNoteReference);
-
     for (const auto &object: mCurrentSelection.getSelectedObjects()) {
         if (object->getType() == SelectionManager::SelectableObject::MidiNote && object != mActionNoteReference) {
             auto note = (MidiNote *) object.get();
@@ -397,7 +358,6 @@ void MidiEditor::handleExtendingByTheRight(QMouseEvent *event)
 
             if (endPos + difference - startPos <= MIDI_NOTE_MINIMUM_LENGTH_IN_SAMPLES)
                 note->getMidiNote()->getNoteOffObject()->setPositionInSamples(startPos + MIDI_NOTE_MINIMUM_LENGTH_IN_SAMPLES);
-            updateNoteGeometry(note);
         }
     }
 
@@ -430,8 +390,6 @@ void MidiEditor::handleMovingEvent(QMouseEvent *event)
     message.setNoteNumber(noteNumber);
     mActionNoteReference->getMidiNote()->getNoteOffObject()->setMidiMessage(message);
 
-    updateNoteGeometry(mActionNoteReference);
-
     for (const auto &object: mCurrentSelection.getSelectedObjects()) {
         if (object->getType() == SelectionManager::SelectableObject::MidiNote && object != mActionNoteReference) {
             auto note = (MidiNote *) object.get();
@@ -454,8 +412,6 @@ void MidiEditor::handleMovingEvent(QMouseEvent *event)
             message = note->getMidiNote()->getNoteOffObject()->getMidiMessage();
             message.setNoteNumber(noteNumber);
             note->getMidiNote()->getNoteOffObject()->setMidiMessage(message);
-
-            updateNoteGeometry(note);
         }
     }
     double bpm = mClip->getClipProperties()->getParentTrack()->getTrackProperties()->getParentProject()

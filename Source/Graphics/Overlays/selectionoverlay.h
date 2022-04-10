@@ -10,15 +10,16 @@ class SelectionOverlay: public QWidget
 {
 Q_OBJECT
 public:
-    explicit SelectionOverlay(QWidget *parent = nullptr);
+    explicit SelectionOverlay(bool filled = true, QWidget *parent = nullptr);
 
-    bool areaContains(QPoint point) const;
+    [[nodiscard]] bool areaContains(QPoint point) const;
     void areaChanged(QRect selectionArea);
 
     void paintEvent(QPaintEvent *event) override;
 
 signals:
 private:
+    bool mFilled;
     QRect mSelectionArea;
 };
 

@@ -25,7 +25,6 @@ public:
 
     [[nodiscard]] Type getType() const override;
     void nextReadPositionChanged() override;
-    void removeArea(int startNote, int nbNotes, juce::int64 relativeStartSample, juce::int64 nbSamples) override;
 private:
     QSharedPointer<AudioResource> mAudioResource;
     QScopedPointer<juce::MemoryAudioSource> mAudioSource;
