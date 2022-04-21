@@ -21,7 +21,7 @@ SelectionManager::Modifiers SelectionManager::generateSelectionModifiers(QMouseE
 SelectionManager::SelectionManager()
 {}
 
-SelectionManager::SelectionType SelectionManager::getSelectionTypeForObject(SelectionManager::SelectableObject *object)
+SelectionManager::SelectionType SelectionManager::getSelectionTypeForObject(SelectableObject *object)
 {
     if (object->getType() == SelectableObject::Track)
         return TracksSelected;
@@ -111,7 +111,7 @@ void SelectionManager::clearPendingEvent()
     mPendingObject = nullptr;
 }
 
-void SelectionManager::setSelectedObjects(const QVector<QPointer<SelectionManager::SelectableObject>>& objects)
+void SelectionManager::setSelectedObjects(const QVector<QPointer<SelectableObject>>& objects)
 {
     for (const auto& object: objects) {
         if (mSelectionType != getSelectionTypeForObject(object))
@@ -134,7 +134,7 @@ void SelectionManager::setSelectedObjects(const QVector<QPointer<SelectionManage
     emit selectionChanged();
 }
 
-QVector<QPointer<SelectionManager::SelectableObject>> SelectionManager::getSelectedObjects() const
+QVector<QPointer<SelectableObject>> SelectionManager::getSelectedObjects() const
 {
     return mSelectedObjects;
 }

@@ -6,6 +6,7 @@
 #include "Audio/Clip/midiclip.h"
 #include "midinotespanel.h"
 #include "midieditor.h"
+#include "velocitypanel.h"
 
 namespace Graphics
 {
@@ -24,6 +25,7 @@ private:
     QSharedPointer<Audio::MidiClip> mClip;
     QPointer<MidiEditor> mMidiEditor;
     QPointer<MidiNotesPanel> mMidiNotesPanel;
+    QPointer<VelocityPanel> mVelocityPanel;
 
     QPointer<QWidget> mVerticalScrollWidget;
     QHBoxLayout mVerticalScrollLayout;
@@ -34,6 +36,8 @@ private:
 
     QPointer<QScrollArea> mVerticalScrollArea;
     QVBoxLayout mMainLayout;
+
+    QSharedPointer<TimelineProperties> mTimelineProperties;
 };
 
 } // Graphics

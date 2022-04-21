@@ -10,7 +10,7 @@
 namespace Graphics
 {
 
-class MidiNote: public SelectionManager::SelectableObject
+class MidiNote: public SelectableObject
 {
 Q_OBJECT
 

@@ -97,9 +97,9 @@ void Clip::setSelectedState(bool isSelected)
     update();
 }
 
-SelectionManager::SelectableObject::Type Clip::getType() const
+SelectableObject::Type Clip::getType() const
 {
-    return SelectionManager::SelectableObject::Clip;
+    return SelectableObject::Clip;
 }
 
 } // namespace Graphics

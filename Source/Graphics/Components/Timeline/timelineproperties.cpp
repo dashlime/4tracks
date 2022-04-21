@@ -3,9 +3,25 @@
 namespace Graphics
 {
 
-TimelineProperties::TimelineProperties(const QSharedPointer<SelectionManager> &currentSelection)
+TimelineProperties::TimelineProperties(const QSharedPointer<SelectionManager> &currentSelection, double basePixelsPerBeatAmount)
+    : mBasePixelsPerBeatAmount(basePixelsPerBeatAmount)
 {
+    updatePixelsPerBeatAmount();
+
     setCurrentSelection(currentSelection);
+}
+
+void TimelineProperties::setBasePixelsPerBeatAmount(double newBasePixelsPerBeatAmount)
+{
+    mBasePixelsPerBeatAmount = newBasePixelsPerBeatAmount;
+    updatePixelsPerBeatAmount();
+}
+
+void TimelineProperties::updatePixelsPerBeatAmount()
+{
+    mPixelsPerBeat = mZoomLevel * mBasePixelsPerBeatAmount;
+
+    emit pixelsPerBeatAmountChanged();
 }
 
 void TimelineProperties::setCurrentSelection(const QSharedPointer<SelectionManager> &currentSelection)
@@ -26,10 +42,9 @@ const QSharedPointer<SelectionManager> &TimelineProperties::getCurrentSelection(
 void TimelineProperties::setZoomLevel(double zoomLevel)
 {
     mZoomLevel = zoomLevel;
-    mPixelsPerBeat = mZoomLevel * DEFAULT_PIXEL_PER_BEAT_AMOUNT;
+    updatePixelsPerBeatAmount();
 
     emit zoomLevelChanged();
-    emit pixelsPerBeatAmountChanged();
 }
 
 double TimelineProperties::getZoomLevel() const

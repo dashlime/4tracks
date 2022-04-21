@@ -16,7 +16,7 @@ namespace Ui
 class Track;
 }
 
-class Track: public SelectionManager::SelectableObject
+class Track: public SelectableObject
 {
 Q_OBJECT
 
@@ -32,7 +32,7 @@ public:
     void paintEvent(QPaintEvent *) override;
 
     void setSelectedState(bool isSelected) override;
-    [[nodiscard]] SelectionManager::SelectableObject::Type getType() const override;
+    [[nodiscard]] SelectableObject::Type getType() const override;
 
 private:
     Ui::Track *ui;

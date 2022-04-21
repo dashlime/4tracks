@@ -12,6 +12,7 @@
 #include "Audio/Resources/midinote.h"
 #include "midinote.h"
 #include "Graphics/Managers/selectionmanager.h"
+#include "Graphics/Components/Timeline/timelineproperties.h"
 
 namespace Graphics
 {
@@ -20,9 +21,9 @@ class MidiEditor: public QWidget
 {
 Q_OBJECT
 public:
-    explicit MidiEditor(const QSharedPointer<Audio::MidiClip> &clip, QWidget *parent = nullptr);
+    explicit MidiEditor(const QSharedPointer<TimelineProperties> &timelineProperties, const QSharedPointer<Audio::MidiClip> &clip, QWidget *parent = nullptr);
 
-    [[nodiscard]] double calculatePixelsPerBeatAmount() const;
+    void updatePixelsPerBeatAmount();
 
     [[nodiscard]] QPointer<MidiNote> getGraphicsNoteForAudioNote(const QSharedPointer<Audio::MidiNote>& note) const;
 
@@ -39,9 +40,6 @@ public:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
 
-signals:
-    void pixelsPerBeatAmountChanged(double newPixelsPerBeatAmount);
-
 private:
     void setupMidiNotes();
     void handleExtendingByTheLeft(QMouseEvent *event);
@@ -57,7 +55,6 @@ private:
     QVector<QPointer<MidiNote>> mNotes;
 
     QPoint mClickedPos;
-    SelectionManager mCurrentSelection;
 
     bool mExtendingByTheRight = false;
     bool mExtendingByTheLeft = false;
@@ -65,10 +62,10 @@ private:
     QPoint mMovingDifferenceAmount;
     QPointer<MidiNote> mActionNoteReference;
 
-    SelectionOverlay mSelectionOverlay;
     QRect mCurrentSelectionArea;
+    SelectionOverlay mSelectionOverlay;
 
-    double mCurrentPixelsPerBeatAmount{};
+    QSharedPointer<TimelineProperties> mTimelineProperties;
 };
 
 } // Graphics

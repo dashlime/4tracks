@@ -9,6 +9,35 @@
 namespace Graphics
 {
 
+class SelectableObject: public QWidget
+{
+Q_OBJECT
+
+public:
+    explicit SelectableObject(QWidget *parent = nullptr)
+        : QWidget(parent)
+    {};
+    ~SelectableObject() override = default;
+
+    virtual void setSelectedState(bool isSelected) = 0;
+    [[nodiscard]] bool getSelectedState() const
+    {
+        return mSelectedState;
+    }
+
+    enum Type
+    {
+        Track, Clip, MidiNote
+    };
+    [[nodiscard]] virtual Type getType() const = 0;
+
+signals:
+    void selectedStateChanged(bool isSelected);
+
+protected:
+    bool mSelectedState = false;
+};
+
 class SelectionManager: public QObject
 {
 Q_OBJECT
@@ -25,23 +54,6 @@ public:
     Q_DECLARE_FLAGS(Modifiers, Modifier)
 
     static Modifiers generateSelectionModifiers(QMouseEvent *event);
-
-    class SelectableObject: public QWidget
-    {
-    public:
-        explicit SelectableObject(QWidget *parent = nullptr)
-            : QWidget(parent)
-        {};
-        ~SelectableObject() override = default;
-
-        virtual void setSelectedState(bool isSelected) = 0;
-
-        enum Type
-        {
-            Track, Clip, MidiNote
-        };
-        [[nodiscard]] virtual Type getType() const = 0;
-    };
 
     SelectionManager();
 

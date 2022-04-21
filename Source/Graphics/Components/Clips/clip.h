@@ -20,7 +20,7 @@ namespace Ui
 class Clip;
 }
 
-class Clip: public SelectionManager::SelectableObject
+class Clip: public SelectableObject
 {
 Q_OBJECT
 
@@ -37,7 +37,7 @@ public:
     void resizeEvent(QResizeEvent *) override;
 
     void setSelectedState(bool isSelected) override;
-    [[nodiscard]] SelectionManager::SelectableObject::Type getType() const override;
+    [[nodiscard]] SelectableObject::Type getType() const override;
 
 private:
     Ui::Clip *ui;

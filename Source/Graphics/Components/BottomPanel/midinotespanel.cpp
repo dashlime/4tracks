@@ -7,7 +7,7 @@ MidiNotesPanel::MidiNotesPanel(const QSharedPointer<Audio::MidiClip> &clip, QWid
     : QWidget(parent), mClip(clip)
 {
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
-    setFixedWidth(90);
+    setFixedWidth(DEFAULT_MIDI_EDITOR_LEFT_PANEL_WIDTH);
 }
 
 void MidiNotesPanel::paintEvent(QPaintEvent *event)
@@ -21,7 +21,7 @@ void MidiNotesPanel::paintEvent(QPaintEvent *event)
 
     int nbNotesToDraw = NOTES_IN_OCTAVE * (END_MIDI_OCTAVE - START_MIDI_OCTAVE);
     for (int i = 0; i < nbNotesToDraw; i++) {
-        p.fillRect(70,
+        p.fillRect(DEFAULT_MIDI_EDITOR_LEFT_PANEL_WIDTH - 20,
                    i * DEFAULT_NOTE_HEIGHT,
                    DEFAULT_NOTE_HEIGHT,
                    DEFAULT_NOTE_HEIGHT,
@@ -29,8 +29,8 @@ void MidiNotesPanel::paintEvent(QPaintEvent *event)
 
         p.drawLine(0, i * DEFAULT_NOTE_HEIGHT, width(), i * DEFAULT_NOTE_HEIGHT);
     }
-    p.drawLine(70, 0, 70, height());
-    p.drawLine(90, 0, 90, height());
+    p.drawLine(DEFAULT_MIDI_EDITOR_LEFT_PANEL_WIDTH - 20, 0, DEFAULT_MIDI_EDITOR_LEFT_PANEL_WIDTH - 20, height());
+    p.drawLine(DEFAULT_MIDI_EDITOR_LEFT_PANEL_WIDTH, 0, DEFAULT_MIDI_EDITOR_LEFT_PANEL_WIDTH, height());
 
     p.setPen(QColorConstants::Black);
 

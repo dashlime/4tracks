@@ -14,7 +14,10 @@ class TimelineProperties: public QObject
 Q_OBJECT
 
 public:
-    explicit TimelineProperties(const QSharedPointer<SelectionManager> &currentSelection);
+    explicit TimelineProperties(const QSharedPointer<SelectionManager> &currentSelection, double basePixelsPerBeatAmount = DEFAULT_PIXEL_PER_BEAT_AMOUNT);
+
+    void setBasePixelsPerBeatAmount(double newBasePixelsPerBeatAmount);
+    void updatePixelsPerBeatAmount();
 
     void setCurrentSelection(const QSharedPointer<SelectionManager> &currentSelection);
     [[nodiscard]] const QSharedPointer<SelectionManager> &getCurrentSelection() const;
@@ -32,8 +35,9 @@ signals:
 private:
     QSharedPointer<SelectionManager> mCurrentSelection;
 
+    double mBasePixelsPerBeatAmount;
     double mZoomLevel = 1.f;
-    double mPixelsPerBeat = mZoomLevel * DEFAULT_PIXEL_PER_BEAT_AMOUNT;
+    double mPixelsPerBeat;
 };
 
 }
