@@ -22,10 +22,12 @@ AudioClip::AudioClip(const QString &filePath, Track *parentTrack)
 AudioClip::AudioClip(const QSharedPointer<AudioResource> &resource, Track *parentTrack)
     : Clip(resource->getSourceFilePath(), parentTrack), mAudioResource(resource)
 {
-    mClipProperties->setLengthInSamples(resource->getAudioData()->getNumSamples());
-    mClipProperties->setEndOffset(resource->getAudioData()->getNumSamples());
+    if (resource->getAudioData()) {
+        mClipProperties->setLengthInSamples(resource->getAudioData()->getNumSamples());
+        mClipProperties->setEndOffset(resource->getAudioData()->getNumSamples());
 
-    mAudioSource.reset(new juce::MemoryAudioSource(*resource->getAudioData(), false));
+        mAudioSource.reset(new juce::MemoryAudioSource(*resource->getAudioData(), false));
+    }
 }
 
 QSharedPointer<AudioResource> AudioClip::getAudioResource() const
@@ -50,8 +52,8 @@ void AudioClip::getNextAudioBlock(const juce::AudioSourceChannelInfo &bufferToFi
     bufferToFill.clearActiveBufferRegion();
 
     if (mAudioSource)
-        if (mNextReadPosition > mClipProperties->getPositionInSamples() + mClipProperties->getStartOffset()
-            && mNextReadPosition < mClipProperties->getPositionInSamples() + mClipProperties->getEndOffset())
+        if (mNextReadPosition >= mClipProperties->getPositionInSamples() + mClipProperties->getStartOffset()
+            && mNextReadPosition <= mClipProperties->getPositionInSamples() + mClipProperties->getEndOffset())
             mAudioSource->getNextAudioBlock(bufferToFill);
 
 

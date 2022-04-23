@@ -1,10 +1,13 @@
-#ifndef DEF_MIXERPOSITIONABLEAUDIOSOURCE
-#define DEF_MIXERPOSITIONABLEAUDIOSOURCE
+#ifndef MIXERPOSITIONABLEAUDIOSOURCE
+#define MIXERPOSITIONABLEAUDIOSOURCE
 
 #pragma once
 
 #include "Audio/JuceIncludes.h"
 #include <iostream>
+
+namespace Audio
+{
 
 class MixerPositionableAudioSource: public juce::PositionableAudioSource
 {
@@ -13,7 +16,7 @@ public:
     ~MixerPositionableAudioSource() override;
 
     //Base functions
-    void addInputSource(juce::PositionableAudioSource *input, bool deleteWhenRemoved);
+    void addInputSource(juce::PositionableAudioSource *input);
     void removeInputSource(juce::PositionableAudioSource *input);
     void removeAllInputs();
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
@@ -28,11 +31,12 @@ public:
 
 private:
     juce::Array<juce::PositionableAudioSource *> inputs;
-    juce::BigInteger inputsToDelete;
     juce::CriticalSection lock;
     juce::AudioBuffer<float> tempBuffer;
     double currentSampleRate;
     int bufferSizeExpected;
 };
+
+}
 
 #endif

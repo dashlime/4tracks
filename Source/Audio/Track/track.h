@@ -51,7 +51,6 @@ public:
     };
 
 private:
-    void resizeClipsWhenClipAdded(int newClipIndex);
 
     QSharedPointer<TrackProperties> mProperties;
 

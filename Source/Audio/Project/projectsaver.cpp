@@ -109,12 +109,12 @@ void ProjectSaver::saveToDirectory(const QDir &dir)
     projectFile.close();
 }
 
-void ProjectSaver::openProject(QFile projectFile)
+bool ProjectSaver::openProject(QFile projectFile)
 {
     QDomDocument xmlBOM;
 
     if (!projectFile.open(QIODevice::ReadOnly))
-        return;
+        return false;
 
     xmlBOM.setContent(&projectFile);
     projectFile.close();
@@ -180,6 +180,8 @@ void ProjectSaver::openProject(QFile projectFile)
 
         domTrack = domTrack.nextSiblingElement();
     }
+
+    return true;
 }
 
 }

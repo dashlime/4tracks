@@ -25,15 +25,9 @@ bool Track::addClip(const QSharedPointer<Clip> &clip)
     int clipID = (int) mClips.size();
     int type = getType();
 
-    if (clip->getType() == Clip::AUDIO_CLIP && type == AUDIO_TRACK) {
-        mClips.push_back(clip);
-        resizeClipsWhenClipAdded(clipID);
-    }
-    else if (clip->getType() == Clip::MIDI_CLIP && type == MIDI_TRACK) {
-        mClips.push_back(clip);
-        resizeClipsWhenClipAdded(clipID);
-    }
-    else if (type == ANY_TRACK)
+    if ((clip->getType() == Clip::AUDIO_CLIP && type == AUDIO_TRACK) ||
+        (clip->getType() == Clip::MIDI_CLIP && type == MIDI_TRACK) ||
+        type == ANY_TRACK)
         mClips.push_back(clip);
     else
         return false;
@@ -80,11 +74,6 @@ void Track::applyPanToBuffer(juce::AudioSampleBuffer *buffer)
         buffer->applyGain(0, 0, buffer->getNumSamples(), 1 - mProperties->getPan());
         buffer->applyGain(1, 0, buffer->getNumSamples(), 1 + mProperties->getPan());
     }
-}
-
-void Track::resizeClipsWhenClipAdded(int newClipIndex)
-{
-
 }
 
 void Track::setNextReadPosition(juce::int64 newPosition)

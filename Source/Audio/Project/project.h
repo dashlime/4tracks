@@ -13,7 +13,7 @@
 namespace Audio
 {
 
-class Project: public QObject, public juce::PositionableAudioSource
+class Project: public QObject, public juce::AudioSource
 {
 Q_OBJECT
 
@@ -55,11 +55,9 @@ public:
 
     bool isPlaying() const;
 
-    void setNextReadPosition(juce::int64 newPosition) override;
-    juce::int64 getNextReadPosition() const override;
-    juce::int64 getTotalLength() const override;
-    bool isLooping() const override;
-    void setLooping(bool) override;
+    void setNextReadPosition(juce::int64 newPosition);
+    juce::int64 getNextReadPosition() const;
+    juce::int64 getTotalLength() const;
 
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
     void releaseResources() override;

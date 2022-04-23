@@ -61,3 +61,12 @@ void AudioProjectSaverTests::TearDown()
     if (projectDir.exists())
         projectDir.removeRecursively();
 }
+
+void MixerAudioSourceTests::SetUp()
+{
+    mProject = QSharedPointer<Audio::Project>::create("Test project");
+    mMixerAudioSource = QSharedPointer<Audio::MixerPositionableAudioSource>::create(44100);
+}
+
+void MixerAudioSourceTests::TearDown()
+{}

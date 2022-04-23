@@ -17,6 +17,7 @@ Q_OBJECT
 public:
     explicit MidiClip(Track *parentTrack);
 
+    void setMidiData(const QSharedPointer<MidiData>& data);
     [[nodiscard]] QSharedPointer<MidiData> getMidiData() const;
 
     [[nodiscard]] bool currentScaleContains(int midiNoteNumber) const;

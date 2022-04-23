@@ -3,6 +3,7 @@
 #include "Audio/Project/project.h"
 #include "Audio/Resources/audiofileloader.h"
 #include "Audio/Project/projectsaver.h"
+#include "Audio/AudioSources/mixerpositionableaudiosource.h"
 
 class TrackTests: public ::testing::Test
 {
@@ -62,4 +63,14 @@ public:
 
     QSharedPointer<Audio::Project> mProject;
     QScopedPointer<Audio::ProjectSaver> mProjectSaver;
+};
+
+class MixerAudioSourceTests: public ::testing::Test
+{
+public:
+    void SetUp() override;
+    void TearDown() override;
+
+    QSharedPointer<Audio::MixerPositionableAudioSource> mMixerAudioSource;
+    QSharedPointer<Audio::Project> mProject;
 };

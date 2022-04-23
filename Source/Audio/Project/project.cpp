@@ -15,7 +15,7 @@ QSharedPointer<ProjectProperties> Project::getProjectProperties() const
 void Project::addTrack(const QSharedPointer<Track> &newTrack)
 {
     mTracks.push_back(newTrack);
-    mMixerAudioSource.addInputSource(newTrack.get(), false);
+    mMixerAudioSource.addInputSource(newTrack.get());
 
     connect(newTrack->getTrackProperties().get(),
             &TrackProperties::savedStateChanged,
@@ -59,6 +59,9 @@ QVector<QSharedPointer<Clip>> Project::getClips() const
 
 QSharedPointer<AudioResource> Project::getAlreadyLoadedResource(const QString &sourcePath) const
 {
+    if (sourcePath == "")
+        return {};
+
     for (const auto &clip: mClips)
         if (clip->getType() == Clip::AUDIO_CLIP)
             if (qSharedPointerCast<AudioClip>(clip)->getAudioResource()->getSourceFilePath() == sourcePath)
@@ -130,7 +133,6 @@ bool Project::canRemoveTracks(int tracksNumber) const
 
 void Project::removeTrack(QSharedPointer<Track> trackToRemove)
 {
-    auto it = mTracks.begin();
     for (auto &track: mTracks) {
         if (track == trackToRemove) {
             for (auto &clip: trackToRemove->getClips()) {
@@ -141,7 +143,7 @@ void Project::removeTrack(QSharedPointer<Track> trackToRemove)
 
             mMixerAudioSource.removeInputSource(trackToRemove.get());
             trackToRemove.reset();
-            mTracks.erase(it);
+            mTracks.remove(mTracks.indexOf(track));
 
             rearrangeTrackIndexes();
 
@@ -150,27 +152,24 @@ void Project::removeTrack(QSharedPointer<Track> trackToRemove)
 
             return;
         }
-        it++;
     }
 }
 
 void Project::removeClip(QSharedPointer<Clip> clipToRemove)
 {
-    auto it = mClips.begin();
     for (auto &clip: mClips) {
         if (clip == clipToRemove) {
-            int clipID = (int) std::distance(mClips.begin(), it);
+            int clipID = (int) mClips.indexOf(clip);
 
             clipToRemove->getClipProperties()->getParentTrack()->removeClip(clipToRemove);
             clipToRemove.reset();
 
-            mClips.erase(it);
+            mClips.remove(clipID);
 
             emit clipRemoved(clipID);
             mProjectProperties->updateSavedState(ProjectProperties::UNSAVED);
             return;
         }
-        it++;
     }
 }
 
@@ -240,7 +239,9 @@ int Project::duplicateClip(const QSharedPointer<Clip> &clipToDuplicate)
                                                     clipToDuplicate->getClipProperties()->getParentTrack());
     }
     else if (clipToDuplicate->getType() == Clip::MIDI_CLIP) {
-        newClip = QSharedPointer<MidiClip>::create(clipToDuplicate->getClipProperties()->getParentTrack());
+        auto midiClip = QSharedPointer<MidiClip>::create(clipToDuplicate->getClipProperties()->getParentTrack());
+        newClip = midiClip;
+        midiClip->setMidiData(qSharedPointerDynamicCast<MidiClip>(clipToDuplicate)->getMidiData());
     }
 
     newClip->getClipProperties()->setLengthInSamples(oldClipLength);
@@ -248,8 +249,7 @@ int Project::duplicateClip(const QSharedPointer<Clip> &clipToDuplicate)
     newClip->getClipProperties()->setEndOffset(oldClipEndOffset);
     newClip->getClipProperties()->setPositionInSamples(oldClipPosition + oldClipEndOffset - oldClipStartOffset);
 
-    if (!addClip(newClip))
-        return -1;
+    addClip(newClip);
 
     return (int) mClips.size() - 1;
 }
@@ -319,14 +319,6 @@ juce::int64 Project::getTotalLength() const
     return mMixerAudioSource.getTotalLength();
 }
 
-bool Project::isLooping() const
-{
-    return false;
-}
-
-void Project::setLooping(bool)
-{}
-
 void Project::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 {
     mMixerAudioSource.prepareToPlay(samplesPerBlockExpected, sampleRate);
@@ -334,6 +326,7 @@ void Project::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 
 void Project::releaseResources()
 {
+    mPlaying = false;
     mMixerAudioSource.releaseResources();
 }
 

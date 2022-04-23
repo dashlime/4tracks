@@ -22,6 +22,12 @@ MidiClip::MidiClip(Track *parentTrack)
     });
 }
 
+void MidiClip::setMidiData(const QSharedPointer<MidiData> &data)
+{
+    mMidiData = data;
+    emit dataChanged();
+}
+
 QSharedPointer<MidiData> MidiClip::getMidiData() const
 {
     return mMidiData;

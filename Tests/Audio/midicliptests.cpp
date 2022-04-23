@@ -37,6 +37,27 @@ TEST_F(MidiClipTests, AddAndRemoveNotes)
     EXPECT_EQ(mMidiClip->getMidiData()->getMidiNotes().size(), 0);
 }
 
+TEST_F(MidiClipTests, DuplicateNote)
+{
+    auto noteOn = QSharedPointer<Audio::MidiNote>::create(0, juce::MidiMessage::noteOn(1, 10, 1.f));
+    auto noteOff = QSharedPointer<Audio::MidiNote>::create(10, juce::MidiMessage::noteOff(1, 10));
+
+    noteOn->setNoteOffObject(noteOff);
+
+    mMidiClip->getMidiData()->addNote(noteOn);
+    mMidiClip->getMidiData()->addNote(noteOff);
+
+    auto newNote = QSharedPointer<Audio::MidiNote>::create(noteOn);
+    EXPECT_EQ(newNote->getPositionInSamples(), 0);
+    EXPECT_EQ(newNote->getNoteOffObject()->getPositionInSamples(), 10);
+    EXPECT_EQ(newNote->getMidiMessage().getNoteNumber(), 10);
+
+    mMidiClip->getMidiData()->addNote(newNote);
+    mMidiClip->getMidiData()->addNote(newNote->getNoteOffObject());
+
+    EXPECT_EQ(mMidiClip->getMidiData()->getMidiNotes().size(), 4);
+}
+
 TEST_F(MidiClipTests, ChangeNotesParams)
 {
     auto noteOn = QSharedPointer<Audio::MidiNote>::create(0, juce::MidiMessage::noteOn(1, 10, 1.f));
@@ -49,4 +70,22 @@ TEST_F(MidiClipTests, ChangeNotesParams)
     mParentProject->getProjectProperties()->updateSavedState(Audio::ProjectProperties::SAVED);
     noteOn->setMidiMessage(juce::MidiMessage::noteOn(1, 20, 1.f));
     EXPECT_EQ(mParentProject->getProjectProperties()->getSavedState(), Audio::ProjectProperties::UNSAVED);
+}
+
+TEST_F(MidiClipTests, PlayThroughMidiClip)
+{
+    mMidiClip->getClipProperties()->setLengthInSamples(10);
+    mMidiClip->getClipProperties()->setEndOffset(10);
+
+    mParentProject->play();
+
+    auto *buffer = new juce::AudioBuffer<float>(2, 1024);
+    auto channelInfo = juce::AudioSourceChannelInfo(buffer, 0, 1024);
+
+    mParentProject->getNextAudioBlock(channelInfo);
+
+    EXPECT_EQ(mParentProject->getNextReadPosition(), 1024);
+    EXPECT_EQ(mParentTrack->getNextReadPosition(), 1024);
+
+    delete buffer;
 }

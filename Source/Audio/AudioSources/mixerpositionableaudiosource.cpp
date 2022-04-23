@@ -1,5 +1,8 @@
 #include "mixerpositionableaudiosource.h"
 
+namespace Audio
+{
+
 MixerPositionableAudioSource::MixerPositionableAudioSource(double sampleRate)
     : currentSampleRate(sampleRate), bufferSizeExpected(0)
 {}
@@ -10,7 +13,7 @@ MixerPositionableAudioSource::~MixerPositionableAudioSource()
 }
 
 // ------------------------------ From MixerAudioSource class ------------------------------
-void MixerPositionableAudioSource::addInputSource(juce::PositionableAudioSource *input, const bool deleteWhenRemoved)
+void MixerPositionableAudioSource::addInputSource(juce::PositionableAudioSource *input)
 {
     if (input != nullptr && !inputs.contains(input)) {
         double localRate;
@@ -27,7 +30,6 @@ void MixerPositionableAudioSource::addInputSource(juce::PositionableAudioSource 
 
         const juce::ScopedLock sl(lock);
 
-        inputsToDelete.setBit(inputs.size(), deleteWhenRemoved);
         inputs.add(input);
     }
 }
@@ -35,21 +37,12 @@ void MixerPositionableAudioSource::addInputSource(juce::PositionableAudioSource 
 void MixerPositionableAudioSource::removeInputSource(juce::PositionableAudioSource *const input)
 {
     if (input != nullptr) {
-        std::unique_ptr<juce::PositionableAudioSource> toDelete;
+        const int index = inputs.indexOf(input);
 
-        {
-            const juce::ScopedLock sl(lock);
-            const int index = inputs.indexOf(input);
+        if (index < 0)
+            return;
 
-            if (index < 0)
-                return;
-
-            if (inputsToDelete[index])
-                toDelete.reset(input);
-
-            inputsToDelete.shiftBits(-1, index);
-            inputs.remove(index);
-        }
+        inputs.remove(index);
 
         input->releaseResources();
     }
@@ -57,20 +50,7 @@ void MixerPositionableAudioSource::removeInputSource(juce::PositionableAudioSour
 
 void MixerPositionableAudioSource::removeAllInputs()
 {
-    juce::OwnedArray<juce::PositionableAudioSource> toDelete;
-
-    {
-        const juce::ScopedLock sl(lock);
-
-        for (int i = inputs.size(); --i >= 0;)
-            if (inputsToDelete[i])
-                toDelete.add(inputs.getUnchecked(i));
-
-        inputs.clear();
-    }
-
-    for (int i = toDelete.size(); --i >= 0;)
-        toDelete.getUnchecked(i)->releaseResources();
+    inputs.clear();
 }
 
 void MixerPositionableAudioSource::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
@@ -164,4 +144,6 @@ void MixerPositionableAudioSource::setNextReadPosition(juce::int64 newPosition)
 bool MixerPositionableAudioSource::isLooping() const
 {
     return false;
+}
+
 }

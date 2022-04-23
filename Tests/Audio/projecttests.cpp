@@ -2,10 +2,14 @@
 
 TEST_F(ProjectTests, PlayAndGetNextReadPosition)
 {
-    mProjectToTest->play();
-
     auto *buffer = new juce::AudioBuffer<float>(2, 1024);
     auto channelInfo = juce::AudioSourceChannelInfo(buffer, 0, 1024);
+
+    buffer->setSample(0, 0, 1);
+    mProjectToTest->getNextAudioBlock(channelInfo);
+    EXPECT_EQ(buffer->getSample(0, 0), 0);
+
+    mProjectToTest->play();
 
     mProjectToTest->createTrack("Test track");
     mProjectToTest->prepareToPlay(1024, DEFAULT_SAMPLE_RATE);
@@ -188,11 +192,17 @@ TEST_F(ProjectTests, CreateAudioClip)
     EXPECT_EQ(mProjectToTest->createAudioClip(mProjectToTest->getTrackByIndex(0), ""), -1);
 
     mProjectToTest->createTrack("Test track");
-    mProjectToTest->createAudioClip(mProjectToTest->getTrackByIndex(0), "");
+    mProjectToTest->createAudioClip(mProjectToTest->getTrackByIndex(0), "test_path");
 
     EXPECT_EQ(mProjectToTest->getTrackByIndex(0)->getClips().size(), 1);
-
     EXPECT_EQ(mProjectToTest->getProjectProperties()->getSavedState(), Audio::ProjectProperties::UNSAVED);
+
+    mProjectToTest->createAudioClip(mProjectToTest->getTrackByIndex(0), "test_path");
+    EXPECT_EQ(qSharedPointerDynamicCast<Audio::AudioClip>(mProjectToTest->getClips().at(0))->getAudioResource(),
+              qSharedPointerDynamicCast<Audio::AudioClip>(mProjectToTest->getClips().at(1))->getAudioResource());
+
+    mProjectToTest->createMIDIClip(mProjectToTest->getTrackByIndex(0));
+    EXPECT_EQ(mProjectToTest->getTrackByIndex(0)->getClips().size(), 2);
 }
 
 TEST_F(ProjectTests, CreateMIDIClip)
@@ -216,4 +226,55 @@ TEST_F(ProjectTests, UpdateTotalLength)
     EXPECT_EQ(mProjectToTest->getTotalLength(), 1000);
 
     EXPECT_EQ(mProjectToTest->getProjectProperties()->getSavedState(), Audio::ProjectProperties::UNSAVED);
+}
+
+TEST_F(ProjectTests, GetAlreadyLoadedResource)
+{
+    EXPECT_TRUE(mProjectToTest->getAlreadyLoadedResource("").isNull());
+
+    int trackID = mProjectToTest->createTrack("Test track");
+    auto track = mProjectToTest->getTrackByIndex(trackID);
+
+    mProjectToTest->createAudioClip(track, "test_file_path");
+    EXPECT_FALSE(mProjectToTest->getAlreadyLoadedResource("test_file_path").isNull());
+}
+
+TEST_F(ProjectTests, ReleaseResources)
+{
+    mProjectToTest->play();
+    mProjectToTest->releaseResources();
+
+    EXPECT_FALSE(mProjectToTest->isPlaying());
+}
+
+TEST_F(ProjectTests, DuplicateClip)
+{
+    int trackID = mProjectToTest->createTrack("Test track");
+    auto track = mProjectToTest->getTrackByIndex(trackID);
+
+    mProjectToTest->createAudioClip(track, "test_file_path");
+    mProjectToTest->getClips().at(0)->getClipProperties()->setEndOffset(10);
+    mProjectToTest->duplicateClip(mProjectToTest->getClips().at(0));
+
+    EXPECT_EQ(mProjectToTest->getClips().size(), 2);
+    EXPECT_EQ(qSharedPointerDynamicCast<Audio::AudioClip>(mProjectToTest->getClips().at(0))->getAudioResource(),
+              qSharedPointerDynamicCast<Audio::AudioClip>(mProjectToTest->getClips().at(1))->getAudioResource());
+    EXPECT_EQ(mProjectToTest->getClips().at(1)->getClipProperties()->getPositionInSamples(), 10);
+    EXPECT_EQ(mProjectToTest->getClips().at(1)->getClipProperties()->getEndOffset(), 10);
+
+    ProjectTests::SetUp();
+
+    trackID = mProjectToTest->createTrack("Test track");
+    track = mProjectToTest->getTrackByIndex(trackID);
+    mProjectToTest->createMIDIClip(track);
+
+    auto midiClip = qSharedPointerDynamicCast<Audio::MidiClip>(mProjectToTest->getClips().at(0));
+    auto testNote = QSharedPointer<Audio::MidiNote>::create(10, juce::MidiMessage());
+    midiClip->getMidiData()->addNote(testNote);
+
+    mProjectToTest->duplicateClip(mProjectToTest->getClips().at(0));
+    ASSERT_EQ(mProjectToTest->getClips().size(), 2);
+    ASSERT_EQ(qSharedPointerDynamicCast<Audio::MidiClip>(mProjectToTest->getClips().at(1))->getMidiData()->getMidiNotes().size(), 1);
+    EXPECT_EQ(midiClip->getMidiData()->getMidiNotes().at(0),
+              qSharedPointerDynamicCast<Audio::MidiClip>(mProjectToTest->getClips().at(1))->getMidiData()->getMidiNotes().at(0));
 }

@@ -4,7 +4,8 @@ TEST_F(AudioProjectSaverTests, SaveAndOpenProject)
 {
     mProject->createTrack("track 1");
     mProject->createTrack("track 2");
-    mProject->createAudioClip(mProject->getTrackByIndex(0), "");
+    mProject->createAudioClip(mProject->getTrackByIndex(0), "test");
+    mProject->createAudioClip(mProject->getTrackByIndex(0), "test");
     int midiClipID = mProject->createMIDIClip(mProject->getTrackByIndex(1));
     auto midiClip = qSharedPointerDynamicCast<Audio::MidiClip>(mProject->getClips().at(midiClipID));
 
@@ -21,17 +22,23 @@ TEST_F(AudioProjectSaverTests, SaveAndOpenProject)
 
     SetUp();
 
-    mProjectSaver->openProject(projectDir.absolutePath() + "/project.4tpro");
+    EXPECT_TRUE(mProjectSaver->openProject(projectDir.absolutePath() + "/project.4tpro"));
     EXPECT_EQ(mProject->getProjectProperties()->getProjectName(), "project");
     EXPECT_EQ(mProject->getTracks().size(), 2);
-    EXPECT_EQ(mProject->getClips().size(), 2);
+    EXPECT_EQ(mProject->getClips().size(), 3);
     EXPECT_EQ(mProject->getTrackByIndex(0)->getTrackProperties()->getName(), "track 1");
     EXPECT_EQ(mProject->getTrackByIndex(1)->getTrackProperties()->getName(), "track 2");
     EXPECT_EQ(mProject->getTrackByIndex(0)->getClips().at(0)->getType(), Audio::Clip::AUDIO_CLIP);
+    EXPECT_EQ(mProject->getTrackByIndex(0)->getClips().at(1)->getType(), Audio::Clip::AUDIO_CLIP);
     EXPECT_EQ(mProject->getTrackByIndex(1)->getClips().at(0)->getType(), Audio::Clip::MIDI_CLIP);
 
     midiClip = qSharedPointerDynamicCast<Audio::MidiClip>(mProject->getTrackByIndex(1)->getClips().at(0));
     EXPECT_EQ(midiClip->getMidiData()->getMidiNotes().at(0)->getPositionInSamples(), 0);
     EXPECT_EQ(midiClip->getMidiData()->getMidiNotes().at(0)->getMidiMessage().getNoteNumber(), 10);
     EXPECT_EQ(midiClip->getMidiData()->getMidiNotes().at(0)->getNoteOffObject()->getPositionInSamples(), 20);
+}
+
+TEST_F(AudioProjectSaverTests, OpenProjectWrongFileName)
+{
+    EXPECT_FALSE(mProjectSaver->openProject(QFile("test_filename")));
 }

@@ -17,7 +17,7 @@ public:
     void initProjectStructure(const QDir &projectDir);
 
     void saveToDirectory(const QDir &dir);
-    void openProject(QFile projectFile);
+    bool openProject(QFile projectFile);
 
 private:
     QSharedPointer<Audio::Project> mProject;
